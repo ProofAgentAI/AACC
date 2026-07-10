@@ -85,7 +85,7 @@ export default async function HomePage({
                 className="object-cover object-center"
                 aria-hidden="true"
               />
-              <div className="absolute inset-0 bg-navy-900/75" aria-hidden="true" />
+              <div className="absolute inset-0 bg-navy-900/60" aria-hidden="true" />
               <div className="relative">
                 <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gold">
                   {home.why.panel.label}
@@ -123,7 +123,7 @@ export default async function HomePage({
           className="object-cover object-center"
           aria-hidden="true"
         />
-        <div className="absolute inset-0 bg-navy-900/85" aria-hidden="true" />
+        <div className="absolute inset-0 bg-navy-900/70" aria-hidden="true" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow={home.sectors.eyebrow}
@@ -187,7 +187,7 @@ export default async function HomePage({
           className="object-cover object-center"
           aria-hidden="true"
         />
-        <div className="absolute inset-0 bg-navy-900/80" aria-hidden="true" />
+        <div className="absolute inset-0 bg-navy-900/65" aria-hidden="true" />
         <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow={home.diaspora.eyebrow}

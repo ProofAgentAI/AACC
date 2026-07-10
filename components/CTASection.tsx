@@ -30,7 +30,7 @@ export default function CTASection({
             className="object-cover object-center"
             aria-hidden="true"
           />
-          <div className="absolute inset-0 bg-navy-900/80" aria-hidden="true" />
+          <div className="absolute inset-0 bg-navy-900/65" aria-hidden="true" />
         </>
       )}
       <div className="tricolor-bar absolute inset-x-0 top-0 h-0.5" aria-hidden="true" />

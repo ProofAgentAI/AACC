@@ -24,7 +24,7 @@ export default function PageHero({
             aria-hidden="true"
           />
           <div
-            className="absolute inset-0 bg-gradient-to-b from-navy-900/85 to-navy-800/75"
+            className="absolute inset-0 bg-gradient-to-b from-navy-900/65 to-navy-800/55"
             aria-hidden="true"
           />
         </>

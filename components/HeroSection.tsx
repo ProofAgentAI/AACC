@@ -34,7 +34,7 @@ export default function HeroSection({
       />
       {/* Legibility overlay */}
       <div
-        className="absolute inset-0 bg-gradient-to-b from-navy-900/85 via-navy-800/60 to-navy-900/90"
+        className="absolute inset-0 bg-gradient-to-b from-navy-900/60 via-navy-800/35 to-navy-900/70"
         aria-hidden="true"
       />
       <div className="relative mx-auto max-w-7xl px-4 pb-28 pt-24 sm:px-6 sm:pt-32 lg:px-8">
