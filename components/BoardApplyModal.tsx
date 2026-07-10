@@ -18,26 +18,50 @@ export default function BoardApplyModal({
 }) {
   const [open, setOpen] = useState(false);
 
+  function openModal() {
+    setOpen(true);
+    // Reflect the shareable route in the address bar while the dialog is open,
+    // so the link can be copied directly. Visiting /board loads the full page.
+    window.history.pushState({ boardModal: true }, "", `/${locale}/board`);
+  }
+
+  function closeModal() {
+    setOpen(false);
+    if (window.history.state?.boardModal) {
+      window.history.back();
+    }
+  }
+
+  // Close when the browser Back button pops our modal state.
+  useEffect(() => {
+    function onPopState() {
+      setOpen(false);
+    }
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   // Lock page scroll and close on Escape while the dialog is open.
   useEffect(() => {
     if (!open) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") closeModal();
     }
     document.addEventListener("keydown", onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", onKeyDown);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   return (
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={openModal}
         className="inline-block rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-7 py-3.5 text-sm font-semibold text-white shadow-glow-green transition-all hover:from-green-500 hover:to-green-400"
       >
         {buttonLabel}
@@ -52,13 +76,13 @@ export default function BoardApplyModal({
         >
           <div
             className="absolute inset-0 bg-navy-900/70 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
+            onClick={closeModal}
             aria-hidden="true"
           />
           <div className="relative max-h-[88vh] w-full max-w-3xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl sm:p-10">
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={closeModal}
               className="absolute end-4 top-4 rounded-full p-2 text-muted transition-colors hover:bg-surface hover:text-navy"
               aria-label="Close"
             >
