@@ -4,6 +4,7 @@ import { Inter, Manrope, Noto_Sans_Arabic } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { locales, isLocale, dir, getDictionary, type Locale } from "@/lib/i18n";
+import { siteUrl } from "@/lib/site";
 import "../globals.css";
 
 const inter = Inter({
@@ -36,7 +37,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const dict = getDictionary(isLocale(locale) ? locale : "en");
   return {
-    metadataBase: new URL("https://aaccusa.org"),
+    metadataBase: new URL(siteUrl),
     title: {
       default: dict.meta.siteTitle,
       template: "%s | AACC-USA",
@@ -57,7 +58,7 @@ export async function generateMetadata({
     openGraph: {
       type: "website",
       locale: locale === "ar" ? "ar_DZ" : "en_US",
-      url: `https://aaccusa.org/${locale}`,
+      url: `${siteUrl}/${locale}`,
       siteName: "AACC-USA",
       title: dict.meta.siteTitle,
       description: dict.meta.siteDescription,
@@ -82,8 +83,8 @@ export async function generateMetadata({
     },
     alternates: {
       languages: {
-        en: "https://aaccusa.org/en",
-        ar: "https://aaccusa.org/ar",
+        en: `${siteUrl}/en`,
+        ar: `${siteUrl}/ar`,
       },
     },
   };
