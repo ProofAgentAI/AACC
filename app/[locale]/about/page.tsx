@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import SectionHeading from "@/components/SectionHeading";
 import LeadershipCard from "@/components/LeadershipCard";
+import BoardApplicationForm from "@/components/BoardApplicationForm";
 import CTASection from "@/components/CTASection";
 import Icon from "@/components/Icon";
 import { getDictionary, isLocale, type Locale } from "@/lib/i18n";
@@ -98,20 +100,47 @@ export default async function AboutPage({
             description={about.leadership.description}
           />
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <LeadershipCard
+              person={about.leadership.president.name}
+              role={about.leadership.president.role}
+              description={about.leadership.president.description}
+            />
             {about.leadership.roles.map((leader) => (
               <LeadershipCard
                 key={leader.role}
                 role={leader.role}
                 description={leader.description}
-                badge={dict.common.announcingSoon}
+                badge={dict.common.comingSoon}
               />
             ))}
+          </div>
+          <div className="mt-12 text-center">
+            <Link
+              href="#board-application"
+              className="inline-block rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-7 py-3.5 text-sm font-semibold text-white shadow-glow-green transition-all hover:from-green-500 hover:to-green-400"
+            >
+              {about.leadership.applyCta}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Board application */}
+      <section id="board-application" className="bg-white py-20 sm:py-24">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            eyebrow={about.board.eyebrow}
+            title={about.board.title}
+            description={about.board.description}
+          />
+          <div className="mt-12 rounded-3xl border border-navy-100 bg-surface p-8 sm:p-10">
+            <BoardApplicationForm locale={locale} dict={about.board} formDict={dict.form} />
           </div>
         </div>
       </section>
 
       {/* Values */}
-      <section className="bg-white py-20 sm:py-24">
+      <section className="bg-surface py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading eyebrow={about.values.eyebrow} title={about.values.title} />
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

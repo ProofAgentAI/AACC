@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Check } from "lucide-react";
+import { Check, Handshake, Award } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import SectionHeading from "@/components/SectionHeading";
 import MembershipTierCard from "@/components/MembershipTierCard";
@@ -111,6 +111,42 @@ export default async function MembershipPage({
             <div className="lg:col-span-3">
               <div className="rounded-3xl border border-navy-100 bg-surface p-8 sm:p-10">
                 <EarlyMembershipForm locale={locale} dict={m.early} formDict={dict.form} />
+              </div>
+            </div>
+          </div>
+
+          {/* Partner and sponsor tracks */}
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
+            <div className="flex items-start gap-5 rounded-2xl border border-dashed border-navy-200 bg-surface p-7">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-navy-50 text-navy">
+                <Handshake className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h3 className="font-heading text-lg font-bold text-navy">
+                    {m.early.partnerTitle}
+                  </h3>
+                  <span className="rounded-full bg-gold-100 px-3 py-1 text-xs font-semibold text-gold-600">
+                    {dict.common.comingSoon}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{m.early.partnerText}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-5 rounded-2xl border border-dashed border-navy-200 bg-surface p-7">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold-100 text-gold-600">
+                <Award className="h-6 w-6" aria-hidden="true" />
+              </span>
+              <div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h3 className="font-heading text-lg font-bold text-navy">
+                    {m.early.sponsorTitle}
+                  </h3>
+                  <span className="rounded-full bg-gold-100 px-3 py-1 text-xs font-semibold text-gold-600">
+                    {dict.common.comingSoon}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{m.early.sponsorText}</p>
               </div>
             </div>
           </div>

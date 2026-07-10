@@ -322,11 +322,17 @@ export const en = {
       eyebrow: "Leadership",
       title: "The People Behind the Platform",
       description:
-        "Chamber leadership is being assembled from the founding network. Interested in serving? Reach out.",
+        "The founding board is being assembled now. Bring your expertise to the table and help build the chamber from day one.",
+      president: {
+        name: "Fouad Bousetouane",
+        role: "President",
+        description: "Vision, strategy, and stewardship of the chamber's founding mission.",
+      },
       roles: [
         {
-          role: "Founder",
-          description: "Vision, strategy, and stewardship of the chamber's founding mission.",
+          role: "Board Members",
+          description:
+            "Founding board seats across finance, legal, business development, and more. Apply below.",
         },
         {
           role: "Advisory Board",
@@ -334,16 +340,57 @@ export const en = {
             "Senior leaders in business, law, finance, and academia guiding chamber direction.",
         },
         {
-          role: "Business Council",
-          description:
-            "Member business leaders shaping trade, directory, and investment programming.",
-        },
-        {
           role: "Community Council",
           description:
             "Community leaders driving youth, professional, and cultural-economic programs.",
         },
       ],
+      applyCta: "Apply to Join the Founding Board",
+    },
+    board: {
+      eyebrow: "Founding Board",
+      title: "Apply to Join the Founding Board",
+      description:
+        "AACC-USA is recruiting founding board members with hands-on expertise across the full life of the organization: finance, legal, growth, communications, and community. Tell us about yourself and where you can lead.",
+      areasLabel: "Board areas you can lead (select all that apply)",
+      areas: [
+        { value: "treasurer-finance", label: "Treasurer / Finance (CPA)" },
+        { value: "legal-incorporation", label: "Legal & Incorporation (Attorney)" },
+        { value: "business-development", label: "Business Development" },
+        { value: "public-relations", label: "Public Relations & Communications" },
+        { value: "membership-engagement", label: "Membership & Community Engagement" },
+        { value: "events-programs", label: "Events & Programs" },
+        { value: "sponsorship-fundraising", label: "Sponsorship & Fundraising" },
+        { value: "technology-digital", label: "Technology & Digital" },
+        { value: "trade-algeria", label: "Trade & Algeria Relations" },
+        { value: "marketing-media", label: "Marketing & Media" },
+      ],
+      linkedin: "LinkedIn Profile",
+      linkedinPlaceholder: "https://linkedin.com/in/your-profile",
+      background: "Professional Background & Experience",
+      backgroundPlaceholder:
+        "Your career, credentials, and the professional experience you bring...",
+      leadership: "Leadership & Board Experience",
+      leadershipPlaceholder:
+        "Boards, associations, or teams you have led or served on...",
+      businesses: "Businesses & Ventures",
+      businessesPlaceholder: "Businesses you own, run, or have built...",
+      algeriaTies: "Ties to Algeria",
+      algeriaTiesPlaceholder:
+        "Family, professional, or business connections to Algeria...",
+      aspiration: "Your Aspiration for AACC-USA",
+      aspirationPlaceholder:
+        "What you hope to build through the chamber, and what you would bring to the board...",
+      submitLabel: "Submit Board Application",
+      submitting: "Submitting...",
+      successTitle: "Application received",
+      successText:
+        "Thank you for stepping forward. The founding team will review your application and reach out to schedule a conversation.",
+      duplicateTitle: "You have already applied",
+      duplicateText:
+        "This email already has a board application on file. We will be in touch soon.",
+      errorText: "Something went wrong while submitting. Please try again, or email us directly at",
+      offlineText: "Board applications open shortly. In the meantime, email us at",
     },
     values: {
       eyebrow: "Our Values",
@@ -522,27 +569,39 @@ export const en = {
     },
     early: {
       eyebrow: "Founding Opportunity",
-      title: "Join the Early Membership List",
+      title: "Become a Member",
       description:
-        "Be first in line as AACC-USA launches. Early members are contacted before public enrollment opens and receive founding recognition.",
+        "Join the chamber's founding membership. Early members are contacted before public enrollment opens and receive founding recognition.",
       benefits: [
         "Founding member recognition, permanently attached to your name or business",
         "Priority access to the first summits, roundtables, and trade missions",
         "Early listing in the business directory before public launch",
         "A voice in shaping the chamber's first programs and priorities",
       ],
-      submitLabel: "Join the Early List",
+      firstName: "First Name",
+      lastName: "Last Name",
+      cell: "Cell Phone",
+      jobFunction: "Function / Title",
+      jobFunctionPlaceholder: "e.g. CEO, Physician, Engineer",
+      businessName: "Business / Organization Name",
+      businessNamePlaceholder: "Your company or organization",
+      submitLabel: "Submit Membership Application",
       submitting: "Submitting...",
       successTitle: "Welcome to the founding network",
       successText:
-        "You are on the early membership list. Our team will reach out with next steps before public enrollment opens.",
-      duplicateTitle: "You are already on the list",
+        "Your membership application has been received. Our team will reach out with next steps.",
+      duplicateTitle: "You have already applied",
       duplicateText:
-        "This email is already registered on the early membership list. We will be in touch soon.",
+        "This email already has a membership application on file. We will be in touch soon.",
       errorText:
         "Something went wrong while submitting. Please try again, or email us directly at",
-      offlineText:
-        "Applications open shortly. In the meantime, email us at",
+      offlineText: "Applications open shortly. In the meantime, email us at",
+      partnerTitle: "Become a Partner",
+      partnerText:
+        "Institutional and strategic partnerships for corporations, universities, and organizations.",
+      sponsorTitle: "Become a Sponsor",
+      sponsorText:
+        "Founding sponsorship packages with premier visibility across the chamber's platforms.",
     },
   },
 
@@ -1018,6 +1077,8 @@ export const en = {
 
   form: {
     name: "Name",
+    firstName: "First Name",
+    lastName: "Last Name",
     email: "Email",
     phone: "Phone",
     organization: "Organization",

@@ -45,15 +45,16 @@ export default function EarlyMembershipForm({
     e.preventDefault();
     if (!supabase) return;
 
-    const form = e.currentTarget;
-    const data = new FormData(form);
+    const data = new FormData(e.currentTarget);
     setStatus("submitting");
 
     const { error } = await supabase.from("membership_applications").insert({
-      full_name: String(data.get("name") ?? "").trim(),
+      first_name: String(data.get("firstName") ?? "").trim(),
+      last_name: String(data.get("lastName") ?? "").trim(),
       email: String(data.get("email") ?? "").trim().toLowerCase(),
-      phone: String(data.get("phone") ?? "").trim() || null,
-      organization: String(data.get("organization") ?? "").trim() || null,
+      phone: String(data.get("cell") ?? "").trim() || null,
+      job_title: String(data.get("jobFunction") ?? "").trim() || null,
+      business_name: String(data.get("businessName") ?? "").trim() || null,
       city_state: String(data.get("location") ?? "").trim() || null,
       tier: String(data.get("tier") ?? "individual"),
       message: String(data.get("message") ?? "").trim() || null,
@@ -72,24 +73,23 @@ export default function EarlyMembershipForm({
   return (
     <form className="grid gap-5 sm:grid-cols-2" onSubmit={handleSubmit}>
       <div>
-        <label htmlFor="early-name" className="mb-1.5 block text-sm font-semibold text-navy">
-          {formDict.name} *
+        <label htmlFor="m-first-name" className="mb-1.5 block text-sm font-semibold text-navy">
+          {dict.firstName} *
         </label>
-        <input
-          id="early-name"
-          name="name"
-          type="text"
-          required
-          placeholder={formDict.namePlaceholder}
-          className={inputClasses}
-        />
+        <input id="m-first-name" name="firstName" type="text" required className={inputClasses} />
       </div>
       <div>
-        <label htmlFor="early-email" className="mb-1.5 block text-sm font-semibold text-navy">
+        <label htmlFor="m-last-name" className="mb-1.5 block text-sm font-semibold text-navy">
+          {dict.lastName} *
+        </label>
+        <input id="m-last-name" name="lastName" type="text" required className={inputClasses} />
+      </div>
+      <div>
+        <label htmlFor="m-email" className="mb-1.5 block text-sm font-semibold text-navy">
           {formDict.email} *
         </label>
         <input
-          id="early-email"
+          id="m-email"
           name="email"
           type="email"
           required
@@ -98,35 +98,47 @@ export default function EarlyMembershipForm({
         />
       </div>
       <div>
-        <label htmlFor="early-phone" className="mb-1.5 block text-sm font-semibold text-navy">
-          {formDict.phone}
+        <label htmlFor="m-cell" className="mb-1.5 block text-sm font-semibold text-navy">
+          {dict.cell}
         </label>
         <input
-          id="early-phone"
-          name="phone"
+          id="m-cell"
+          name="cell"
           type="tel"
           placeholder={formDict.phonePlaceholder}
           className={inputClasses}
         />
       </div>
       <div>
-        <label htmlFor="early-organization" className="mb-1.5 block text-sm font-semibold text-navy">
-          {formDict.organization}
+        <label htmlFor="m-function" className="mb-1.5 block text-sm font-semibold text-navy">
+          {dict.jobFunction}
         </label>
         <input
-          id="early-organization"
-          name="organization"
+          id="m-function"
+          name="jobFunction"
           type="text"
-          placeholder={formDict.organizationPlaceholder}
+          placeholder={dict.jobFunctionPlaceholder}
           className={inputClasses}
         />
       </div>
       <div>
-        <label htmlFor="early-location" className="mb-1.5 block text-sm font-semibold text-navy">
+        <label htmlFor="m-business" className="mb-1.5 block text-sm font-semibold text-navy">
+          {dict.businessName}
+        </label>
+        <input
+          id="m-business"
+          name="businessName"
+          type="text"
+          placeholder={dict.businessNamePlaceholder}
+          className={inputClasses}
+        />
+      </div>
+      <div>
+        <label htmlFor="m-location" className="mb-1.5 block text-sm font-semibold text-navy">
           {formDict.location}
         </label>
         <input
-          id="early-location"
+          id="m-location"
           name="location"
           type="text"
           placeholder={formDict.locationPlaceholder}
@@ -134,10 +146,10 @@ export default function EarlyMembershipForm({
         />
       </div>
       <div>
-        <label htmlFor="early-tier" className="mb-1.5 block text-sm font-semibold text-navy">
+        <label htmlFor="m-tier" className="mb-1.5 block text-sm font-semibold text-navy">
           {formDict.membershipInterest} *
         </label>
-        <select id="early-tier" name="tier" required defaultValue="" className={inputClasses}>
+        <select id="m-tier" name="tier" required defaultValue="" className={inputClasses}>
           <option value="" disabled>
             {formDict.selectTier}
           </option>
@@ -149,11 +161,11 @@ export default function EarlyMembershipForm({
         </select>
       </div>
       <div className="sm:col-span-2">
-        <label htmlFor="early-message" className="mb-1.5 block text-sm font-semibold text-navy">
+        <label htmlFor="m-message" className="mb-1.5 block text-sm font-semibold text-navy">
           {formDict.message}
         </label>
         <textarea
-          id="early-message"
+          id="m-message"
           name="message"
           rows={4}
           placeholder={formDict.messagePlaceholder}
