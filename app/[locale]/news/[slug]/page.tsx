@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, Clock } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, UserRound } from "lucide-react";
 import ShareBar from "@/components/ShareBar";
 import LikeButton from "@/components/LikeButton";
 import { getPostBySlug, formatPostDate, readTimeOf, POST_TYPE_LABELS } from "@/lib/posts";
@@ -68,15 +68,10 @@ export default async function ArticlePage({
             <ArrowLeft className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
             {dict.news.article.back}
           </Link>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <div className="mt-6">
             <span className="rounded-full bg-gold px-3 py-1 text-xs font-bold uppercase tracking-wider text-navy">
               {typeLabel}
             </span>
-            {post.category && (
-              <span className="rounded-full border border-white/30 px-3 py-1 text-xs font-semibold text-navy-100">
-                {post.category}
-              </span>
-            )}
           </div>
           <h1 className="mt-5 font-heading text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
             {post.title}
@@ -85,6 +80,12 @@ export default async function ArticlePage({
             <p className="mt-4 max-w-3xl text-lg leading-relaxed text-navy-100">{post.excerpt}</p>
           )}
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-navy-200">
+            {post.author && (
+              <span className="inline-flex items-center gap-1.5 font-semibold text-white">
+                <UserRound className="h-4 w-4 text-gold" aria-hidden="true" />
+                {post.author}
+              </span>
+            )}
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="h-4 w-4 text-gold" aria-hidden="true" />
               {formatPostDate(post, locale)}

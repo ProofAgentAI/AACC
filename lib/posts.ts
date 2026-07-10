@@ -9,6 +9,7 @@ export type CmsPost = {
   content_html: string;
   cover_image: string | null;
   category: string | null;
+  author: string | null;
   locale: string;
   seo_title: string | null;
   seo_description: string | null;
@@ -30,9 +31,7 @@ export async function getPublishedPosts(locale: string): Promise<CmsPost[]> {
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("posts")
-    .select(
-      "id, slug, type, title, excerpt, content_html, cover_image, category, locale, seo_title, seo_description, seo_keywords, published_at, created_at, likes, views"
-    )
+    .select("*")
     .eq("locale", locale)
     .order("published_at", { ascending: false, nullsFirst: false });
   if (error || !data) return [];
@@ -43,9 +42,7 @@ export async function getPostBySlug(slug: string): Promise<CmsPost | null> {
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("posts")
-    .select(
-      "id, slug, type, title, excerpt, content_html, cover_image, category, locale, seo_title, seo_description, seo_keywords, published_at, created_at, likes, views"
-    )
+    .select("*")
     .eq("slug", slug)
     .maybeSingle();
   if (error || !data) return null;

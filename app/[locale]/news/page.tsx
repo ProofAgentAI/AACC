@@ -48,8 +48,15 @@ export default async function NewsPage({
             post.type,
           readTime: readTimeOf(post, locale),
           href: p(`/news/${post.slug}`),
+          image: post.cover_image,
+          author: post.author,
         }))
-      : mockPosts.map((post) => ({ ...post, href: p("/news") }));
+      : mockPosts.map((post) => ({
+          ...post,
+          href: p("/news"),
+          image: null as string | null,
+          author: null as string | null,
+        }));
 
   const featured = cards[0];
   const rest = cards.slice(1);
@@ -68,7 +75,13 @@ export default async function NewsPage({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading eyebrow={n.featured.eyebrow} title={n.featured.title} align="left" />
           <div className="mt-10">
-            <BlogCard post={featured} large href={featured.href} />
+            <BlogCard
+              post={featured}
+              large
+              href={featured.href}
+              image={featured.image}
+              author={featured.author}
+            />
           </div>
         </div>
       </section>
@@ -83,7 +96,13 @@ export default async function NewsPage({
           />
           <div className="mt-14 grid gap-6 md:grid-cols-2">
             {rest.map((post) => (
-              <BlogCard key={post.slug} post={post} href={post.href} />
+              <BlogCard
+                key={post.slug}
+                post={post}
+                href={post.href}
+                image={post.image}
+                author={post.author}
+              />
             ))}
           </div>
         </div>

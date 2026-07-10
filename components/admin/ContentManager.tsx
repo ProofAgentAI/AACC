@@ -137,6 +137,7 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
       slug: String(draft.slug ?? "").trim() || slugify(title),
       type: draft.type ?? "article",
       category: String(draft.category ?? "").trim() || null,
+      author: String(draft.author ?? "").trim() || null,
       locale: draft.locale ?? "en",
       excerpt: String(draft.excerpt ?? "").trim() || null,
       cover_image: String(draft.cover_image ?? "").trim() || null,
@@ -289,6 +290,16 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
               onChange={(e) => set("category", e.target.value)}
               className={inputClasses}
               placeholder="e.g. Chamber Updates, Market Insights"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-navy">Author (byline)</label>
+            <input
+              type="text"
+              value={String(draft.author ?? "")}
+              onChange={(e) => set("author", e.target.value)}
+              className={inputClasses}
+              placeholder="e.g. Fouad Bousetouane"
             />
           </div>
           <div>

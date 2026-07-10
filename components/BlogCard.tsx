@@ -12,10 +12,14 @@ export default function BlogCard({
   post,
   large = false,
   href = "/en/news",
+  image,
+  author,
 }: {
   post: Post;
   large?: boolean;
   href?: string;
+  image?: string | null;
+  author?: string | null;
 }) {
   return (
     <article
@@ -25,24 +29,36 @@ export default function BlogCard({
     >
       <div
         className={`relative overflow-hidden rounded-t-2xl bg-gradient-to-br from-navy via-navy-600 to-navy-500 ${
-          large ? "min-h-[220px] md:w-1/2 md:rounded-l-2xl md:rounded-tr-none" : "h-40"
+          large ? "min-h-[220px] md:w-1/2 md:rounded-s-2xl md:rounded-se-none" : "h-40"
         }`}
         aria-hidden="true"
       >
-        <svg
-          className="absolute inset-0 h-full w-full opacity-25"
-          viewBox="0 0 400 200"
-          preserveAspectRatio="xMidYMid slice"
-          fill="none"
-        >
-          <path d="M20 170 C120 60, 280 60, 380 170" stroke="#C9A227" strokeWidth="1.5" />
-          <path d="M20 170 H380" stroke="#FFFFFF" strokeWidth="1.5" />
-          <circle cx="20" cy="170" r="4" fill="#007A3D" />
-          <circle cx="380" cy="170" r="4" fill="#D71920" />
-        </svg>
-        <span className="absolute bottom-4 left-4 font-heading text-sm font-bold tracking-wider text-gold">
-          AACC-USA
-        </span>
+        {image ? (
+          // The article's uploaded picture is the featured image.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={image}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <>
+            <svg
+              className="absolute inset-0 h-full w-full opacity-25"
+              viewBox="0 0 400 200"
+              preserveAspectRatio="xMidYMid slice"
+              fill="none"
+            >
+              <path d="M20 170 C120 60, 280 60, 380 170" stroke="#C9A227" strokeWidth="1.5" />
+              <path d="M20 170 H380" stroke="#FFFFFF" strokeWidth="1.5" />
+              <circle cx="20" cy="170" r="4" fill="#007A3D" />
+              <circle cx="380" cy="170" r="4" fill="#D71920" />
+            </svg>
+            <span className="absolute bottom-4 start-4 font-heading text-sm font-bold tracking-wider text-gold">
+              AACC-USA
+            </span>
+          </>
+        )}
       </div>
       <div className={`flex flex-1 flex-col p-7 ${large ? "md:justify-center" : ""}`}>
         <div className="flex items-center gap-3">
@@ -63,7 +79,15 @@ export default function BlogCard({
           <Link href={href}>{post.title}</Link>
         </h3>
         <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{post.excerpt}</p>
-        <p className="mt-5 text-xs font-medium text-muted">{post.date}</p>
+        <p className="mt-5 text-xs font-medium text-muted">
+          {author ? (
+            <>
+              <span className="font-semibold text-navy">{author}</span>
+              <span className="mx-1.5">·</span>
+            </>
+          ) : null}
+          {post.date}
+        </p>
       </div>
     </article>
   );
