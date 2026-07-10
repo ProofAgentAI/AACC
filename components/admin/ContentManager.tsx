@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Eye, FilePlus2, Globe, Heart, ImagePlus, Pencil, Trash2, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { ADMIN_EMAIL } from "@/lib/admin";
 
 type PostRow = Record<string, unknown>;
 
@@ -57,7 +58,15 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isAdmin = userEmail.toLowerCase() === ADMIN_EMAIL;
+
+  useEffect(() => {
+    supabase?.auth.getSession().then(({ data }) => {
+      setUserEmail(data.session?.user.email ?? "");
+    });
+  }, []);
 
   async function uploadImage(file: File) {
     if (!supabase) return;
@@ -118,7 +127,11 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
       return;
     }
     setSaving(true);
-    const published = publish ?? Boolean(draft.published);
+    const wantsPublish = publish ?? Boolean(draft.published);
+    // Non-admin staff cannot publish directly: publishing becomes a request
+    // that lands in the administrator's Approvals queue.
+    const published = wantsPublish && isAdmin;
+    const approval_status = wantsPublish ? (isAdmin ? "approved" : "pending") : "draft";
     const payload: PostRow = {
       title,
       slug: String(draft.slug ?? "").trim() || slugify(title),
@@ -132,6 +145,8 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
       seo_description: String(draft.seo_description ?? "").trim() || null,
       seo_keywords: String(draft.seo_keywords ?? "").trim() || null,
       published,
+      approval_status,
+      created_by: String(draft.created_by ?? "") || userEmail || null,
       published_at: published ? (draft.published_at ?? new Date().toISOString()) : null,
       updated_at: new Date().toISOString(),
     };
@@ -148,7 +163,13 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
       );
       return;
     }
-    onNotice(published ? "Published." : "Saved as draft.");
+    onNotice(
+      published
+        ? "Published."
+        : wantsPublish
+          ? "Submitted to the administrator for approval."
+          : "Saved as draft."
+    );
     setDraft(null);
     load();
   }
@@ -160,6 +181,7 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
       .from("posts")
       .update({
         published,
+        approval_status: published ? "approved" : "draft",
         published_at: published ? (post.published_at ?? new Date().toISOString()) : null,
       })
       .eq("id", post.id);
@@ -404,7 +426,13 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
             onClick={() => save(true)}
             className="rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-6 py-3 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400 disabled:opacity-60"
           >
-            {saving ? "Saving..." : draft.published ? "Update Published Post" : "Publish Now"}
+            {saving
+              ? "Saving..."
+              : !isAdmin
+                ? "Submit for Approval"
+                : draft.published
+                  ? "Update Published Post"
+                  : "Publish Now"}
           </button>
           <button
             type="button"
@@ -543,18 +571,42 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
                 <td className="px-4 py-3 capitalize text-muted">{String(post.type)}</td>
                 <td className="px-4 py-3 uppercase text-muted">{String(post.locale)}</td>
                 <td className="px-4 py-3">
-                  <button
-                    type="button"
-                    onClick={() => togglePublish(post)}
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      post.published
-                        ? "bg-green-50 text-green-700"
-                        : "bg-gold-100 text-gold-600"
-                    }`}
-                    title="Click to toggle"
-                  >
-                    {post.published ? "Published" : "Draft"}
-                  </button>
+                  {isAdmin ? (
+                    <button
+                      type="button"
+                      onClick={() => togglePublish(post)}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        post.published
+                          ? "bg-green-50 text-green-700"
+                          : post.approval_status === "pending"
+                            ? "bg-red-50 text-red-700"
+                            : "bg-gold-100 text-gold-600"
+                      }`}
+                      title="Click to toggle"
+                    >
+                      {post.published
+                        ? "Published"
+                        : post.approval_status === "pending"
+                          ? "Pending Approval"
+                          : "Draft"}
+                    </button>
+                  ) : (
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        post.published
+                          ? "bg-green-50 text-green-700"
+                          : post.approval_status === "pending"
+                            ? "bg-red-50 text-red-700"
+                            : "bg-gold-100 text-gold-600"
+                      }`}
+                    >
+                      {post.published
+                        ? "Published"
+                        : post.approval_status === "pending"
+                          ? "Pending Approval"
+                          : "Draft"}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-muted">
                   <span className="inline-flex items-center gap-1">
@@ -589,15 +641,17 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
                       <Globe className="h-4 w-4" />
                     </a>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => remove(post)}
-                    className="rounded-lg p-2 text-muted hover:bg-red-50 hover:text-red-600"
-                    aria-label="Delete"
-                    title="Delete"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => remove(post)}
+                      className="rounded-lg p-2 text-muted hover:bg-red-50 hover:text-red-600"
+                      aria-label="Delete"
+                      title="Delete"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

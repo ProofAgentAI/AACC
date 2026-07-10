@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { ADMIN_EMAIL } from "@/lib/admin";
 
 // User management requires the service-role key, which must only ever live in
 // server-side environment variables (never NEXT_PUBLIC_*, never in the repo).
@@ -30,6 +31,15 @@ async function requireStaff(request: NextRequest) {
   const { data, error } = await admin.auth.getUser(token);
   if (error || !data.user) {
     return { error: NextResponse.json({ error: "Session invalid or expired." }, { status: 401 }) };
+  }
+  // User management is reserved for the administrator account.
+  if (data.user.email?.toLowerCase() !== ADMIN_EMAIL) {
+    return {
+      error: NextResponse.json(
+        { error: "Only the administrator can manage users." },
+        { status: 403 }
+      ),
+    };
   }
   return { admin, caller: data.user };
 }

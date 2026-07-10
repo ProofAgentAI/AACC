@@ -7,11 +7,14 @@ import { Eye, KeyRound, LogOut, Mail, RefreshCw, Trash2, UserPlus, ExternalLink,
 import { supabase } from "@/lib/supabase";
 import ContentManager from "@/components/admin/ContentManager";
 import CrmManager from "@/components/admin/CrmManager";
+import ApprovalsManager from "@/components/admin/ApprovalsManager";
+import { ADMIN_EMAIL } from "@/lib/admin";
 
 type Row = Record<string, unknown>;
 
 const TABS = [
   { key: "content", label: "Content", table: "" },
+  { key: "approvals", label: "Approvals", table: "" },
   { key: "crm", label: "CRM", table: "" },
   { key: "memberships", label: "Memberships", table: "membership_applications" },
   { key: "board", label: "Board Applications", table: "board_applications" },
@@ -46,6 +49,7 @@ const statusColors: Record<string, string> = {
 
 const EMAIL_SUBJECTS: Record<TabKey, string> = {
   content: "",
+  approvals: "",
   crm: "",
   memberships: "Your AACC-USA membership application",
   board: "Your AACC-USA founding board application",
@@ -61,6 +65,7 @@ const FIELD_LABELS: Record<string, string> = {
   last_name: "Last Name",
   name: "Name",
   email: "Email",
+  last_sign_in_at: "Last Sign-in",
   phone: "Phone",
   job_title: "Function / Title",
   business_name: "Business",
@@ -162,6 +167,21 @@ export default function AdminDashboard() {
   const [detail, setDetail] = useState<Row | null>(null);
   const [pwOpen, setPwOpen] = useState(false);
   const [pwError, setPwError] = useState("");
+  const [approvalsCount, setApprovalsCount] = useState(0);
+  const isAdmin = email.toLowerCase() === ADMIN_EMAIL;
+
+  const loadApprovalsCount = useCallback(async () => {
+    if (!supabase) return;
+    const { count } = await supabase
+      .from("posts")
+      .select("id", { count: "exact", head: true })
+      .eq("approval_status", "pending");
+    setApprovalsCount(count ?? 0);
+  }, []);
+
+  useEffect(() => {
+    if (ready && isAdmin) loadApprovalsCount();
+  }, [ready, isAdmin, loadApprovalsCount]);
 
   // Session guard
   useEffect(() => {
@@ -438,7 +458,7 @@ export default function AdminDashboard() {
       </header>
 
       <nav className="mt-6 flex flex-wrap gap-2">
-        {TABS.map((t) => (
+        {TABS.filter((t) => isAdmin || (t.key !== "users" && t.key !== "approvals")).map((t) => (
           <button
             key={t.key}
             type="button"
@@ -450,6 +470,11 @@ export default function AdminDashboard() {
             }`}
           >
             {t.label}
+            {t.key === "approvals" && approvalsCount > 0 && (
+              <span className="ms-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
+                {approvalsCount}
+              </span>
+            )}
           </button>
         ))}
         <button
@@ -470,6 +495,8 @@ export default function AdminDashboard() {
 
       {tab === "content" ? (
         <ContentManager onNotice={setNotice} />
+      ) : tab === "approvals" ? (
+        <ApprovalsManager onNotice={setNotice} onChanged={loadApprovalsCount} />
       ) : tab === "crm" ? (
         <CrmManager onNotice={setNotice} />
       ) : tab !== "users" ? (
@@ -496,7 +523,11 @@ export default function AdminDashboard() {
                 </tr>
               )}
               {rows.map((row) => (
-                <tr key={String(row.id)} className="border-b border-navy-50 align-top">
+                <tr
+                  key={String(row.id)}
+                  onClick={() => setDetail(row)}
+                  className="cursor-pointer border-b border-navy-50 align-top transition-colors hover:bg-surface"
+                >
                   <td className="whitespace-nowrap px-4 py-3 text-muted">
                     {formatDate(row.created_at)}
                   </td>
@@ -513,7 +544,11 @@ export default function AdminDashboard() {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <a href={`mailto:${row.email}`} className="text-green-600 hover:underline">
+                    <a
+                      href={`mailto:${row.email}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-green-600 hover:underline"
+                    >
                       {String(row.email ?? "")}
                     </a>
                     {row.phone ? (
@@ -556,7 +591,7 @@ export default function AdminDashboard() {
                     {tab === "subscribers" && <span>{String(row.locale ?? "")}</span>}
                   </td>
                   {STATUS_OPTIONS[currentTable] && (
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <select
                         value={String(row.status ?? "")}
                         onChange={(e) => updateStatus(row.id, e.target.value)}
@@ -572,7 +607,7 @@ export default function AdminDashboard() {
                       </select>
                     </td>
                   )}
-                  <td className="whitespace-nowrap px-4 py-3">
+                  <td className="whitespace-nowrap px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     {tab !== "subscribers" && (
                       <button
                         type="button"
@@ -660,13 +695,17 @@ export default function AdminDashboard() {
                   </tr>
                 )}
                 {users.map((user) => (
-                  <tr key={String(user.id)} className="border-b border-navy-50">
+                  <tr
+                    key={String(user.id)}
+                    onClick={() => setDetail(user)}
+                    className="cursor-pointer border-b border-navy-50 transition-colors hover:bg-surface"
+                  >
                     <td className="px-4 py-3 font-semibold text-navy">{String(user.email)}</td>
                     <td className="px-4 py-3 text-muted">{formatDate(user.created_at)}</td>
                     <td className="px-4 py-3 text-muted">
                       {user.last_sign_in_at ? formatDate(user.last_sign_in_at) : "Never"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       {user.email !== email && (
                         <button
                           type="button"
@@ -731,13 +770,15 @@ export default function AdminDashboard() {
               >
                 <Mail className="h-3.5 w-3.5" /> Email Applicant
               </a>
-              <button
-                type="button"
-                onClick={() => addToCrm(detail)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-navy-200 px-4 py-2 text-xs font-semibold text-navy hover:bg-surface"
-              >
-                <UserPlus className="h-3.5 w-3.5" /> Add to CRM
-              </button>
+              {tab !== "users" && tab !== "subscribers" && (
+                <button
+                  type="button"
+                  onClick={() => addToCrm(detail)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-navy-200 px-4 py-2 text-xs font-semibold text-navy hover:bg-surface"
+                >
+                  <UserPlus className="h-3.5 w-3.5" /> Add to CRM
+                </button>
+              )}
             </div>
             <dl className="mt-6 space-y-4">
               {detailEntries.map((entry) => (
