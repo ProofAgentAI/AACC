@@ -70,36 +70,69 @@ export function brandedEmail(title: string, bodyHtml: string) {
 </html>`;
 }
 
-export type NewsletterItem = {
+export type NewsletterSection = {
   title: string;
+  date?: string;
+  html?: string;
   description?: string;
   url?: string;
   image?: string;
 };
 
-export function newsletterHtml(subject: string, intro: string, items: NewsletterItem[]) {
-  const itemsHtml = items
-    .map((item) => {
-      const titleHtml = item.url
-        ? `<a href="${item.url}" style="color:#0B1F3A;text-decoration:none;">${item.title}</a>`
-        : item.title;
+export type NewsletterContent = {
+  subject: string;
+  headline?: string;
+  intro?: string;
+  mainImage?: string;
+  mainImageCredit?: string;
+  sections: NewsletterSection[];
+};
+
+function formatSectionDate(value?: string) {
+  if (!value) return "";
+  const d = new Date(value.includes("T") ? value : `${value}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+}
+
+export function newsletterHtml(content: NewsletterContent) {
+  const sectionsHtml = content.sections
+    .map((section) => {
+      const titleHtml = section.url
+        ? `<a href="${section.url}" style="color:#0B1F3A;text-decoration:none;">${section.title}</a>`
+        : section.title;
+      const bodyHtml =
+        section.html ??
+        (section.description
+          ? `<p style="margin:0;">${section.description.replace(/\n/g, "<br/>")}</p>`
+          : "");
       return `
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
-        ${item.image ? `<tr><td><a href="${item.url ?? "https://aacc-usa.org"}"><img src="${item.image}" alt="" width="100%" style="display:block;max-height:280px;object-fit:cover;"/></a></td></tr>` : ""}
-        <tr><td style="padding:16px 18px;">
-          <h2 style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:18px;color:#0B1F3A;">${titleHtml}</h2>
-          ${item.description ? `<p style="margin:0 0 10px;font-family:Arial,sans-serif;font-size:14px;color:#374151;line-height:1.6;">${item.description}</p>` : ""}
-          ${item.url ? `<a href="${item.url}" style="font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#007A3D;">Read more →</a>` : ""}
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 22px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+        ${section.image ? `<tr><td><a href="${section.url ?? "https://aacc-usa.org"}"><img src="${section.image}" alt="" width="100%" style="display:block;max-height:280px;object-fit:cover;"/></a></td></tr>` : ""}
+        <tr><td style="padding:18px 20px;">
+          ${section.date ? `<p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:#A8861D;">${formatSectionDate(section.date)}</p>` : ""}
+          <h2 style="margin:0 0 10px;font-family:Arial,sans-serif;font-size:19px;color:#0B1F3A;">${titleHtml}</h2>
+          <div style="font-family:Arial,sans-serif;font-size:14px;color:#374151;line-height:1.65;">${bodyHtml}</div>
+          ${section.url ? `<p style="margin:10px 0 0;"><a href="${section.url}" style="font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#007A3D;">Read more →</a></p>` : ""}
         </td></tr>
       </table>`;
     })
     .join("");
 
+  const mainImageHtml = content.mainImage
+    ? `
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 8px;">
+        <tr><td><img src="${content.mainImage}" alt="" width="100%" style="display:block;border-radius:10px;max-height:320px;object-fit:cover;"/></td></tr>
+        ${content.mainImageCredit ? `<tr><td style="padding-top:4px;font-family:Arial,sans-serif;font-size:11px;color:#6B7280;font-style:italic;">Photo: ${content.mainImageCredit}</td></tr>` : ""}
+      </table>`
+    : "";
+
   const body = `
-    ${intro ? `<p style="margin:0 0 20px;">${intro.replace(/\n/g, "<br/>")}</p>` : ""}
-    ${itemsHtml}
+    ${mainImageHtml}
+    ${content.intro ? `<p style="margin:${content.mainImage ? "16px" : "0"} 0 22px;">${content.intro.replace(/\n/g, "<br/>")}</p>` : ""}
+    ${sectionsHtml}
   `;
-  return brandedEmail(subject, body);
+  return brandedEmail(content.headline || content.subject, body);
 }
 
 export function welcomeEmailHtml(role: string) {

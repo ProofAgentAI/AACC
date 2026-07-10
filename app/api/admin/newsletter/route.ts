@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { ADMIN_EMAIL } from "@/lib/admin";
-import { getTransporter, sendMail, newsletterHtml, FROM_ADDRESS, type NewsletterItem } from "@/lib/mailer";
+import { getTransporter, sendMail, newsletterHtml, FROM_ADDRESS, type NewsletterSection } from "@/lib/mailer";
 
 const BATCH_SIZE = 40;
 
@@ -78,11 +78,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "There are no subscribers yet." }, { status: 400 });
   }
 
-  const html = newsletterHtml(
-    String(newsletter.subject),
-    String(newsletter.intro ?? ""),
-    (newsletter.items as NewsletterItem[]) ?? []
-  );
+  const html = newsletterHtml({
+    subject: String(newsletter.subject),
+    headline: newsletter.headline ? String(newsletter.headline) : undefined,
+    intro: newsletter.intro ? String(newsletter.intro) : undefined,
+    mainImage: newsletter.main_image ? String(newsletter.main_image) : undefined,
+    mainImageCredit: newsletter.main_image_credit
+      ? String(newsletter.main_image_credit)
+      : undefined,
+    sections: (newsletter.items as NewsletterSection[]) ?? [],
+  });
 
   // Recipients go in BCC batches so addresses are never exposed to each other.
   let sent = 0;
