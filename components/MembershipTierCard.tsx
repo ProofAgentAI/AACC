@@ -36,8 +36,8 @@ export default function MembershipTierCard({
       )}
       <h3 className="font-heading text-lg font-bold text-navy">{tier.name}</h3>
       <p className="mt-3">
-        <span className="font-heading text-4xl font-extrabold text-navy">{tier.price}</span>
-        <span className="text-sm text-muted">{tier.period}</span>
+        <span className="font-heading text-3xl font-extrabold text-navy">{tier.price}</span>
+        {tier.period && <span className="text-sm text-muted">{tier.period}</span>}
       </p>
       <p className="mt-3 text-sm leading-relaxed text-muted">{tier.audience}</p>
       <ul className="mt-6 flex-1 space-y-3">

@@ -15,7 +15,7 @@ export const ar: typeof en = {
     announcingSoon: "يُعلن قريباً",
     virtual: "عن بُعد",
     mostPopular: "الأكثر طلباً",
-    placeholderPricing: "أسعار تأسيسية مبدئية",
+    placeholderPricing: "تُعلن الأسعار التأسيسية قريباً",
     becomeASponsor: "كن راعياً",
     becomeAFoundingMember: "انضم كعضو مؤسس",
     joinAaccUsa: "انضم إلى الغرفة",
@@ -360,14 +360,14 @@ export const ar: typeof en = {
     tiersSection: {
       eyebrow: "فئات العضوية",
       title: "اختر عضويتك",
-      description: "أسعار تأسيسية مبدئية. كل فئة تشمل الوصول إلى شبكة الغرفة وتقدير العضو المؤسس.",
+      description: "تُعلن الأسعار قريباً. كل فئة تشمل الوصول إلى شبكة الغرفة وتقدير العضو المؤسس.",
     },
     tiers: [
       {
         slug: "individual",
         name: "عضو فردي",
-        price: "$95",
-        period: "/سنة",
+        price: "قريباً",
+        period: "",
         audience: "للمهنيين والمؤسسين والطلبة وقادة المجتمع.",
         benefits: [
           "النشرة البريدية وتحليلات الأسواق",
@@ -381,8 +381,8 @@ export const ar: typeof en = {
       {
         slug: "business",
         name: "عضو أعمال",
-        price: "$295",
-        period: "/سنة",
+        price: "قريباً",
+        period: "",
         audience: "للشركات الصغيرة والناشئة ومقدمي الخدمات ورواد الأعمال.",
         benefits: [
           "إدراج في دليل الأعمال",
@@ -396,8 +396,8 @@ export const ar: typeof en = {
       {
         slug: "corporate",
         name: "شريك مؤسسي",
-        price: "$1,500",
-        period: "/سنة",
+        price: "قريباً",
+        period: "",
         audience: "للشركات الكبرى والبنوك وشركات الطيران والجامعات والمؤسسات.",
         benefits: [
           "حضور رعائي عبر منصات الغرفة",
@@ -411,8 +411,8 @@ export const ar: typeof en = {
       {
         slug: "founding-sponsor",
         name: "راعٍ مؤسس",
-        price: "$5,000",
-        period: " التزام تأسيسي",
+        price: "قريباً",
+        period: "",
         audience: "للداعمين الأوائل الراغبين في حضور ومكانة تأسيسية دائمة.",
         benefits: [
           "تقدير في الصفحة الرئيسية والفعاليات",
@@ -719,13 +719,13 @@ export const ar: typeof en = {
     tiersSection: {
       eyebrow: "فئات الرعاية",
       title: "اختر مستوى أثرك",
-      description: "أسعار تأسيسية مبدئية. باقات مخصصة متاحة للشركاء الاستراتيجيين.",
+      description: "تُعلن الأسعار قريباً. باقات مخصصة متاحة للشركاء الاستراتيجيين.",
     },
     tiers: [
       {
         slug: "platinum",
         name: "راعٍ بلاتيني",
-        price: "$25,000",
+        price: "قريباً",
         description: "شراكة رائدة بحضور مميز عبر جميع منصات الغرفة وفعالياتها.",
         benefits: [
           "شعار في الصدارة على الصفحة الرئيسية وجميع الفعاليات",
@@ -739,7 +739,7 @@ export const ar: typeof en = {
       {
         slug: "gold",
         name: "راعٍ ذهبي",
-        price: "$10,000",
+        price: "قريباً",
         description: "شراكة عالية الحضور عبر برامج الغرفة الرئيسية واتصالاتها.",
         benefits: [
           "شعار على الموقع والفعاليات الكبرى",
@@ -752,7 +752,7 @@ export const ar: typeof en = {
       {
         slug: "silver",
         name: "راعٍ فضي",
-        price: "$5,000",
+        price: "قريباً",
         description: "حضور قوي للعلامة في فعاليات الغرفة وشبكة الأعضاء.",
         benefits: ["شعار في فعاليات الغرفة", "تقدير في النشرات", "تذاكر فعاليات ووصول للأعضاء"],
         featured: false,
@@ -760,7 +760,7 @@ export const ar: typeof en = {
       {
         slug: "community",
         name: "راعي المجتمع",
-        price: "$2,500",
+        price: "قريباً",
         description: "ادعم البرامج المجتمعية واكسب رصيداً وحضوراً محلياً.",
         benefits: ["تقدير في البرامج المجتمعية", "شكر في النشرة البريدية", "مشاركة في الفعاليات"],
         featured: false,
@@ -768,7 +768,7 @@ export const ar: typeof en = {
       {
         slug: "event",
         name: "راعي فعالية",
-        price: "ابتداءً من $1,000",
+        price: "قريباً",
         description: "ارعَ قمة أو ورشة أو مائدة مستديرة أو حلقة بودكاست واحدة.",
         benefits: ["علامة خاصة بالفعالية", "تقدير على المنصة", "تواصل مع الحضور"],
         featured: false,

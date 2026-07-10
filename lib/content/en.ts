@@ -13,7 +13,7 @@ export const en = {
     announcingSoon: "Announcing Soon",
     virtual: "Virtual",
     mostPopular: "Most Popular",
-    placeholderPricing: "Placeholder pricing — founding rates",
+    placeholderPricing: "Founding pricing announced soon",
     becomeASponsor: "Become a Sponsor",
     becomeAFoundingMember: "Become a Founding Member",
     joinAaccUsa: "Join AACC-USA",
@@ -405,14 +405,14 @@ export const en = {
       eyebrow: "Membership Tiers",
       title: "Choose Your Membership",
       description:
-        "Founding-rate placeholder pricing. Every tier includes access to the chamber network and founding-member recognition.",
+        "Pricing will be announced soon. Every tier includes access to the chamber network and founding-member recognition.",
     },
     tiers: [
       {
         slug: "individual",
         name: "Individual Member",
-        price: "$95",
-        period: "/year",
+        price: "Coming Soon",
+        period: "",
         audience: "For professionals, founders, students, and community leaders.",
         benefits: [
           "Member newsletter and market insights",
@@ -426,8 +426,8 @@ export const en = {
       {
         slug: "business",
         name: "Business Member",
-        price: "$295",
-        period: "/year",
+        price: "Coming Soon",
+        period: "",
         audience: "For small businesses, startups, service providers, and entrepreneurs.",
         benefits: [
           "Business directory listing",
@@ -441,8 +441,8 @@ export const en = {
       {
         slug: "corporate",
         name: "Corporate Partner",
-        price: "$1,500",
-        period: "/year",
+        price: "Coming Soon",
+        period: "",
         audience: "For corporations, banks, airlines, universities, and institutions.",
         benefits: [
           "Sponsorship placement across chamber platforms",
@@ -456,8 +456,8 @@ export const en = {
       {
         slug: "founding-sponsor",
         name: "Founding Sponsor",
-        price: "$5,000",
-        period: " founding commitment",
+        price: "Coming Soon",
+        period: "",
         audience: "For early supporters who want visibility and legacy positioning.",
         benefits: [
           "Homepage and event recognition",
@@ -841,13 +841,13 @@ export const en = {
     tiersSection: {
       eyebrow: "Sponsor Tiers",
       title: "Choose Your Level of Impact",
-      description: "Placeholder founding-era rates. Custom packages available for strategic partners.",
+      description: "Pricing will be announced soon. Custom packages available for strategic partners.",
     },
     tiers: [
       {
         slug: "platinum",
         name: "Platinum Sponsor",
-        price: "$25,000",
+        price: "Coming Soon",
         description:
           "Flagship partnership with premier visibility across all chamber platforms and events.",
         benefits: [
@@ -862,7 +862,7 @@ export const en = {
       {
         slug: "gold",
         name: "Gold Sponsor",
-        price: "$10,000",
+        price: "Coming Soon",
         description: "High-visibility partnership across major chamber programs and communications.",
         benefits: [
           "Logo placement on website and major events",
@@ -875,7 +875,7 @@ export const en = {
       {
         slug: "silver",
         name: "Silver Sponsor",
-        price: "$5,000",
+        price: "Coming Soon",
         description: "Strong brand presence at chamber events and in the member network.",
         benefits: [
           "Logo placement at chamber events",
@@ -887,7 +887,7 @@ export const en = {
       {
         slug: "community",
         name: "Community Sponsor",
-        price: "$2,500",
+        price: "Coming Soon",
         description: "Support community programming while gaining goodwill and local visibility.",
         benefits: [
           "Recognition in community programs",
@@ -899,7 +899,7 @@ export const en = {
       {
         slug: "event",
         name: "Event Sponsor",
-        price: "From $1,000",
+        price: "Coming Soon",
         description: "Sponsor a single summit, workshop, roundtable, or podcast episode.",
         benefits: ["Event-specific branding", "On-stage recognition", "Attendee networking access"],
         featured: false,
