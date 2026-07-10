@@ -254,7 +254,7 @@ export const en = {
     },
     missionLabel: "Our Mission",
     mission:
-      "To strengthen Algerian-American economic ties by connecting business leaders, entrepreneurs, investors, professionals, and institutions across the United States and Algeria.",
+      "To strengthen Algerian-American economic ties by connecting business leaders, entrepreneurs, innovators, startups, investors, professionals, and institutions across the United States and Algeria.",
     visionLabel: "Our Vision",
     vision:
       "To become the leading U.S.-based chamber representing Algerian-American business interests, trade opportunities, innovation, investment, and diaspora economic leadership.",
