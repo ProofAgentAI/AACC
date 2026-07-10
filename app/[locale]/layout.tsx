@@ -65,8 +65,9 @@ export async function generateMetadata({
         {
           url: "/og-image.jpg",
           width: 1200,
-          height: 630,
-          alt: "AACC-USA — Algerian American Chamber of Commerce | غرفة التجارة الجزائرية الأمريكية بالولايات المتحدة",
+          height: 675,
+          type: "image/jpeg",
+          alt: "AACC-USA | Algerian American Chamber of Commerce | غرفة التجارة الجزائرية الأمريكية بالولايات المتحدة",
         },
       ],
     },
