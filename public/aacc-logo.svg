@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="AACC — Algerian American Chamber of Commerce logo">
+  <defs>
+    <linearGradient id="greenGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0E8A4C"/>
+      <stop offset="1" stop-color="#006B36"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0" stop-color="#E02830"/>
+      <stop offset="1" stop-color="#B5121B"/>
+    </linearGradient>
+    <linearGradient id="navyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16345C"/>
+      <stop offset="1" stop-color="#0B1F3A"/>
+    </linearGradient>
+    <path id="star" d="M0,-10 L2.47,-3.4 L9.51,-3.09 L4.0,1.3 L5.88,8.09 L0,4.2 L-5.88,8.09 L-4.0,1.3 L-9.51,-3.09 L-2.47,-3.4 Z"/>
+  </defs>
+
+  <!-- ============ BRIDGE ============ -->
+  <g stroke="#0B1F3A" fill="none" stroke-linecap="round">
+    <!-- deck -->
+    <path d="M110,170 H690" stroke-width="8"/>
+    <!-- left tower -->
+    <path d="M262,62 V170 M278,62 V170" stroke-width="7"/>
+    <path d="M262,84 H278 M262,112 H278 M262,140 H278" stroke-width="5"/>
+    <!-- right tower -->
+    <path d="M522,62 V170 M538,62 V170" stroke-width="7"/>
+    <path d="M522,84 H538 M522,112 H538 M522,140 H538" stroke-width="5"/>
+    <!-- main cables -->
+    <path d="M110,170 C160,80 220,60 270,58" stroke-width="6"/>
+    <path d="M270,58 C340,120 460,120 530,58" stroke-width="6"/>
+    <path d="M530,58 C580,60 640,80 690,170" stroke-width="6"/>
+    <!-- suspenders left span -->
+    <path d="M157,107 V170 M206,72 V170 M236,63 V170" stroke-width="3"/>
+    <!-- suspenders center span -->
+    <path d="M330,93 V170 M357,100 V170 M400,105 V170 M443,100 V170 M470,93 V170" stroke-width="3"/>
+    <!-- suspenders right span -->
+    <path d="M643,107 V170 M594,72 V170 M564,63 V170" stroke-width="3"/>
+  </g>
+
+  <!-- ============ GREEN RIBBON (Algeria) ============ -->
+  <path d="M55,210 C190,202 315,210 402,236 C340,280 190,296 58,294 C47,266 47,238 55,210 Z" fill="url(#greenGrad)"/>
+  <!-- crescent -->
+  <circle cx="150" cy="248" r="27" fill="#FFFFFF"/>
+  <circle cx="161" cy="248" r="22" fill="#0A7A43"/>
+  <!-- red star of the crescent -->
+  <use href="#star" transform="translate(181,248) scale(1.15)" fill="#D71920"/>
+
+  <!-- ============ RED/STRIPED RIBBON (USA) ============ -->
+  <path d="M745,210 C610,202 485,210 398,236 C460,280 610,296 742,294 C753,266 753,238 745,210 Z" fill="url(#redGrad)"/>
+  <!-- white stripes following the curve -->
+  <path d="M737,232 C665,227 595,231 535,241" stroke="#FFFFFF" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M734,264 C670,260 605,266 540,276" stroke="#FFFFFF" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <!-- navy segment with stars near the handshake -->
+  <path d="M398,236 C440,224 485,218 532,216 C534,235 533,254 529,272 C482,262 438,250 398,236 Z" fill="url(#navyGrad)"/>
+  <use href="#star" transform="translate(478,240) scale(0.8)" fill="#FFFFFF"/>
+  <use href="#star" transform="translate(505,233) scale(0.8)" fill="#FFFFFF"/>
+  <use href="#star" transform="translate(478,262) scale(0.8)" fill="#FFFFFF"/>
+
+  <!-- ============ HANDSHAKE (hands emerge from the two ribbons) ============ -->
+  <g>
+    <!-- right hand reaching left -->
+    <path d="M430,222 C446,218 458,222 462,232 C466,244 456,252 442,252 L400,248 Z"
+      fill="#0B1F3A" stroke="#F7F8FA" stroke-width="3"/>
+    <!-- left hand reaching right, clasping over -->
+    <path d="M370,222 C354,218 342,222 338,232 C334,244 344,252 358,252 L436,250 C446,248 448,238 440,232 L402,226 Z"
+      fill="#0B1F3A" stroke="#F7F8FA" stroke-width="3"/>
+    <!-- thumb over the clasp -->
+    <path d="M388,224 C392,214 404,211 414,214 C424,217 428,225 424,231 C416,227 402,225 388,224 Z"
+      fill="#0B1F3A" stroke="#F7F8FA" stroke-width="3" stroke-linejoin="round"/>
+    <!-- knuckle lines -->
+    <g stroke="#F7F8FA" stroke-width="2.5" stroke-linecap="round" fill="none">
+      <path d="M394,230 l4,17"/>
+      <path d="M408,229 l4,17"/>
+      <path d="M422,228 l4,16"/>
+    </g>
+  </g>
+
+  <!-- ============ WORDMARK (Georgia Bold outlines — no font dependency) ============ -->
+  <g>
+    <path fill="#0A5C34" d="M279.9 505.0H209.1V497.9Q214.0 497.5 220.7 496.1Q227.4 494.6 227.4 492.5Q227.4 491.8 227.3 490.9Q227.1 490.0 226.5 488.4L215.4 461.5H170.5Q169.0 465.2 167.1 470.3Q165.2 475.3 163.8 479.3Q162.1 484.4 161.8 486.7Q161.5 489.0 161.5 489.9Q161.5 492.8 165.9 494.9Q170.3 496.9 180.7 497.9V505.0H127.4V497.9Q130.4 497.7 134.2 496.9Q138.0 496.1 140.2 494.7Q144.0 492.5 146.6 489.3Q149.2 486.1 150.9 481.7Q161.6 456.0 172.2 430.2Q182.9 404.3 195.8 373.2H214.1Q232.1 417.3 242.3 443.0Q252.4 468.6 259.6 485.5Q260.8 488.2 262.6 490.5Q264.4 492.7 267.8 494.7Q270.4 496.2 273.8 496.9Q277.2 497.7 279.9 497.9ZM211.7 452.4 192.8 405.3 174.2 452.4Z"/>
+    <path fill="#0A5C34" d="M416.2 505.0H345.4V497.9Q350.3 497.5 357.0 496.1Q363.7 494.6 363.7 492.5Q363.7 491.8 363.6 490.9Q363.4 490.0 362.8 488.4L351.7 461.5H306.8Q305.2 465.2 303.4 470.3Q301.5 475.3 300.1 479.3Q298.4 484.4 298.1 486.7Q297.7 489.0 297.7 489.9Q297.7 492.8 302.2 494.9Q306.6 496.9 317.0 497.9V505.0H263.7V497.9Q266.7 497.7 270.5 496.9Q274.3 496.1 276.5 494.7Q280.2 492.5 282.8 489.3Q285.5 486.1 287.2 481.7Q297.8 456.0 308.5 430.2Q319.2 404.3 332.1 373.2H350.4Q368.4 417.3 378.5 443.0Q388.7 468.6 395.9 485.5Q397.0 488.2 398.9 490.5Q400.7 492.7 404.1 494.7Q406.7 496.2 410.1 496.9Q413.4 497.7 416.2 497.9ZM347.9 452.4 329.1 405.3 310.5 452.4Z"/>
+    <path fill="#C1272D" d="M479.5 508.5Q465.3 508.5 452.8 503.9Q440.3 499.2 431.1 490.4Q422.0 481.8 416.8 469.1Q411.6 456.4 411.6 441.2Q411.6 426.1 416.8 413.2Q422.1 400.4 431.6 390.9Q441.0 381.7 454.1 376.6Q467.2 371.5 482.1 371.5Q492.9 371.5 501.8 374.1Q510.7 376.7 516.8 380.0L522.5 375.0H530.5L531.3 422.5H523.2Q516.4 400.7 506.8 390.6Q497.1 380.4 483.3 380.4Q466.1 380.4 457.1 395.6Q448.1 410.7 448.1 438.1Q448.1 453.6 451.2 464.6Q454.3 475.5 459.2 482.2Q464.5 489.2 471.8 492.4Q479.0 495.7 487.8 495.7Q500.6 495.7 510.6 488.7Q520.7 481.7 528.9 467.6L536.8 472.4Q532.9 480.4 527.8 486.8Q522.8 493.2 516.2 497.8Q509.0 502.8 500.2 505.6Q491.5 508.5 479.5 508.5Z"/>
+    <path fill="#C1272D" d="M607.8 508.5Q593.5 508.5 581.0 503.9Q568.5 499.2 559.3 490.4Q550.2 481.8 545.0 469.1Q539.8 456.4 539.8 441.2Q539.8 426.1 545.0 413.2Q550.3 400.4 559.8 390.9Q569.2 381.7 582.3 376.6Q595.4 371.5 610.3 371.5Q621.1 371.5 630.0 374.1Q638.9 376.7 645.0 380.0L650.7 375.0H658.7L659.5 422.5H651.5Q644.6 400.7 635.0 390.6Q625.3 380.4 611.5 380.4Q594.3 380.4 585.3 395.6Q576.3 410.7 576.3 438.1Q576.3 453.6 579.4 464.6Q582.5 475.5 587.4 482.2Q592.7 489.2 600.0 492.4Q607.2 495.7 616.0 495.7Q628.8 495.7 638.9 488.7Q648.9 481.7 657.1 467.6L665.0 472.4Q661.1 480.4 656.0 486.8Q651.0 493.2 644.4 497.8Q637.2 502.8 628.4 505.6Q619.7 508.5 607.8 508.5Z"/>
+  </g>
+</svg>
