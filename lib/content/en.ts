@@ -520,6 +520,30 @@ export const en = {
         "Tell us about yourself and the membership that fits. Our team will follow up with next steps.",
       submitLabel: "Submit Membership Interest",
     },
+    early: {
+      eyebrow: "Founding Opportunity",
+      title: "Join the Early Membership List",
+      description:
+        "Be first in line as AACC-USA launches. Early members are contacted before public enrollment opens and receive founding recognition.",
+      benefits: [
+        "Founding member recognition, permanently attached to your name or business",
+        "Priority access to the first summits, roundtables, and trade missions",
+        "Early listing in the business directory before public launch",
+        "A voice in shaping the chamber's first programs and priorities",
+      ],
+      submitLabel: "Join the Early List",
+      submitting: "Submitting...",
+      successTitle: "Welcome to the founding network",
+      successText:
+        "You are on the early membership list. Our team will reach out with next steps before public enrollment opens.",
+      duplicateTitle: "You are already on the list",
+      duplicateText:
+        "This email is already registered on the early membership list. We will be in touch soon.",
+      errorText:
+        "Something went wrong while submitting. Please try again, or email us directly at",
+      offlineText:
+        "Applications open shortly. In the meantime, email us at",
+    },
   },
 
   directory: {

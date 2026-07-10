@@ -43,6 +43,7 @@ export default function Footer({ locale, dict }: { locale: Locale; dict: Diction
               <p className="mt-2 text-sm text-navy-200">{f.newsletterText}</p>
             </div>
             <NewsletterSignup
+              locale={locale}
               placeholder={f.emailPlaceholder}
               buttonLabel={f.subscribe}
               thanksMessage={f.newsletterThanks}

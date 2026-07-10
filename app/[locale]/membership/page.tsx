@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { Check } from "lucide-react";
 import PageHero from "@/components/PageHero";
 import SectionHeading from "@/components/SectionHeading";
 import MembershipTierCard from "@/components/MembershipTierCard";
-import ContactForm from "@/components/ContactForm";
+import EarlyMembershipForm from "@/components/EarlyMembershipForm";
 import Icon from "@/components/Icon";
 import { getDictionary, isLocale, type Locale } from "@/lib/i18n";
 
@@ -85,16 +86,33 @@ export default async function MembershipPage({
         </div>
       </section>
 
-      {/* Membership form */}
-      <section className="bg-white py-20 sm:py-24">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow={m.form.eyebrow}
-            title={m.form.title}
-            description={m.form.description}
-          />
-          <div className="mt-12 rounded-3xl border border-navy-100 bg-surface p-8 sm:p-10">
-            <ContactForm dict={dict.form} showInquiryType={false} submitLabel={m.form.submitLabel} />
+      {/* Early membership list */}
+      <section id="early-list" className="bg-white py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid items-start gap-12 lg:grid-cols-5">
+            <div className="lg:col-span-2">
+              <SectionHeading
+                eyebrow={m.early.eyebrow}
+                title={m.early.title}
+                description={m.early.description}
+                align="left"
+              />
+              <ul className="mt-8 space-y-4">
+                {m.early.benefits.map((benefit) => (
+                  <li key={benefit} className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-50 text-green-600">
+                      <Check className="h-4 w-4" aria-hidden="true" />
+                    </span>
+                    <span className="text-base leading-relaxed text-ink">{benefit}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="lg:col-span-3">
+              <div className="rounded-3xl border border-navy-100 bg-surface p-8 sm:p-10">
+                <EarlyMembershipForm locale={locale} dict={m.early} formDict={dict.form} />
+              </div>
+            </div>
           </div>
         </div>
       </section>
