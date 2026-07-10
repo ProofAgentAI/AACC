@@ -5,8 +5,12 @@ import SectionHeading from "@/components/SectionHeading";
 import BlogCard from "@/components/BlogCard";
 import CTASection from "@/components/CTASection";
 import { Mic, Play } from "lucide-react";
-import { posts, podcastEpisodes } from "@/data/posts";
+import { posts as mockPosts, podcastEpisodes } from "@/data/posts";
+import { getPublishedPosts, formatPostDate, readTimeOf, POST_TYPE_LABELS } from "@/lib/posts";
 import { getDictionary, isLocale, type Locale } from "@/lib/i18n";
+
+// Refresh the listing from the CMS at most every 60 seconds.
+export const revalidate = 60;
 
 export async function generateMetadata({
   params,
@@ -29,8 +33,26 @@ export default async function NewsPage({
   const n = dict.news;
   const p = (href: string) => `/${locale}${href}`;
 
-  const featured = posts.find((post) => post.featured) ?? posts[0];
-  const rest = posts.filter((post) => post !== featured);
+  // Published CMS content replaces the mock articles once it exists.
+  const cmsPosts = await getPublishedPosts(locale);
+  const cards =
+    cmsPosts.length > 0
+      ? cmsPosts.map((post) => ({
+          slug: post.slug,
+          title: post.title,
+          excerpt: post.excerpt ?? "",
+          date: formatPostDate(post, locale),
+          category:
+            post.category ??
+            POST_TYPE_LABELS[post.type]?.[locale === "ar" ? "ar" : "en"] ??
+            post.type,
+          readTime: readTimeOf(post, locale),
+          href: p(`/news/${post.slug}`),
+        }))
+      : mockPosts.map((post) => ({ ...post, href: p("/news") }));
+
+  const featured = cards[0];
+  const rest = cards.slice(1);
 
   return (
     <>
@@ -46,7 +68,7 @@ export default async function NewsPage({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading eyebrow={n.featured.eyebrow} title={n.featured.title} align="left" />
           <div className="mt-10">
-            <BlogCard post={featured} large href={p("/news")} />
+            <BlogCard post={featured} large href={featured.href} />
           </div>
         </div>
       </section>
@@ -61,7 +83,7 @@ export default async function NewsPage({
           />
           <div className="mt-14 grid gap-6 md:grid-cols-2">
             {rest.map((post) => (
-              <BlogCard key={post.slug} post={post} href={p("/news")} />
+              <BlogCard key={post.slug} post={post} href={post.href} />
             ))}
           </div>
         </div>

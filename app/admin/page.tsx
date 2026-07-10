@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Eye, KeyRound, LogOut, Mail, RefreshCw, Trash2, UserPlus, ExternalLink, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import ContentManager from "@/components/admin/ContentManager";
 
 type Row = Record<string, unknown>;
 
 const TABS = [
+  { key: "content", label: "Content", table: "" },
   { key: "memberships", label: "Memberships", table: "membership_applications" },
   { key: "board", label: "Board Applications", table: "board_applications" },
   { key: "directory", label: "Directory Requests", table: "directory_submissions" },
@@ -41,6 +43,7 @@ const statusColors: Record<string, string> = {
 };
 
 const EMAIL_SUBJECTS: Record<TabKey, string> = {
+  content: "",
   memberships: "Your AACC-USA membership application",
   board: "Your AACC-USA founding board application",
   directory: "Your AACC-USA business directory request",
@@ -400,7 +403,9 @@ export default function AdminDashboard() {
         </p>
       )}
 
-      {tab !== "users" ? (
+      {tab === "content" ? (
+        <ContentManager onNotice={setNotice} />
+      ) : tab !== "users" ? (
         <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white shadow-card">
           <table className="w-full min-w-[900px] text-sm">
             <thead>

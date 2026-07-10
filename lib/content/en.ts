@@ -951,6 +951,7 @@ export const en = {
         "Chamber updates, market insights, member spotlights, and podcast episodes covering Algerian-American business.",
     },
     featured: { eyebrow: "Featured Article", title: "Editor's Pick" },
+    article: { back: "Back to News", share: "Share" },
     latest: {
       eyebrow: "Latest News & Insights",
       title: "Recent Publications",
