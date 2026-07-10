@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { User } from "@supabase/supabase-js";
 import { ADMIN_EMAIL } from "@/lib/admin";
+import { getTransporter, sendMail, welcomeEmailHtml } from "@/lib/mailer";
 
 // User management requires the service-role key, which must only ever live in
 // server-side environment variables (never NEXT_PUBLIC_*, never in the repo).
@@ -106,7 +107,25 @@ export async function POST(request: NextRequest) {
     redirectTo: `${origin}/admin/setup`,
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  return NextResponse.json({ user: { id: data.user.id, email: data.user.email }, invited: true });
+
+  // Send the role-specific welcome from contact@aacc-usa.org when SMTP is
+  // configured; otherwise the dashboard falls back to a mailto draft.
+  let welcomed = false;
+  if (getTransporter()) {
+    try {
+      const welcome = welcomeEmailHtml(role);
+      await sendMail({ to: email, subject: welcome.subject, html: welcome.html });
+      welcomed = true;
+    } catch {
+      welcomed = false;
+    }
+  }
+
+  return NextResponse.json({
+    user: { id: data.user.id, email: data.user.email },
+    invited: true,
+    welcomed,
+  });
 }
 
 export async function PATCH(request: NextRequest) {

@@ -19,6 +19,7 @@ import {
   LogOut,
   Mail,
   MailCheck,
+  MailPlus,
   Menu,
   MessagesSquare,
   Newspaper,
@@ -36,6 +37,7 @@ import DashboardOverview from "@/components/admin/DashboardOverview";
 import TasksManager from "@/components/admin/TasksManager";
 import EventsManager from "@/components/admin/EventsManager";
 import BillingManager from "@/components/admin/BillingManager";
+import NewsletterComposer from "@/components/admin/NewsletterComposer";
 import { ADMIN_EMAIL, ROLE_LABELS, roleOf, type StaffRole } from "@/lib/admin";
 
 type Row = Record<string, unknown>;
@@ -47,6 +49,7 @@ const TABS = [
   { key: "approvals", label: "Approvals", table: "", icon: BadgeCheck },
   { key: "events", label: "Events", table: "", icon: CalendarDays },
   { key: "billing", label: "Billing", table: "", icon: CircleDollarSign },
+  { key: "newsletter", label: "Newsletter", table: "", icon: MailPlus },
   { key: "crm", label: "CRM", table: "", icon: ContactRound },
   { key: "memberships", label: "Memberships", table: "membership_applications", icon: Inbox },
   { key: "board", label: "Board Applications", table: "board_applications", icon: ClipboardList },
@@ -86,6 +89,7 @@ const EMAIL_SUBJECTS: Record<TabKey, string> = {
   approvals: "",
   events: "",
   billing: "",
+  newsletter: "",
   crm: "",
   memberships: "Your AACC-USA membership application",
   board: "Your AACC-USA founding board application",
@@ -360,12 +364,19 @@ export default function AdminDashboard() {
       return;
     }
     form.reset();
-    setNotice(
-      `Invitation emailed to ${userEmail} (${ROLE_LABELS[role]}). Your personal welcome email is opening now.`
-    );
     loadUsers();
-    // Open the role-specific welcome message in the admin's mail client.
-    window.location.href = welcomeMailto(userEmail, role);
+    if (body.welcomed) {
+      // The server sent the welcome from contact@aacc-usa.org via SMTP.
+      setNotice(
+        `Invitation and welcome email sent to ${userEmail} (${ROLE_LABELS[role]}) from contact@aacc-usa.org.`
+      );
+    } else {
+      setNotice(
+        `Invitation emailed to ${userEmail} (${ROLE_LABELS[role]}). Your personal welcome email is opening now.`
+      );
+      // SMTP not configured: open the welcome message in the admin's mail client.
+      window.location.href = welcomeMailto(userEmail, role);
+    }
   }
 
   async function changeRole(id: unknown, role: string) {
@@ -508,7 +519,7 @@ export default function AdminDashboard() {
         .filter((entry) => entry.value !== "")
     : [];
 
-  const STAFF_TABS = ["dashboard", "tasks", "content", "events"];
+  const STAFF_TABS = ["dashboard", "tasks", "content", "events", "newsletter"];
   const visibleTabs = TABS.filter((t) => {
     if (isAdmin) return true;
     if (myRole === "staff") return STAFF_TABS.includes(t.key);
@@ -657,6 +668,8 @@ export default function AdminDashboard() {
         <EventsManager onNotice={setNotice} />
       ) : tab === "billing" ? (
         <BillingManager onNotice={setNotice} />
+      ) : tab === "newsletter" ? (
+        <NewsletterComposer onNotice={setNotice} />
       ) : tab === "content" ? (
         <ContentManager onNotice={setNotice} />
       ) : tab === "approvals" ? (
