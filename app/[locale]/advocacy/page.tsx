@@ -99,7 +99,12 @@ export default async function AdvocacyPage({
             description={a.submit.description}
           />
           <div className="mt-12 rounded-3xl border border-navy-100 bg-surface p-8 sm:p-10">
-            <ContactForm dict={dict.form} defaultInquiry="general" submitLabel={a.submit.submitLabel} />
+            <ContactForm
+              locale={locale}
+              dict={dict.form}
+              defaultInquiry="general"
+              submitLabel={a.submit.submitLabel}
+            />
           </div>
         </div>
       </section>

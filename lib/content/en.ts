@@ -62,6 +62,7 @@ export const en = {
     newsletterThanks: "Thank you for subscribing. Welcome to the AACC-USA network.",
     newsletter: "Newsletter",
     sponsorship: "Sponsorship",
+    admin: "Admin",
     legal: "© 2026 AACC-USA. Algerian American Chamber of Commerce USA. All rights reserved.",
     disclaimer:
       "AACC-USA is an independent U.S.-based nonprofit chamber-style association and is not a government agency.",
@@ -1140,8 +1141,9 @@ export const en = {
     selectInquiry: "Select an inquiry type",
     selectTier: "Select a membership tier",
     send: "Send Message",
-    disclaimer: "This form is a placeholder for the MVP, submissions are not yet transmitted. Email",
-    disclaimerSuffix: "directly for immediate inquiries.",
+    disclaimer: "Prefer email? You can also reach us directly at",
+    disclaimerSuffix: ".",
+    errorText: "Something went wrong while sending. Please try again, or email us at",
     thanksTitle: "Thank you for reaching out",
     thanksText:
       "Your message has been received. A member of the AACC-USA team will follow up shortly.",

@@ -90,7 +90,7 @@ export default async function ContactPage({
                 <h2 className="font-heading text-2xl font-bold text-navy">{c.formTitle}</h2>
                 <p className="mt-2 text-sm text-muted">{c.formNote}</p>
                 <div className="mt-8">
-                  <ContactForm dict={dict.form} defaultInquiry={inquiry} />
+                  <ContactForm locale={locale} dict={dict.form} defaultInquiry={inquiry} />
                 </div>
               </div>
             </div>

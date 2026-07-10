@@ -63,6 +63,7 @@ export const ar: typeof en = {
     newsletterThanks: "شكراً لاشتراكك. مرحباً بك في شبكة الغرفة.",
     newsletter: "النشرة البريدية",
     sponsorship: "الرعاية",
+    admin: "لوحة الإدارة",
     legal: "© 2026 AACC-USA. غرفة التجارة الجزائرية الأمريكية. جميع الحقوق محفوظة.",
     disclaimer:
       "AACC-USA جمعية أمريكية مستقلة غير ربحية على نمط غرف التجارة، وهي ليست جهة حكومية.",
@@ -996,8 +997,9 @@ export const ar: typeof en = {
     selectInquiry: "اختر نوع الاستفسار",
     selectTier: "اختر فئة العضوية",
     send: "أرسل الرسالة",
-    disclaimer: "هذا النموذج مبدئي في هذه المرحلة، لا تُرسل البيانات بعد. راسل",
-    disclaimerSuffix: "مباشرة للاستفسارات العاجلة.",
+    disclaimer: "تفضل البريد؟ يمكنك مراسلتنا مباشرة على",
+    disclaimerSuffix: ".",
+    errorText: "حدث خطأ أثناء الإرسال. حاول مرة أخرى، أو راسلنا على",
     thanksTitle: "شكراً لتواصلك",
     thanksText: "وصلتنا رسالتك، وسيتواصل معك أحد أعضاء فريق الغرفة قريباً.",
     inquiryTypes: [

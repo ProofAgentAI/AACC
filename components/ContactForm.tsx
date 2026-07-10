@@ -1,27 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import type { Dictionary } from "@/lib/i18n";
+import { supabase } from "@/lib/supabase";
+import type { Locale, Dictionary } from "@/lib/i18n";
 
 type FormDict = Dictionary["form"];
 
 const inputClasses =
   "w-full rounded-lg border border-navy-200 bg-white px-4 py-3 text-sm text-ink placeholder:text-muted focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy";
 
+type Status = "idle" | "submitting" | "success" | "error";
+
 export default function ContactForm({
+  locale = "en",
   dict,
   defaultInquiry = "",
   showInquiryType = true,
   submitLabel,
 }: {
+  locale?: Locale;
   dict: FormDict;
   defaultInquiry?: string;
   showInquiryType?: boolean;
   submitLabel?: string;
 }) {
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
 
-  if (submitted) {
+  if (status === "success") {
     return (
       <div
         className="rounded-2xl border border-green-100 bg-green-50 p-10 text-center"
@@ -33,14 +38,33 @@ export default function ContactForm({
     );
   }
 
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!supabase) return;
+
+    const data = new FormData(e.currentTarget);
+    setStatus("submitting");
+
+    const inquiry = showInquiryType
+      ? String(data.get("inquiry") ?? "general")
+      : String(data.get("interest") ?? "general");
+
+    const { error } = await supabase.from("contact_messages").insert({
+      name: String(data.get("name") ?? "").trim(),
+      email: String(data.get("email") ?? "").trim().toLowerCase(),
+      phone: String(data.get("phone") ?? "").trim() || null,
+      organization: String(data.get("organization") ?? "").trim() || null,
+      city_state: String(data.get("location") ?? "").trim() || null,
+      inquiry_type: inquiry,
+      message: String(data.get("message") ?? "").trim() || null,
+      locale,
+    });
+
+    setStatus(error ? "error" : "success");
+  }
+
   return (
-    <form
-      className="grid gap-5 sm:grid-cols-2"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSubmitted(true);
-      }}
-    >
+    <form className="grid gap-5 sm:grid-cols-2" onSubmit={handleSubmit}>
       <div>
         <label htmlFor="name" className="mb-1.5 block text-sm font-semibold text-navy">
           {dict.name} *
@@ -163,17 +187,26 @@ export default function ContactForm({
       <div className="sm:col-span-2">
         <button
           type="submit"
-          className="w-full rounded-lg bg-navy px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-600 sm:w-auto"
+          disabled={status === "submitting" || !supabase}
+          className="w-full rounded-lg bg-navy px-8 py-4 text-base font-semibold text-white transition-colors hover:bg-navy-600 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
-          {submitLabel ?? dict.send}
+          {status === "submitting" ? "..." : submitLabel ?? dict.send}
         </button>
         <p className="mt-3 text-xs text-muted">
           {dict.disclaimer}{" "}
           <a href="mailto:contact@aacc-usa.org" className="font-semibold text-green-600">
             contact@aacc-usa.org
-          </a>{" "}
+          </a>
           {dict.disclaimerSuffix}
         </p>
+        {status === "error" && (
+          <p className="mt-3 text-sm font-medium text-red-600" role="alert">
+            {dict.errorText}{" "}
+            <a href="mailto:contact@aacc-usa.org" className="underline">
+              contact@aacc-usa.org
+            </a>
+          </p>
+        )}
       </div>
     </form>
   );

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { LogOut, RefreshCw, Trash2, UserPlus, ExternalLink } from "lucide-react";
+import { Eye, KeyRound, LogOut, Mail, RefreshCw, Trash2, UserPlus, ExternalLink, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 type Row = Record<string, unknown>;
@@ -12,6 +12,7 @@ const TABS = [
   { key: "memberships", label: "Memberships", table: "membership_applications" },
   { key: "board", label: "Board Applications", table: "board_applications" },
   { key: "directory", label: "Directory Requests", table: "directory_submissions" },
+  { key: "contacts", label: "Contact Messages", table: "contact_messages" },
   { key: "subscribers", label: "Subscribers", table: "newsletter_subscribers" },
   { key: "users", label: "Users", table: "" },
 ] as const;
@@ -22,6 +23,7 @@ const STATUS_OPTIONS: Record<string, string[]> = {
   membership_applications: ["new", "contacted", "approved", "declined"],
   board_applications: ["new", "reviewing", "interviewed", "accepted", "declined"],
   directory_submissions: ["pending", "approved", "rejected"],
+  contact_messages: ["new", "replied", "closed"],
 };
 
 const statusColors: Record<string, string> = {
@@ -30,11 +32,92 @@ const statusColors: Record<string, string> = {
   contacted: "bg-gold-100 text-gold-600",
   reviewing: "bg-gold-100 text-gold-600",
   interviewed: "bg-navy-50 text-navy",
+  replied: "bg-green-50 text-green-700",
   approved: "bg-green-50 text-green-700",
   accepted: "bg-green-50 text-green-700",
+  closed: "bg-surface text-muted",
   declined: "bg-red-50 text-red-700",
   rejected: "bg-red-50 text-red-700",
 };
+
+const EMAIL_SUBJECTS: Record<TabKey, string> = {
+  memberships: "Your AACC-USA membership application",
+  board: "Your AACC-USA founding board application",
+  directory: "Your AACC-USA business directory request",
+  contacts: "Re: your message to AACC-USA",
+  subscribers: "AACC-USA newsletter",
+  users: "",
+};
+
+const FIELD_LABELS: Record<string, string> = {
+  created_at: "Submitted",
+  first_name: "First Name",
+  last_name: "Last Name",
+  name: "Name",
+  email: "Email",
+  phone: "Phone",
+  job_title: "Function / Title",
+  business_name: "Business",
+  organization: "Organization",
+  city_state: "City / State",
+  city: "City",
+  state: "State",
+  tier: "Membership Tier",
+  inquiry_type: "Inquiry Type",
+  message: "Message",
+  linkedin: "LinkedIn",
+  areas: "Board Areas",
+  background: "Professional Background & Experience",
+  leadership: "Leadership & Board Experience",
+  businesses: "Businesses & Ventures",
+  algeria_ties: "Ties to Algeria",
+  aspiration: "Aspiration for AACC-USA",
+  category: "Industry",
+  business_type: "Business Type",
+  description: "Description",
+  website: "Website",
+  services: "Services",
+  contact_name: "Contact Name",
+  algeria_interest: "Algeria Market Interest",
+  us_interest: "U.S. Market Interest",
+  locale: "Language",
+  status: "Status",
+};
+
+// Field order for the detail view; anything not listed renders afterward.
+const FIELD_ORDER = [
+  "created_at",
+  "first_name",
+  "last_name",
+  "name",
+  "contact_name",
+  "email",
+  "phone",
+  "job_title",
+  "business_name",
+  "organization",
+  "category",
+  "business_type",
+  "city",
+  "state",
+  "city_state",
+  "website",
+  "services",
+  "tier",
+  "inquiry_type",
+  "linkedin",
+  "areas",
+  "background",
+  "leadership",
+  "businesses",
+  "algeria_ties",
+  "aspiration",
+  "message",
+  "algeria_interest",
+  "us_interest",
+  "locale",
+  "status",
+];
 
 function formatDate(value: unknown) {
   if (typeof value !== "string") return "";
@@ -43,6 +126,22 @@ function formatDate(value: unknown) {
     day: "numeric",
     year: "numeric",
   });
+}
+
+function formatValue(key: string, value: unknown): string {
+  if (value === null || value === undefined || value === "") return "";
+  if (key === "created_at") return formatDate(value);
+  if (Array.isArray(value)) return value.join(", ");
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return String(value);
+}
+
+function mailtoFor(row: Row, tab: TabKey) {
+  const email = String(row.email ?? "");
+  const subject = encodeURIComponent(EMAIL_SUBJECTS[tab] ?? "AACC-USA");
+  const first = String(row.first_name ?? row.contact_name ?? row.name ?? "").split(" ")[0];
+  const body = encodeURIComponent(`Dear ${first || "member of our community"},\n\n`);
+  return `mailto:${email}?subject=${subject}&body=${body}`;
 }
 
 export default function AdminDashboard() {
@@ -54,6 +153,9 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<Row[]>([]);
   const [loading, setLoading] = useState(false);
   const [notice, setNotice] = useState("");
+  const [detail, setDetail] = useState<Row | null>(null);
+  const [pwOpen, setPwOpen] = useState(false);
+  const [pwError, setPwError] = useState("");
 
   // Session guard
   useEffect(() => {
@@ -112,6 +214,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!ready) return;
+    setDetail(null);
     if (tab === "users") {
       loadUsers();
     } else {
@@ -126,6 +229,7 @@ export default function AdminDashboard() {
       setNotice(`Update failed: ${error.message}`);
     } else {
       setRows((current) => current.map((r) => (r.id === id ? { ...r, status } : r)));
+      setDetail((current) => (current && current.id === id ? { ...current, status } : current));
     }
   }
 
@@ -137,6 +241,7 @@ export default function AdminDashboard() {
       setNotice(`Delete failed: ${error.message}`);
     } else {
       setRows((current) => current.filter((r) => r.id !== id));
+      setDetail(null);
     }
   }
 
@@ -182,6 +287,30 @@ export default function AdminDashboard() {
     loadUsers();
   }
 
+  async function changePassword(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!supabase) return;
+    const data = new FormData(e.currentTarget);
+    const password = String(data.get("newPassword") ?? "");
+    const confirm = String(data.get("confirmPassword") ?? "");
+    if (password.length < 8) {
+      setPwError("Password must be at least 8 characters.");
+      return;
+    }
+    if (password !== confirm) {
+      setPwError("Passwords do not match.");
+      return;
+    }
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) {
+      setPwError(error.message);
+      return;
+    }
+    setPwOpen(false);
+    setPwError("");
+    setNotice("Password updated.");
+  }
+
   async function signOut() {
     await supabase?.auth.signOut();
     router.replace("/admin/login");
@@ -195,6 +324,12 @@ export default function AdminDashboard() {
     );
   }
 
+  const detailEntries = detail
+    ? [...FIELD_ORDER.filter((k) => k in detail), ...Object.keys(detail).filter((k) => !FIELD_ORDER.includes(k) && k !== "id")]
+        .map((key) => ({ key, label: FIELD_LABELS[key] ?? key, value: formatValue(key, detail[key]) }))
+        .filter((entry) => entry.value !== "")
+    : [];
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-navy-100 pb-6">
@@ -205,7 +340,7 @@ export default function AdminDashboard() {
             <p className="text-xs text-muted">{email}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <a
             href="/en"
             target="_blank"
@@ -214,6 +349,16 @@ export default function AdminDashboard() {
           >
             <ExternalLink className="h-4 w-4" /> View Site
           </a>
+          <button
+            type="button"
+            onClick={() => {
+              setPwError("");
+              setPwOpen(true);
+            }}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy hover:bg-white"
+          >
+            <KeyRound className="h-4 w-4" /> Password
+          </button>
           <button
             type="button"
             onClick={signOut}
@@ -257,7 +402,7 @@ export default function AdminDashboard() {
 
       {tab !== "users" ? (
         <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white shadow-card">
-          <table className="w-full min-w-[900px] text-start text-sm">
+          <table className="w-full min-w-[900px] text-sm">
             <thead>
               <tr className="border-b border-navy-100 bg-surface text-xs uppercase tracking-wider text-muted">
                 <th className="px-4 py-3 text-start">Date</th>
@@ -286,7 +431,9 @@ export default function AdminDashboard() {
                   <td className="px-4 py-3 font-semibold text-navy">
                     {tab === "directory"
                       ? String(row.business_name ?? "")
-                      : `${row.first_name ?? ""} ${row.last_name ?? ""}`}
+                      : tab === "contacts"
+                        ? String(row.name ?? "")
+                        : `${row.first_name ?? ""} ${row.last_name ?? ""}`}
                     {tab === "directory" && (
                       <span className="block text-xs font-normal text-muted">
                         {String(row.contact_name ?? "")}
@@ -308,38 +455,30 @@ export default function AdminDashboard() {
                         {row.business_name ? ` · ${row.business_name}` : ""}
                         {row.job_title ? ` · ${row.job_title}` : ""}
                         {row.city_state ? ` · ${row.city_state}` : ""}
-                        {row.message ? (
-                          <span className="mt-1 block text-xs">{String(row.message)}</span>
-                        ) : null}
                       </>
                     )}
                     {tab === "board" && (
-                      <>
-                        <span className="font-medium text-ink">
-                          {((row.areas as string[]) ?? []).join(", ")}
-                        </span>
-                        {row.city_state ? ` · ${row.city_state}` : ""}
-                        {row.linkedin ? (
-                          <a
-                            href={String(row.linkedin)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ms-1 text-green-600 hover:underline"
-                          >
-                            LinkedIn
-                          </a>
-                        ) : null}
-                        {row.background ? (
-                          <span className="mt-1 block text-xs">{String(row.background)}</span>
-                        ) : null}
-                      </>
+                      <span className="font-medium text-ink">
+                        {((row.areas as string[]) ?? []).join(", ")}
+                      </span>
                     )}
                     {tab === "directory" && (
                       <>
                         <span className="font-medium text-ink">{String(row.category ?? "")}</span>
                         {row.city ? ` · ${row.city}, ${row.state ?? ""}` : ""}
-                        {row.website ? ` · ${row.website}` : ""}
-                        <span className="mt-1 block text-xs">{String(row.description ?? "")}</span>
+                      </>
+                    )}
+                    {tab === "contacts" && (
+                      <>
+                        <span className="font-medium text-ink">
+                          {String(row.inquiry_type ?? "")}
+                        </span>
+                        {row.organization ? ` · ${row.organization}` : ""}
+                        {row.message ? (
+                          <span className="mt-1 block truncate text-xs">
+                            {String(row.message)}
+                          </span>
+                        ) : null}
                       </>
                     )}
                     {tab === "subscribers" && <span>{String(row.locale ?? "")}</span>}
@@ -361,12 +500,32 @@ export default function AdminDashboard() {
                       </select>
                     </td>
                   )}
-                  <td className="px-4 py-3">
+                  <td className="whitespace-nowrap px-4 py-3">
+                    {tab !== "subscribers" && (
+                      <button
+                        type="button"
+                        onClick={() => setDetail(row)}
+                        className="rounded-lg p-2 text-muted transition-colors hover:bg-navy-50 hover:text-navy"
+                        aria-label="View details"
+                        title="View all answers"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                    )}
+                    <a
+                      href={mailtoFor(row, tab)}
+                      className="inline-block rounded-lg p-2 text-muted transition-colors hover:bg-green-50 hover:text-green-600"
+                      aria-label="Email"
+                      title="Email"
+                    >
+                      <Mail className="h-4 w-4" />
+                    </a>
                     <button
                       type="button"
                       onClick={() => deleteRow(row.id)}
                       className="rounded-lg p-2 text-muted transition-colors hover:bg-red-50 hover:text-red-600"
                       aria-label="Delete"
+                      title="Delete"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -405,7 +564,8 @@ export default function AdminDashboard() {
                 Create User
               </button>
               <p className="text-xs text-muted">
-                Share the initial password securely; the user can change it later.
+                No email is sent. Share the initial password securely; the user can change it from
+                the Password button after signing in.
               </p>
             </form>
           </div>
@@ -450,6 +610,124 @@ export default function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Record detail dialog */}
+      {detail && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Record details"
+        >
+          <div
+            className="absolute inset-0 bg-navy-900/70 backdrop-blur-sm"
+            onClick={() => setDetail(null)}
+            aria-hidden="true"
+          />
+          <div className="relative max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl sm:p-10">
+            <button
+              type="button"
+              onClick={() => setDetail(null)}
+              className="absolute end-4 top-4 rounded-full p-2 text-muted transition-colors hover:bg-surface hover:text-navy"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <h2 className="pe-10 font-heading text-xl font-bold text-navy">
+              {String(
+                detail.business_name ??
+                  detail.name ??
+                  `${detail.first_name ?? ""} ${detail.last_name ?? ""}`
+              )}
+            </h2>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              {typeof detail.status === "string" && (
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                    statusColors[detail.status] ?? "bg-surface text-navy"
+                  }`}
+                >
+                  {detail.status}
+                </span>
+              )}
+              <a
+                href={mailtoFor(detail, tab)}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-4 py-2 text-xs font-semibold text-white hover:from-green-500 hover:to-green-400"
+              >
+                <Mail className="h-3.5 w-3.5" /> Email Applicant
+              </a>
+            </div>
+            <dl className="mt-6 space-y-4">
+              {detailEntries.map((entry) => (
+                <div key={entry.key} className="border-b border-navy-50 pb-3">
+                  <dt className="text-xs font-semibold uppercase tracking-wider text-muted">
+                    {entry.label}
+                  </dt>
+                  <dd className="mt-1 whitespace-pre-wrap text-sm text-ink">{entry.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      )}
+
+      {/* Change password dialog */}
+      {pwOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Change password"
+        >
+          <div
+            className="absolute inset-0 bg-navy-900/70 backdrop-blur-sm"
+            onClick={() => setPwOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="relative w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setPwOpen(false)}
+              className="absolute end-4 top-4 rounded-full p-2 text-muted transition-colors hover:bg-surface hover:text-navy"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <h2 className="font-heading text-lg font-bold text-navy">Change My Password</h2>
+            <form className="mt-5 space-y-3" onSubmit={changePassword}>
+              <input
+                name="newPassword"
+                type="password"
+                required
+                minLength={8}
+                autoComplete="new-password"
+                placeholder="New password (min 8 chars)"
+                className="w-full rounded-lg border border-navy-200 px-4 py-2.5 text-sm"
+              />
+              <input
+                name="confirmPassword"
+                type="password"
+                required
+                minLength={8}
+                autoComplete="new-password"
+                placeholder="Confirm new password"
+                className="w-full rounded-lg border border-navy-200 px-4 py-2.5 text-sm"
+              />
+              {pwError && (
+                <p className="text-sm font-medium text-red-600" role="alert">
+                  {pwError}
+                </p>
+              )}
+              <button
+                type="submit"
+                className="w-full rounded-lg bg-navy px-4 py-2.5 text-sm font-semibold text-white hover:bg-navy-600"
+              >
+                Update Password
+              </button>
+            </form>
           </div>
         </div>
       )}
