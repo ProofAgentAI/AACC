@@ -21,9 +21,11 @@ const resources = [
 
 export default function Footer() {
   return (
-    <footer className="bg-navy text-navy-100">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div id="newsletter" className="mb-14 rounded-2xl bg-navy-700 p-8 md:p-10">
+    <footer className="relative bg-navy text-navy-100">
+      <div className="tricolor-bar h-1" aria-hidden="true" />
+      <div className="absolute inset-0 bg-grid-light" aria-hidden="true" />
+      <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div id="newsletter" className="glass-dark mb-14 rounded-2xl p-8 md:p-10">
           <div className="grid items-center gap-8 md:grid-cols-2">
             <div>
               <h2 className="font-heading text-2xl font-bold text-white">

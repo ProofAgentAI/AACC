@@ -24,7 +24,8 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-navy-100 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="tricolor-bar h-1" aria-hidden="true" />
+      <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Logo />
 
         <nav className="hidden items-center gap-1 xl:flex" aria-label="Main navigation">
@@ -56,7 +57,7 @@ export default function Header() {
           </Link>
           <Link
             href="/membership"
-            className="whitespace-nowrap rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-navy-600"
+            className="whitespace-nowrap rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:from-green-500 hover:to-green-400 hover:shadow-glow-green"
           >
             Join AACC-USA
           </Link>
@@ -95,7 +96,7 @@ export default function Header() {
             <Link
               href="/membership"
               onClick={() => setOpen(false)}
-              className="rounded-lg bg-navy px-4 py-3 text-center text-sm font-semibold text-white"
+              className="rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-4 py-3 text-center text-sm font-semibold text-white"
             >
               Join AACC-USA
             </Link>

@@ -44,6 +44,10 @@ export const metadata: Metadata = {
     title: "AACC-USA | Algerian American Chamber of Commerce USA",
     description:
       "Building the Bridge Between Algerian Talent, Trade, and Opportunity.",
+    images: [{ url: "/aacc-logo.png", width: 580, height: 335 }],
+  },
+  icons: {
+    icon: "/aacc-logo.png",
   },
 };
 
