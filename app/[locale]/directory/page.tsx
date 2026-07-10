@@ -44,7 +44,7 @@ export default async function DirectoryPage({
         title={d.cta.title}
         description={d.cta.description}
         primaryLabel={d.cta.primary}
-        primaryHref={p("/contact?inquiry=directory")}
+        primaryHref={p("/directory/submit")}
         secondaryLabel={d.cta.secondary}
         secondaryHref={p("/membership")}
         image="/images/energy-industry.jpg"

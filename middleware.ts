@@ -16,6 +16,6 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Skip static files (contain a dot), Next internals, and API routes.
-  matcher: ["/((?!_next|api|.*\\..*).*)"],
+  // Skip static files (contain a dot), Next internals, API routes, and the back office.
+  matcher: ["/((?!_next|api|admin|.*\\..*).*)"],
 };

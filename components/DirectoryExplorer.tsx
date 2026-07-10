@@ -1,10 +1,21 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import DirectoryCard from "./DirectoryCard";
-import { directoryListings, industries, states, businessTypes } from "@/data/directory";
+import { directoryListings, type DirectoryListing } from "@/data/directory";
+import { supabase } from "@/lib/supabase";
 import type { Locale, Dictionary } from "@/lib/i18n";
+
+function initialsOf(name: string) {
+  return name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
 
 type ExplorerDict = Dictionary["directory"]["explorer"];
 
@@ -24,10 +35,55 @@ export default function DirectoryExplorer({
   const [businessType, setBusinessType] = useState("");
   const [algeriaInterest, setAlgeriaInterest] = useState(false);
   const [usInterest, setUsInterest] = useState(false);
+  // Approved real listings from the database; the mock listings are the
+  // placeholder shown until real businesses are approved.
+  const [listings, setListings] = useState<DirectoryListing[]>(directoryListings);
+
+  useEffect(() => {
+    if (!supabase) return;
+    supabase
+      .from("directory_submissions")
+      .select(
+        "id, business_name, category, business_type, city, state, description, website, services, algeria_interest, us_interest"
+      )
+      .order("created_at", { ascending: true })
+      .then(({ data, error }) => {
+        if (error || !data || data.length === 0) return;
+        setListings(
+          data.map((row) => ({
+            slug: row.id as string,
+            name: row.business_name as string,
+            category: (row.category as string) ?? "",
+            businessType: (row.business_type as string) ?? "",
+            city: (row.city as string) ?? "",
+            state: (row.state as string) ?? "",
+            description: (row.description as string) ?? "",
+            website: (row.website as string) ?? "",
+            services: (row.services as string[]) ?? [],
+            algeriaInterest: Boolean(row.algeria_interest),
+            usInterest: Boolean(row.us_interest),
+            initials: initialsOf(row.business_name as string),
+          }))
+        );
+      });
+  }, []);
+
+  const industries = useMemo(
+    () => Array.from(new Set([...listings.map((l) => l.category).filter(Boolean)])).sort(),
+    [listings]
+  );
+  const states = useMemo(
+    () => Array.from(new Set([...listings.map((l) => l.state).filter(Boolean)])).sort(),
+    [listings]
+  );
+  const businessTypes = useMemo(
+    () => Array.from(new Set([...listings.map((l) => l.businessType).filter(Boolean)])).sort(),
+    [listings]
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return directoryListings.filter((listing) => {
+    return listings.filter((listing) => {
       if (industry && listing.category !== industry) return false;
       if (state && listing.state !== state) return false;
       if (businessType && listing.businessType !== businessType) return false;
@@ -48,7 +104,7 @@ export default function DirectoryExplorer({
       }
       return true;
     });
-  }, [query, industry, state, businessType, algeriaInterest, usInterest]);
+  }, [listings, query, industry, state, businessType, algeriaInterest, usInterest]);
 
   return (
     <div>
@@ -151,7 +207,7 @@ export default function DirectoryExplorer({
       </div>
 
       <p className="mt-8 text-sm font-medium text-muted" role="status">
-        {dict.showing} {filtered.length} {dict.of} {directoryListings.length} {dict.businesses}
+        {dict.showing} {filtered.length} {dict.of} {listings.length} {dict.businesses}
       </p>
 
       <div className="mt-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
