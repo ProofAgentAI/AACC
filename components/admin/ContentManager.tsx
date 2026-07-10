@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { Eye, FilePlus2, Globe, Heart, Pencil, Trash2, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Eye, FilePlus2, Globe, Heart, ImagePlus, Pencil, Trash2, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 type PostRow = Record<string, unknown>;
@@ -55,6 +55,37 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
   const [loading, setLoading] = useState(false);
   const [draft, setDraft] = useState<PostRow | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function uploadImage(file: File) {
+    if (!supabase) return;
+    if (!file.type.startsWith("image/")) {
+      onNotice("Please choose an image file.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      onNotice("Image is too large (max 5 MB).");
+      return;
+    }
+    setUploading(true);
+    const extension = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
+    const { error } = await supabase.storage.from("post-images").upload(path, file, {
+      cacheControl: "31536000",
+      contentType: file.type,
+    });
+    if (error) {
+      setUploading(false);
+      onNotice(`Upload failed: ${error.message}`);
+      return;
+    }
+    const { data } = supabase.storage.from("post-images").getPublicUrl(path);
+    setDraft((d) => (d ? { ...d, cover_image: data.publicUrl } : d));
+    setUploading(false);
+    onNotice("Image uploaded.");
+  }
 
   const load = useCallback(async () => {
     if (!supabase) return;
@@ -240,15 +271,56 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-navy">
-              Cover Image URL (optional)
+              Article Picture (optional)
             </label>
             <input
-              type="url"
-              value={String(draft.cover_image ?? "")}
-              onChange={(e) => set("cover_image", e.target.value)}
-              className={inputClasses}
-              placeholder="https://... or /images/..."
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) uploadImage(file);
+                e.target.value = "";
+              }}
             />
+            {draft.cover_image ? (
+              <div className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={String(draft.cover_image)}
+                  alt="Cover preview"
+                  className="h-16 w-24 rounded-lg border border-navy-100 object-cover"
+                />
+                <div className="flex flex-col gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="text-start text-xs font-semibold text-green-600 hover:underline disabled:opacity-60"
+                  >
+                    {uploading ? "Uploading..." : "Replace image"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => set("cover_image", "")}
+                    className="text-start text-xs font-semibold text-red-600 hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-navy-300 bg-surface px-4 py-3 text-sm font-semibold text-navy transition-colors hover:border-navy disabled:opacity-60"
+              >
+                <ImagePlus className="h-4 w-4" />
+                {uploading ? "Uploading..." : "Upload picture"}
+              </button>
+            )}
           </div>
           <div className="sm:col-span-2">
             <label className="mb-1.5 block text-sm font-semibold text-navy">
@@ -321,6 +393,13 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <button
             type="button"
+            onClick={() => setPreviewOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-navy bg-navy px-6 py-3 text-sm font-semibold text-white hover:bg-navy-600"
+          >
+            <Eye className="h-4 w-4" /> Preview
+          </button>
+          <button
+            type="button"
             disabled={saving}
             onClick={() => save(true)}
             className="rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-6 py-3 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400 disabled:opacity-60"
@@ -346,6 +425,78 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
             </a>
           )}
         </div>
+
+        {/* Article preview: renders exactly like the public article page */}
+        {previewOpen && (
+          <div
+            className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Article preview"
+          >
+            <div
+              className="absolute inset-0 bg-navy-900/70 backdrop-blur-sm"
+              onClick={() => setPreviewOpen(false)}
+              aria-hidden="true"
+            />
+            <div
+              className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white shadow-2xl"
+              dir={draft.locale === "ar" ? "rtl" : "ltr"}
+            >
+              <div className="sticky top-0 z-10 flex items-center justify-between border-b border-navy-100 bg-white/95 px-6 py-3 backdrop-blur">
+                <span className="rounded-full bg-gold-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-gold-600">
+                  Preview — not published yet
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPreviewOpen(false)}
+                  className="rounded-full p-2 text-muted hover:bg-surface hover:text-navy"
+                  aria-label="Close preview"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div
+                className="bg-gradient-to-b from-navy-900 to-navy-700 px-6 py-12 text-white sm:px-10"
+                style={
+                  draft.cover_image
+                    ? {
+                        backgroundImage: `linear-gradient(rgba(7,21,39,0.75), rgba(11,31,58,0.85)), url(${draft.cover_image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }
+                    : undefined
+                }
+              >
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="rounded-full bg-gold px-3 py-1 text-xs font-bold uppercase tracking-wider text-navy">
+                    {String(draft.type ?? "article")}
+                  </span>
+                  {Boolean(draft.category) && (
+                    <span className="rounded-full border border-white/30 px-3 py-1 text-xs font-semibold text-navy-100">
+                      {String(draft.category)}
+                    </span>
+                  )}
+                </div>
+                <h1 className="mt-4 font-heading text-3xl font-extrabold leading-tight sm:text-4xl">
+                  {String(draft.title ?? "") || "Untitled"}
+                </h1>
+                {Boolean(draft.excerpt) && (
+                  <p className="mt-3 max-w-3xl text-lg leading-relaxed text-navy-100">
+                    {String(draft.excerpt)}
+                  </p>
+                )}
+              </div>
+              <div className="tricolor-bar h-1" aria-hidden="true" />
+              <div className="px-6 py-10 sm:px-10">
+                <article
+                  className="article-content"
+                  dangerouslySetInnerHTML={{ __html: String(draft.content_html ?? "") }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
