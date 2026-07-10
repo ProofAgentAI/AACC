@@ -270,7 +270,7 @@ export default async function HomePage({
         title={home.finalCta.title}
         description={home.finalCta.description}
         primaryLabel={home.finalCta.primary}
-        primaryHref={p("/membership")}
+        primaryHref={p("/board")}
         secondaryLabel={home.finalCta.secondary}
         secondaryHref={p("/sponsors")}
         image="/images/trade-port.jpg"

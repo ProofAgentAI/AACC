@@ -15,7 +15,7 @@ export const en = {
     mostPopular: "Most Popular",
     placeholderPricing: "Founding pricing announced soon",
     becomeASponsor: "Become a Sponsor",
-    becomeAFoundingMember: "Become a Founding Member",
+    becomeAFoundingMember: "Become a Board Member",
     joinAaccUsa: "Join AACC-USA",
     partnerWithUs: "Partner With Us",
     sponsor: "Sponsor",
@@ -75,7 +75,7 @@ export const en = {
       titleHighlight: "Business, Trade, and Community Leadership",
       subtitle:
         "AACC-USA connects Algerian-American entrepreneurs, professionals, investors, and institutions to expand trade, investment, innovation, and opportunity between the United States and Algeria.",
-      primary: "Become a Founding Member",
+      primary: "Become a Board Member",
       secondary: "Partner With Us",
       tertiary: "Explore the Chamber",
       trust:
@@ -211,7 +211,7 @@ export const en = {
       title: "Founding members, sponsors, advisors, and partners welcome",
       description:
         "Join early and help shape the chamber's first programs, priorities, and leadership.",
-      primary: "Become a Founding Member",
+      primary: "Become a Board Member",
       secondary: "Sponsor the Chamber",
     },
     programs: {
@@ -285,7 +285,7 @@ export const en = {
       title: "Join the Founding Network of AACC-USA",
       description:
         "Be part of the first generation of members, sponsors, and partners building the Algerian-American economic bridge.",
-      primary: "Become a Founding Member",
+      primary: "Become a Board Member",
       secondary: "Partner With Us",
     },
   },
@@ -437,7 +437,7 @@ export const en = {
       title: "Help Us Build the Chamber",
       description:
         "Founding members, advisors, and partners are shaping AACC-USA right now. Add your voice.",
-      primary: "Become a Founding Member",
+      primary: "Become a Board Member",
       secondary: "Contact Us",
     },
   },

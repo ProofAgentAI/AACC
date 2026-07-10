@@ -52,7 +52,7 @@ export default function HeroSection({
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              href={p("/membership")}
+              href={p("/board")}
               className="w-full rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-8 py-4 text-base font-semibold text-white shadow-glow-green transition-all hover:from-green-500 hover:to-green-400 sm:w-auto"
             >
               {hero.primary}

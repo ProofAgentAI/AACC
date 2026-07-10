@@ -149,7 +149,7 @@ export default async function AboutPage({
         title={about.cta.title}
         description={about.cta.description}
         primaryLabel={about.cta.primary}
-        primaryHref={p("/membership")}
+        primaryHref={p("/board")}
         secondaryLabel={about.cta.secondary}
         secondaryHref={p("/contact")}
         image="/images/diaspora-connect.jpg"
