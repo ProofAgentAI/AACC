@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Eye, FilePlus2, Globe, Heart, ImagePlus, Pencil, Trash2, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { ADMIN_EMAIL } from "@/lib/admin";
+import { isAdminUser } from "@/lib/admin";
 
 type PostRow = Record<string, unknown>;
 
@@ -59,12 +59,13 @@ export default function ContentManager({ onNotice }: { onNotice: (msg: string) =
   const [uploading, setUploading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [userEmail, setUserEmail] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const isAdmin = userEmail.toLowerCase() === ADMIN_EMAIL;
 
   useEffect(() => {
     supabase?.auth.getSession().then(({ data }) => {
       setUserEmail(data.session?.user.email ?? "");
+      setIsAdmin(isAdminUser(data.session?.user));
     });
   }, []);
 

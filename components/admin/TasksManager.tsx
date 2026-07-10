@@ -38,10 +38,27 @@ export default function TasksManager({ onNotice }: { onNotice: (msg: string) => 
   const [showDone, setShowDone] = useState(false);
   const [mineOnly, setMineOnly] = useState(false);
   const [email, setEmail] = useState("");
+  const [team, setTeam] = useState<{ email: string; role: string }[]>([]);
 
   useEffect(() => {
-    supabase?.auth.getSession().then(({ data }) => {
+    supabase?.auth.getSession().then(async ({ data }) => {
       setEmail(data.session?.user.email ?? "");
+      // Board members and staff for the assignee dropdown; falls back to a
+      // plain email field when the roster cannot load.
+      const token = data.session?.access_token;
+      if (!token) return;
+      const res = await fetch("/api/admin/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => null);
+      if (res?.ok) {
+        const body = await res.json();
+        setTeam(
+          (body.users ?? []).map((u: { email: string; role: string }) => ({
+            email: u.email,
+            role: u.role,
+          }))
+        );
+      }
     });
   }, []);
 
@@ -134,12 +151,27 @@ export default function TasksManager({ onNotice }: { onNotice: (msg: string) => 
         </div>
         <div>
           <label className="mb-1 block text-xs font-semibold text-navy">Assign To</label>
-          <input
-            name="assignee"
-            type="email"
-            placeholder={email || "staff email"}
-            className={`${inputClasses} w-48`}
-          />
+          {team.length > 0 ? (
+            <select name="assignee" defaultValue={email} className={`${inputClasses} w-56`}>
+              {team.map((member) => (
+                <option key={member.email} value={member.email}>
+                  {member.email}
+                  {member.role === "admin"
+                    ? " (Admin)"
+                    : member.role === "board"
+                      ? " (Board)"
+                      : " (Staff)"}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              name="assignee"
+              type="email"
+              placeholder={email || "staff email"}
+              className={`${inputClasses} w-48`}
+            />
+          )}
         </div>
         <div>
           <label className="mb-1 block text-xs font-semibold text-navy">Due</label>

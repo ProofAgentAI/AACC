@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { CalendarPlus, Globe, Pencil, Trash2, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { ADMIN_EMAIL } from "@/lib/admin";
+import { isAdminUser } from "@/lib/admin";
 
 type Row = Record<string, unknown>;
 
@@ -58,11 +58,12 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
   const [draft, setDraft] = useState<Row | null>(null);
   const [saving, setSaving] = useState(false);
   const [email, setEmail] = useState("");
-  const isAdmin = email.toLowerCase() === ADMIN_EMAIL;
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     supabase?.auth.getSession().then(({ data }) => {
       setEmail(data.session?.user.email ?? "");
+      setIsAdmin(isAdminUser(data.session?.user));
     });
   }, []);
 

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { BellRing, CalendarDays, CircleDollarSign, FileText, Heart, Inbox, ListTodo, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { ADMIN_EMAIL } from "@/lib/admin";
+import { isAdminUser } from "@/lib/admin";
 
 // Categorical palette — validated (lightness, chroma, CVD separation, contrast)
 // with the dataviz six-checks validator; assign in this fixed order, never cycled.
@@ -152,7 +152,7 @@ export default function DashboardOverview({
 
   useEffect(() => {
     supabase?.auth.getSession().then(({ data }) => {
-      setIsAdmin((data.session?.user.email ?? "").toLowerCase() === ADMIN_EMAIL);
+      setIsAdmin(isAdminUser(data.session?.user));
     });
   }, []);
 
@@ -266,7 +266,7 @@ export default function DashboardOverview({
       </p>
 
       {/* Headline stat tiles */}
-      <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-5">
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         {statTiles.map((tile) => (
           <button
             key={tile.label}

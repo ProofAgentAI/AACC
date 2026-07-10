@@ -36,7 +36,7 @@ import DashboardOverview from "@/components/admin/DashboardOverview";
 import TasksManager from "@/components/admin/TasksManager";
 import EventsManager from "@/components/admin/EventsManager";
 import BillingManager from "@/components/admin/BillingManager";
-import { ADMIN_EMAIL } from "@/lib/admin";
+import { ADMIN_EMAIL, ROLE_LABELS, roleOf, type StaffRole } from "@/lib/admin";
 
 type Row = Record<string, unknown>;
 
@@ -195,6 +195,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState("");
+  const [myRole, setMyRole] = useState<StaffRole>("staff");
   const [tab, setTab] = useState<TabKey>("dashboard");
   const [rows, setRows] = useState<Row[]>([]);
   const [users, setUsers] = useState<Row[]>([]);
@@ -205,7 +206,7 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pwError, setPwError] = useState("");
   const [approvalsCount, setApprovalsCount] = useState(0);
-  const isAdmin = email.toLowerCase() === ADMIN_EMAIL;
+  const isAdmin = myRole === "admin";
 
   const loadApprovalsCount = useCallback(async () => {
     if (!supabase) return;
@@ -231,6 +232,7 @@ export default function AdminDashboard() {
         router.replace("/admin/login");
       } else {
         setEmail(data.session.user.email ?? "");
+        setMyRole(roleOf(data.session.user));
         setReady(true);
       }
     });
@@ -308,20 +310,49 @@ export default function AdminDashboard() {
     }
   }
 
+  function welcomeMailto(userEmail: string, role: StaffRole) {
+    const subjects: Record<StaffRole, string> = {
+      admin: "Welcome to AACC-USA — Administrator Access",
+      board: "Welcome to the AACC-USA Founding Board",
+      staff: "Welcome to the AACC-USA Team",
+    };
+    const intros: Record<StaffRole, string> = {
+      admin:
+        "Welcome aboard as an Administrator of the Algerian American Chamber of Commerce USA. You have full access to the chamber's back office, including approvals, billing, and user management.",
+      board:
+        "Welcome to the founding board of the Algerian American Chamber of Commerce USA. We are honored to have your leadership as we build the bridge between Algerian talent, trade, and opportunity.",
+      staff:
+        "Welcome to the AACC-USA team. You now have access to the chamber's back office to contribute content, manage tasks, and support our programs.",
+    };
+    const body = [
+      "Dear colleague,",
+      "",
+      intros[role],
+      "",
+      "You will receive a separate email with a secure link to set your password. Once set, sign in anytime at:",
+      "https://aacc-usa.org/admin",
+      "",
+      "Warm regards,",
+      "Fouad Bousetouane",
+      "President, AACC-USA",
+      "contact@aacc-usa.org",
+    ].join("\n");
+    return `mailto:${userEmail}?subject=${encodeURIComponent(subjects[role])}&body=${encodeURIComponent(body)}`;
+  }
+
   async function createUser(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!supabase) return;
     const form = e.currentTarget;
     const data = new FormData(form);
+    const userEmail = String(data.get("email") ?? "").trim().toLowerCase();
+    const role = (String(data.get("role") ?? "board") as StaffRole) || "board";
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData.session?.access_token;
     const res = await fetch("/api/admin/users", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({
-        email: String(data.get("email") ?? "").trim(),
-        password: String(data.get("password") ?? ""),
-      }),
+      body: JSON.stringify({ email: userEmail, role }),
     });
     const body = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -329,7 +360,29 @@ export default function AdminDashboard() {
       return;
     }
     form.reset();
-    setNotice("User created. They can sign in immediately.");
+    setNotice(
+      `Invitation emailed to ${userEmail} (${ROLE_LABELS[role]}). Your personal welcome email is opening now.`
+    );
+    loadUsers();
+    // Open the role-specific welcome message in the admin's mail client.
+    window.location.href = welcomeMailto(userEmail, role);
+  }
+
+  async function changeRole(id: unknown, role: string) {
+    if (!supabase) return;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+    const res = await fetch("/api/admin/users", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ id, role }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      setNotice(body.error ?? "Could not change role.");
+      return;
+    }
+    setNotice("Role updated. It takes effect the next time that user signs in.");
     loadUsers();
   }
 
@@ -455,9 +508,12 @@ export default function AdminDashboard() {
         .filter((entry) => entry.value !== "")
     : [];
 
-  const visibleTabs = TABS.filter(
-    (t) => isAdmin || (t.key !== "users" && t.key !== "approvals" && t.key !== "billing")
-  );
+  const STAFF_TABS = ["dashboard", "tasks", "content", "events"];
+  const visibleTabs = TABS.filter((t) => {
+    if (isAdmin) return true;
+    if (myRole === "staff") return STAFF_TABS.includes(t.key);
+    return t.key !== "users" && t.key !== "approvals" && t.key !== "billing";
+  });
   const currentLabel = TABS.find((t) => t.key === tab)?.label ?? "";
 
   const sidebarNav = (
@@ -608,7 +664,87 @@ export default function AdminDashboard() {
       ) : tab === "crm" ? (
         <CrmManager onNotice={setNotice} />
       ) : tab !== "users" ? (
-        <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white shadow-card">
+        <>
+        {/* Mobile: cards instead of a wide table */}
+        <div className="mt-6 space-y-3 md:hidden">
+          {rows.length === 0 && !loading && (
+            <p className="rounded-2xl border border-dashed border-navy-200 bg-white p-8 text-center text-sm text-muted">
+              No records yet.
+            </p>
+          )}
+          {rows.map((row) => (
+            <div
+              key={String(row.id)}
+              onClick={() => setDetail(row)}
+              className="cursor-pointer rounded-2xl border border-navy-100 bg-white p-4 shadow-card active:bg-surface"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate font-heading text-sm font-bold text-navy">
+                    {tab === "directory"
+                      ? String(row.business_name ?? "")
+                      : tab === "contacts"
+                        ? String(row.name ?? "")
+                        : tab === "subscribers"
+                          ? String(row.email ?? "")
+                          : `${row.first_name ?? ""} ${row.last_name ?? ""}`}
+                  </p>
+                  {tab !== "subscribers" && (
+                    <p className="truncate text-xs text-muted">{String(row.email ?? "")}</p>
+                  )}
+                  <p className="mt-1 truncate text-xs text-muted">
+                    {tab === "memberships" && `${row.tier ?? ""}${row.business_name ? ` · ${row.business_name}` : ""}`}
+                    {tab === "board" && ((row.areas as string[]) ?? []).join(", ")}
+                    {tab === "directory" && `${row.category ?? ""}${row.city ? ` · ${row.city}` : ""}`}
+                    {tab === "contacts" && `${row.inquiry_type ?? ""}${row.organization ? ` · ${row.organization}` : ""}`}
+                    {tab === "subscribers" && String(row.locale ?? "")}
+                  </p>
+                </div>
+                {STATUS_OPTIONS[currentTable] && (
+                  <select
+                    value={String(row.status ?? "")}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => updateStatus(row.id, e.target.value)}
+                    className={`shrink-0 rounded-full border-0 px-2.5 py-1 text-xs font-semibold ${
+                      statusColors[String(row.status)] ?? "bg-surface text-navy"
+                    }`}
+                  >
+                    {STATUS_OPTIONS[currentTable].map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              <div
+                className="mt-3 flex items-center justify-between border-t border-navy-50 pt-2"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <span className="text-xs text-muted">{formatDate(row.created_at)}</span>
+                <span className="flex items-center gap-1">
+                  <a
+                    href={mailtoFor(row, tab)}
+                    className="rounded-lg p-2 text-muted hover:bg-green-50 hover:text-green-600"
+                    aria-label="Email"
+                  >
+                    <Mail className="h-4 w-4" />
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => deleteRow(row.id)}
+                    className="rounded-lg p-2 text-muted hover:bg-red-50 hover:text-red-600"
+                    aria-label="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 hidden overflow-x-auto rounded-2xl border border-navy-100 bg-white shadow-card md:block">
           <table className="w-full min-w-[900px] text-sm">
             <thead>
               <tr className="border-b border-navy-100 bg-surface text-xs uppercase tracking-wider text-muted">
@@ -750,6 +886,7 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
+        </>
       ) : (
         <div className="mt-6 grid gap-6 lg:grid-cols-3">
           <div className="rounded-2xl border border-navy-100 bg-white p-6 shadow-card">
@@ -761,26 +898,27 @@ export default function AdminDashboard() {
                 name="email"
                 type="email"
                 required
-                placeholder="email@aacc-usa.org"
+                placeholder="their@email.com"
                 className="w-full rounded-lg border border-navy-200 px-4 py-2.5 text-sm"
               />
-              <input
-                name="password"
-                type="text"
-                required
-                minLength={8}
-                placeholder="Initial password (min 8 chars)"
+              <select
+                name="role"
+                defaultValue="board"
                 className="w-full rounded-lg border border-navy-200 px-4 py-2.5 text-sm"
-              />
+              >
+                <option value="board">Board Member — full operations</option>
+                <option value="staff">Staff — tasks, content & events</option>
+                <option value="admin">Admin — everything incl. billing & users</option>
+              </select>
               <button
                 type="submit"
-                className="w-full rounded-lg bg-navy px-4 py-2.5 text-sm font-semibold text-white hover:bg-navy-600"
+                className="w-full rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400"
               >
-                Create User
+                Create & Send Invite
               </button>
               <p className="text-xs text-muted">
-                No email is sent. Share the initial password securely; the user can change it from
-                the Password button after signing in.
+                They receive an email with a secure link to set their own password, and your
+                personal welcome message opens ready to send.
               </p>
             </form>
           </div>
@@ -789,6 +927,7 @@ export default function AdminDashboard() {
               <thead>
                 <tr className="border-b border-navy-100 bg-surface text-xs uppercase tracking-wider text-muted">
                   <th className="px-4 py-3 text-start">Email</th>
+                  <th className="px-4 py-3 text-start">Role</th>
                   <th className="px-4 py-3 text-start">Created</th>
                   <th className="px-4 py-3 text-start">Last Sign-in</th>
                   <th className="px-4 py-3 text-start">Actions</th>
@@ -797,7 +936,7 @@ export default function AdminDashboard() {
               <tbody>
                 {users.length === 0 && !loading && (
                   <tr>
-                    <td colSpan={4} className="px-4 py-10 text-center text-muted">
+                    <td colSpan={5} className="px-4 py-10 text-center text-muted">
                       No users loaded.
                     </td>
                   </tr>
@@ -809,6 +948,23 @@ export default function AdminDashboard() {
                     className="cursor-pointer border-b border-navy-50 transition-colors hover:bg-surface"
                   >
                     <td className="px-4 py-3 font-semibold text-navy">{String(user.email)}</td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      {String(user.email).toLowerCase() === ADMIN_EMAIL || user.email === email ? (
+                        <span className="rounded-full bg-gold-100 px-3 py-1 text-xs font-semibold text-gold-600">
+                          {ROLE_LABELS[(user.role as StaffRole) ?? "admin"] ?? "Admin"}
+                        </span>
+                      ) : (
+                        <select
+                          value={String(user.role ?? "board")}
+                          onChange={(e) => changeRole(user.id, e.target.value)}
+                          className="rounded-full border-0 bg-navy-50 px-3 py-1.5 text-xs font-semibold text-navy"
+                        >
+                          <option value="admin">Admin</option>
+                          <option value="board">Board Member</option>
+                          <option value="staff">Staff</option>
+                        </select>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-muted">{formatDate(user.created_at)}</td>
                     <td className="px-4 py-3 text-muted">
                       {user.last_sign_in_at ? formatDate(user.last_sign_in_at) : "Never"}
