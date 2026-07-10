@@ -169,6 +169,7 @@ export default async function DiasporaPage({
         primaryHref={p("/membership")}
         secondaryLabel={d.cta.secondary}
         secondaryHref={p("/contact?inquiry=media")}
+        image="/images/energy-industry.jpg"
       />
     </>
   );

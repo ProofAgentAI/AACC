@@ -47,6 +47,7 @@ export default async function DirectoryPage({
         primaryHref={p("/contact?inquiry=directory")}
         secondaryLabel={d.cta.secondary}
         secondaryHref={p("/membership")}
+        image="/images/energy-industry.jpg"
       />
     </>
   );

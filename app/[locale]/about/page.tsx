@@ -33,6 +33,7 @@ export default async function AboutPage({
         eyebrow={about.hero.eyebrow}
         title={about.hero.title}
         description={about.hero.description}
+        image="/images/hero-bridge.jpg"
       />
 
       {/* Mission & Vision */}
@@ -137,6 +138,7 @@ export default async function AboutPage({
         primaryHref={p("/membership")}
         secondaryLabel={about.cta.secondary}
         secondaryHref={p("/contact")}
+        image="/images/diaspora-connect.jpg"
       />
     </>
   );

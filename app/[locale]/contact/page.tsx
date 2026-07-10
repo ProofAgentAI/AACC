@@ -47,7 +47,12 @@ export default async function ContactPage({
 
   return (
     <>
-      <PageHero eyebrow={c.hero.eyebrow} title={c.hero.title} description={c.hero.description} />
+      <PageHero
+        eyebrow={c.hero.eyebrow}
+        title={c.hero.title}
+        description={c.hero.description}
+        image="/images/hero-monuments.jpg"
+      />
 
       <section className="bg-surface py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

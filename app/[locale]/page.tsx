@@ -78,7 +78,7 @@ export default async function HomePage({
             </div>
             <div className="relative overflow-hidden rounded-3xl bg-navy p-10 text-white lg:p-14">
               <Image
-                src="/images/diaspora-connect.jpg"
+                src="/images/hero-bridge.jpg"
                 alt=""
                 fill
                 sizes="(min-width: 1024px) 50vw, 100vw"

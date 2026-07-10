@@ -32,7 +32,7 @@ export default async function ProgramsPage({
         eyebrow={pr.hero.eyebrow}
         title={pr.hero.title}
         description={pr.hero.description}
-        image="/images/smart-infrastructure.jpg"
+        image="/images/energy-industry.jpg"
       />
 
       <section className="bg-surface py-20 sm:py-24">
@@ -61,6 +61,7 @@ export default async function ProgramsPage({
         primaryHref={p("/contact?inquiry=partnership")}
         secondaryLabel={pr.cta.secondary}
         secondaryHref={p("/sponsors")}
+        image="/images/hero-monuments.jpg"
       />
     </>
   );

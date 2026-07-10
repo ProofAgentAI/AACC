@@ -118,6 +118,7 @@ export default async function SponsorsPage({
         primaryHref={p("/contact?inquiry=sponsorship")}
         secondaryLabel={s.cta.secondary}
         secondaryHref="mailto:sponsorship@aaccusa.org"
+        image="/images/hero-monuments.jpg"
       />
     </>
   );

@@ -13,14 +13,23 @@ export default function HeroSection({
 
   return (
     <section className="relative overflow-hidden bg-navy-900 text-white">
-      {/* Background artwork */}
+      {/* Background artwork: portrait crop on phones, wide scene on larger screens */}
       <Image
-        src="/images/hero-bridge.jpg"
+        src="/images/hero-monuments-mobile.jpg"
         alt=""
         fill
         priority
         sizes="100vw"
-        className="object-cover object-center"
+        className="object-cover object-center sm:hidden"
+        aria-hidden="true"
+      />
+      <Image
+        src="/images/hero-monuments.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="hidden object-cover object-center sm:block"
         aria-hidden="true"
       />
       {/* Legibility overlay */}

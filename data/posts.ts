@@ -13,7 +13,7 @@ export const posts: Post[] = [
     slug: "why-algerian-american-businesses-need-a-chamber",
     title: "Why Algerian-American Businesses Need a Chamber",
     excerpt:
-      "Algerian-American businesses are growing across the United States — but without a structured chamber, their collective economic voice remains fragmented. Here's why that's changing.",
+      "Algerian-American businesses are growing across the United States, but without a structured chamber, their collective economic voice remains fragmented. Here's why that's changing.",
     date: "June 18, 2026",
     category: "Chamber Updates",
     readTime: "6 min read",
@@ -32,7 +32,7 @@ export const posts: Post[] = [
     slug: "how-diaspora-entrepreneurs-can-invest-in-algeria",
     title: "How Diaspora Entrepreneurs Can Invest in Algeria",
     excerpt:
-      "A practical primer for U.S.-based Algerian entrepreneurs exploring investment back home — sectors, structures, and the questions to ask before you start.",
+      "A practical primer for U.S.-based Algerian entrepreneurs exploring investment back home: sectors, structures, and the questions to ask before you start.",
     date: "May 22, 2026",
     category: "Market Insights",
     readTime: "7 min read",
@@ -41,7 +41,7 @@ export const posts: Post[] = [
     slug: "case-for-direct-flights-us-algeria",
     title: "The Case for Direct Flights Between the U.S. and Algeria",
     excerpt:
-      "Direct air connectivity is more than convenience — it's trade facilitation, investment enablement, and community connection. The business case, explained.",
+      "Direct air connectivity is more than convenience. It is trade facilitation, investment enablement, and community connection. The business case, explained.",
     date: "May 8, 2026",
     category: "Advocacy",
     readTime: "5 min read",
@@ -50,7 +50,7 @@ export const posts: Post[] = [
     slug: "meet-the-founding-members-of-aacc-usa",
     title: "Meet the Founding Members of AACC-USA",
     excerpt:
-      "Entrepreneurs, executives, physicians, engineers, and community builders — meet the early leaders shaping the Algerian American Chamber of Commerce USA.",
+      "Entrepreneurs, executives, physicians, engineers, and community builders: meet the early leaders shaping the Algerian American Chamber of Commerce USA.",
     date: "April 25, 2026",
     category: "Member Spotlights",
     readTime: "4 min read",

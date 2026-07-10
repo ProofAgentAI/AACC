@@ -30,7 +30,12 @@ export default async function EventsPage({
 
   return (
     <>
-      <PageHero eyebrow={e.hero.eyebrow} title={e.hero.title} description={e.hero.description} />
+      <PageHero
+        eyebrow={e.hero.eyebrow}
+        title={e.hero.title}
+        description={e.hero.description}
+        image="/images/hero-monuments.jpg"
+      />
 
       {/* Upcoming */}
       <section className="bg-surface py-20 sm:py-24">
@@ -79,6 +84,7 @@ export default async function EventsPage({
         primaryHref={p("/sponsors")}
         secondaryLabel={e.cta.secondary}
         secondaryHref={p("/contact?inquiry=event")}
+        image="/images/trade-port.jpg"
       />
     </>
   );

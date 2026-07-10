@@ -35,16 +35,16 @@ export default function Logo({
       ) : (
         <span className="transition-transform group-hover:scale-[1.03]">{img}</span>
       )}
-      <span className="hidden flex-col leading-tight sm:flex">
+      <span className="flex flex-col leading-tight">
         <span
           className={`font-heading font-extrabold tracking-tight ${
             variant === "light" ? "text-white" : "text-navy"
-          } ${compact ? "text-base" : "text-lg"}`}
+          } ${compact ? "text-sm sm:text-base" : "text-base sm:text-lg"}`}
         >
           AACC<span className="text-gold">-</span>USA
         </span>
         <span
-          className={`text-[9px] font-medium uppercase tracking-[0.14em] ${
+          className={`max-w-[150px] text-[8px] font-medium uppercase tracking-[0.1em] sm:max-w-none sm:text-[9px] sm:tracking-[0.14em] ${
             variant === "light" ? "text-navy-200" : "text-muted"
           }`}
         >

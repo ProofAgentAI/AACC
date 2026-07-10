@@ -34,7 +34,7 @@ export default async function AdvocacyPage({
         eyebrow={a.hero.eyebrow}
         title={a.hero.title}
         description={a.hero.description}
-        image="/images/smart-infrastructure.jpg"
+        image="/images/diaspora-connect.jpg"
       />
 
       {/* Priorities */}
@@ -111,6 +111,7 @@ export default async function AdvocacyPage({
         primaryHref={p("/membership")}
         secondaryLabel={a.cta.secondary}
         secondaryHref={p("/news")}
+        image="/images/hero-bridge.jpg"
       />
     </>
   );

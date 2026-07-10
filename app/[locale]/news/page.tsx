@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import PageHero from "@/components/PageHero";
 import SectionHeading from "@/components/SectionHeading";
 import BlogCard from "@/components/BlogCard";
@@ -33,7 +34,12 @@ export default async function NewsPage({
 
   return (
     <>
-      <PageHero eyebrow={n.hero.eyebrow} title={n.hero.title} description={n.hero.description} />
+      <PageHero
+        eyebrow={n.hero.eyebrow}
+        title={n.hero.title}
+        description={n.hero.description}
+        image="/images/smart-infrastructure.jpg"
+      />
 
       {/* Featured */}
       <section className="bg-surface py-20 sm:py-24">
@@ -62,8 +68,17 @@ export default async function NewsPage({
       </section>
 
       {/* Podcast */}
-      <section className="bg-navy py-20 text-white sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-navy-900 py-20 text-white sm:py-24">
+        <Image
+          src="/images/hero-monuments.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-navy-900/85" aria-hidden="true" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow={n.podcast.eyebrow}
             title={n.podcast.title}
@@ -107,6 +122,7 @@ export default async function NewsPage({
         primaryHref={p("/contact?inquiry=media")}
         secondaryLabel={n.cta.secondary}
         secondaryHref={p("/membership")}
+        image="/images/trade-port.jpg"
       />
     </>
   );
