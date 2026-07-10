@@ -994,7 +994,7 @@ export const en = {
       description:
         "Founding sponsors receive premier recognition as the chamber launches, a one-time opportunity for legacy positioning.",
       primary: "Become a Sponsor",
-      secondary: "Email sponsorship@aaccusa.org",
+      secondary: "Email sponsorship@aacc-usa.org",
     },
   },
 

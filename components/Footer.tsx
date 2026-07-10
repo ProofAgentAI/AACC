@@ -80,25 +80,25 @@ export default function Footer({ locale, dict }: { locale: Locale; dict: Diction
             </div>
             <div className="mt-6 space-y-2">
               <a
-                href="mailto:info@aaccusa.org"
+                href="mailto:info@aacc-usa.org"
                 className="flex items-center gap-2 text-sm text-navy-200 transition-colors hover:text-white"
               >
                 <Mail className="h-4 w-4 text-gold" />
-                info@aaccusa.org
+                info@aacc-usa.org
               </a>
               <a
-                href="mailto:membership@aaccusa.org"
+                href="mailto:membership@aacc-usa.org"
                 className="flex items-center gap-2 text-sm text-navy-200 transition-colors hover:text-white"
               >
                 <Mail className="h-4 w-4 text-gold" />
-                membership@aaccusa.org
+                membership@aacc-usa.org
               </a>
               <a
-                href="mailto:sponsorship@aaccusa.org"
+                href="mailto:sponsorship@aacc-usa.org"
                 className="flex items-center gap-2 text-sm text-navy-200 transition-colors hover:text-white"
               >
                 <Mail className="h-4 w-4 text-gold" />
-                sponsorship@aaccusa.org
+                sponsorship@aacc-usa.org
               </a>
             </div>
           </div>

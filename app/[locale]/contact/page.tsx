@@ -40,9 +40,9 @@ export default async function ContactPage({
   const inquiry = sp.inquiry && validInquiries.has(sp.inquiry) ? sp.inquiry : "";
 
   const contacts = [
-    { label: c.general, email: "info@aaccusa.org" },
-    { label: c.membershipLabel, email: "membership@aaccusa.org" },
-    { label: c.sponsorshipLabel, email: "sponsorship@aaccusa.org" },
+    { label: c.general, email: "info@aacc-usa.org" },
+    { label: c.membershipLabel, email: "membership@aacc-usa.org" },
+    { label: c.sponsorshipLabel, email: "sponsorship@aacc-usa.org" },
   ];
 
   return (

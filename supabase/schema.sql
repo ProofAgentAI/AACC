@@ -16,7 +16,7 @@ create table public.membership_applications (
   status text not null default 'new' check (status in ('new', 'contacted', 'approved', 'declined'))
 );
 
-comment on table public.membership_applications is 'Early membership list signups from aaccusa.org';
+comment on table public.membership_applications is 'Early membership list signups from aacc-usa.org';
 
 alter table public.membership_applications enable row level security;
 
@@ -36,7 +36,7 @@ create table public.newsletter_subscribers (
   locale text not null default 'en'
 );
 
-comment on table public.newsletter_subscribers is 'Newsletter signups from aaccusa.org';
+comment on table public.newsletter_subscribers is 'Newsletter signups from aacc-usa.org';
 
 alter table public.newsletter_subscribers enable row level security;
 
