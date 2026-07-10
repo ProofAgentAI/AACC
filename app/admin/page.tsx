@@ -8,11 +8,13 @@ import { supabase } from "@/lib/supabase";
 import ContentManager from "@/components/admin/ContentManager";
 import CrmManager from "@/components/admin/CrmManager";
 import ApprovalsManager from "@/components/admin/ApprovalsManager";
+import DashboardOverview from "@/components/admin/DashboardOverview";
 import { ADMIN_EMAIL } from "@/lib/admin";
 
 type Row = Record<string, unknown>;
 
 const TABS = [
+  { key: "dashboard", label: "Dashboard", table: "" },
   { key: "content", label: "Content", table: "" },
   { key: "approvals", label: "Approvals", table: "" },
   { key: "crm", label: "CRM", table: "" },
@@ -48,6 +50,7 @@ const statusColors: Record<string, string> = {
 };
 
 const EMAIL_SUBJECTS: Record<TabKey, string> = {
+  dashboard: "",
   content: "",
   approvals: "",
   crm: "",
@@ -159,7 +162,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState("");
-  const [tab, setTab] = useState<TabKey>("memberships");
+  const [tab, setTab] = useState<TabKey>("dashboard");
   const [rows, setRows] = useState<Row[]>([]);
   const [users, setUsers] = useState<Row[]>([]);
   const [loading, setLoading] = useState(false);
@@ -493,7 +496,9 @@ export default function AdminDashboard() {
         </p>
       )}
 
-      {tab === "content" ? (
+      {tab === "dashboard" ? (
+        <DashboardOverview onNotice={setNotice} goTo={(k) => setTab(k as TabKey)} />
+      ) : tab === "content" ? (
         <ContentManager onNotice={setNotice} />
       ) : tab === "approvals" ? (
         <ApprovalsManager onNotice={setNotice} onChanged={loadApprovalsCount} />
