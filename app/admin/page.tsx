@@ -7,6 +7,7 @@ import {
   BadgeCheck,
   Building2,
   CalendarDays,
+  CircleDollarSign,
   ClipboardList,
   ContactRound,
   Eye,
@@ -34,6 +35,7 @@ import ApprovalsManager from "@/components/admin/ApprovalsManager";
 import DashboardOverview from "@/components/admin/DashboardOverview";
 import TasksManager from "@/components/admin/TasksManager";
 import EventsManager from "@/components/admin/EventsManager";
+import BillingManager from "@/components/admin/BillingManager";
 import { ADMIN_EMAIL } from "@/lib/admin";
 
 type Row = Record<string, unknown>;
@@ -44,6 +46,7 @@ const TABS = [
   { key: "content", label: "Content", table: "", icon: Newspaper },
   { key: "approvals", label: "Approvals", table: "", icon: BadgeCheck },
   { key: "events", label: "Events", table: "", icon: CalendarDays },
+  { key: "billing", label: "Billing", table: "", icon: CircleDollarSign },
   { key: "crm", label: "CRM", table: "", icon: ContactRound },
   { key: "memberships", label: "Memberships", table: "membership_applications", icon: Inbox },
   { key: "board", label: "Board Applications", table: "board_applications", icon: ClipboardList },
@@ -82,6 +85,7 @@ const EMAIL_SUBJECTS: Record<TabKey, string> = {
   content: "",
   approvals: "",
   events: "",
+  billing: "",
   crm: "",
   memberships: "Your AACC-USA membership application",
   board: "Your AACC-USA founding board application",
@@ -452,7 +456,7 @@ export default function AdminDashboard() {
     : [];
 
   const visibleTabs = TABS.filter(
-    (t) => isAdmin || (t.key !== "users" && t.key !== "approvals")
+    (t) => isAdmin || (t.key !== "users" && t.key !== "approvals" && t.key !== "billing")
   );
   const currentLabel = TABS.find((t) => t.key === tab)?.label ?? "";
 
@@ -595,6 +599,8 @@ export default function AdminDashboard() {
         <TasksManager onNotice={setNotice} />
       ) : tab === "events" ? (
         <EventsManager onNotice={setNotice} />
+      ) : tab === "billing" ? (
+        <BillingManager onNotice={setNotice} />
       ) : tab === "content" ? (
         <ContentManager onNotice={setNotice} />
       ) : tab === "approvals" ? (

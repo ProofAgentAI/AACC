@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { BellRing, CalendarDays, FileText, Heart, Inbox, ListTodo, Users } from "lucide-react";
+import { BellRing, CalendarDays, CircleDollarSign, FileText, Heart, Inbox, ListTodo, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { ADMIN_EMAIL } from "@/lib/admin";
 
 // Categorical palette — validated (lightness, chroma, CVD separation, contrast)
 // with the dataviz six-checks validator; assign in this fixed order, never cycled.
@@ -146,6 +147,14 @@ export default function DashboardOverview({
   const [subscribers, setSubscribers] = useState(0);
   const [openTasks, setOpenTasks] = useState<Record<string, unknown>[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<Record<string, unknown>[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [finance, setFinance] = useState({ collected: 0, outstanding: 0, overdue: 0 });
+
+  useEffect(() => {
+    supabase?.auth.getSession().then(({ data }) => {
+      setIsAdmin((data.session?.user.email ?? "").toLowerCase() === ADMIN_EMAIL);
+    });
+  }, []);
 
   const load = useCallback(async () => {
     if (!supabase) return;
@@ -205,6 +214,26 @@ export default function DashboardOverview({
     setSubscribers(s.count ?? 0);
     setOpenTasks((t.data as Record<string, unknown>[]) ?? []);
     setUpcomingEvents((ev.data as Record<string, unknown>[]) ?? []);
+
+    // Finance is admin-only; the query returns nothing (or errors before
+    // schema-v10) for everyone else, and the panel simply stays hidden.
+    const inv = await supabase
+      .from("invoices")
+      .select("amount_cents, status, due_date");
+    const invoiceRows = (inv.data as Record<string, unknown>[]) ?? [];
+    const today2 = new Date().toISOString().slice(0, 10);
+    setFinance({
+      collected: invoiceRows
+        .filter((r) => r.status === "paid")
+        .reduce((sum, r) => sum + Number(r.amount_cents ?? 0), 0),
+      outstanding: invoiceRows
+        .filter((r) => r.status === "sent")
+        .reduce((sum, r) => sum + Number(r.amount_cents ?? 0), 0),
+      overdue: invoiceRows.filter(
+        (r) =>
+          r.status === "sent" && typeof r.due_date === "string" && r.due_date !== "" && r.due_date < today2
+      ).length,
+    });
   }, [onNotice]);
 
   useEffect(() => {
@@ -260,6 +289,47 @@ export default function DashboardOverview({
 
       {/* Panels */}
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        {isAdmin && (
+          <Panel title="Finance" onView={() => goTo("billing")}>
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div>
+                <CircleDollarSign className="mx-auto h-4 w-4 text-green-600" aria-hidden="true" />
+                <p className="mt-1.5 font-heading text-lg font-extrabold text-green-600">
+                  ${(finance.collected / 100).toLocaleString("en-US")}
+                </p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+                  Collected
+                </p>
+              </div>
+              <div>
+                <CircleDollarSign className="mx-auto h-4 w-4 text-navy" aria-hidden="true" />
+                <p className="mt-1.5 font-heading text-lg font-extrabold text-navy">
+                  ${(finance.outstanding / 100).toLocaleString("en-US")}
+                </p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+                  Outstanding
+                </p>
+              </div>
+              <div>
+                <BellRing
+                  className={`mx-auto h-4 w-4 ${finance.overdue > 0 ? "text-red-600" : "text-muted"}`}
+                  aria-hidden="true"
+                />
+                <p
+                  className={`mt-1.5 font-heading text-lg font-extrabold ${
+                    finance.overdue > 0 ? "text-red-600" : "text-navy"
+                  }`}
+                >
+                  {finance.overdue}
+                </p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">
+                  Overdue
+                </p>
+              </div>
+            </div>
+          </Panel>
+        )}
+
         <Panel title="Common Tasks" onView={() => goTo("tasks")}>
           {openTasks.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted">
