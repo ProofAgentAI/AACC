@@ -9,6 +9,12 @@ import {
   Users,
   BarChart3,
   Shield,
+  Flame,
+  Wheat,
+  Cpu,
+  Sun,
+  HeartPulse,
+  Truck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -23,6 +29,12 @@ const iconMap: Record<string, LucideIcon> = {
   users: Users,
   chart: BarChart3,
   shield: Shield,
+  flame: Flame,
+  wheat: Wheat,
+  cpu: Cpu,
+  sun: Sun,
+  heartpulse: HeartPulse,
+  truck: Truck,
 };
 
 export default function Icon({

@@ -220,6 +220,50 @@ export const en = {
         "From trade missions to direct flight advocacy, our programs are designed for measurable economic impact.",
       viewAll: "View All Programs",
     },
+    sectors: {
+      eyebrow: "Key Sectors",
+      title: "Sectors of Opportunity Between Two Economies",
+      description:
+        "From energy corridors to AI labs, AACC-USA connects members to the industries shaping U.S.–Algeria trade and investment.",
+      items: [
+        {
+          title: "Energy, Oil & Gas",
+          description:
+            "Partnerships across hydrocarbons, petrochemicals, and energy services — the backbone of U.S.–Algeria trade.",
+          icon: "flame",
+        },
+        {
+          title: "Food Security & Agriculture",
+          description:
+            "Agribusiness, food processing, and supply-chain investment supporting food security in both markets.",
+          icon: "wheat",
+        },
+        {
+          title: "Technology & AI",
+          description:
+            "Software, artificial intelligence, and digital services powered by Algerian engineering talent.",
+          icon: "cpu",
+        },
+        {
+          title: "Renewable Energy",
+          description:
+            "Solar, hydrogen, and clean-energy ventures leveraging Algeria's vast renewable potential.",
+          icon: "sun",
+        },
+        {
+          title: "Healthcare & Life Sciences",
+          description:
+            "Medical services, pharmaceuticals, and telehealth bridges led by diaspora physicians and researchers.",
+          icon: "heartpulse",
+        },
+        {
+          title: "Logistics & Infrastructure",
+          description:
+            "Shipping, construction, and infrastructure projects connecting Mediterranean and Atlantic markets.",
+          icon: "truck",
+        },
+      ],
+    },
     diaspora: {
       eyebrow: "The Algerian Diaspora",
       title: "A Community of Builders, in Every U.S. State",

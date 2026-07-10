@@ -113,6 +113,41 @@ export default async function HomePage({
         </div>
       </section>
 
+      {/* Key sectors */}
+      <section className="relative overflow-hidden bg-navy-900 py-20 text-white sm:py-24">
+        <Image
+          src="/images/energy-industry.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-navy-900/85" aria-hidden="true" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            eyebrow={home.sectors.eyebrow}
+            title={home.sectors.title}
+            description={home.sectors.description}
+            dark
+          />
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {home.sectors.items.map((sector) => (
+              <div
+                key={sector.title}
+                className="glass-dark rounded-2xl p-7 transition-colors hover:border-gold/50"
+              >
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-gold">
+                  <Icon name={sector.icon} className="h-6 w-6" />
+                </span>
+                <h3 className="mt-5 font-heading text-lg font-bold">{sector.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-navy-100">{sector.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* What we do */}
       <section className="bg-surface py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

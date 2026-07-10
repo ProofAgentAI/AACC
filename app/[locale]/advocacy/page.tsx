@@ -30,7 +30,12 @@ export default async function AdvocacyPage({
 
   return (
     <>
-      <PageHero eyebrow={a.hero.eyebrow} title={a.hero.title} description={a.hero.description} />
+      <PageHero
+        eyebrow={a.hero.eyebrow}
+        title={a.hero.title}
+        description={a.hero.description}
+        image="/images/smart-infrastructure.jpg"
+      />
 
       {/* Priorities */}
       <section className="bg-white py-20 sm:py-24">

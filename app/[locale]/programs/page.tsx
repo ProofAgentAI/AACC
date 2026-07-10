@@ -32,7 +32,7 @@ export default async function ProgramsPage({
         eyebrow={pr.hero.eyebrow}
         title={pr.hero.title}
         description={pr.hero.description}
-        image="/images/trade-port.jpg"
+        image="/images/smart-infrastructure.jpg"
       />
 
       <section className="bg-surface py-20 sm:py-24">
