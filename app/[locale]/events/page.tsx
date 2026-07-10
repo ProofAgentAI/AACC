@@ -5,7 +5,22 @@ import SectionHeading from "@/components/SectionHeading";
 import EventCard from "@/components/EventCard";
 import CTASection from "@/components/CTASection";
 import { CalendarClock } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import { getDictionary, isLocale, type Locale } from "@/lib/i18n";
+
+// Refresh from the events manager at most every 60 seconds.
+export const revalidate = 60;
+
+async function getPublishedEvents(locale: string) {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("locale", locale)
+    .order("starts_at", { ascending: true, nullsFirst: false });
+  if (error || !data) return [];
+  return data as Record<string, unknown>[];
+}
 
 export async function generateMetadata({
   params,
@@ -28,6 +43,36 @@ export default async function EventsPage({
   const e = dict.events;
   const p = (href: string) => `/${locale}${href}`;
 
+  // Events managed in the back office replace the placeholder calendar once
+  // real ones are published.
+  const dbEvents = await getPublishedEvents(locale);
+  const items =
+    dbEvents.length > 0
+      ? dbEvents.map((event) => ({
+          slug: String(event.slug),
+          title: String(event.title),
+          date: event.starts_at
+            ? new Date(String(event.starts_at)).toLocaleDateString(
+                locale === "ar" ? "ar-DZ" : "en-US",
+                { month: "long", day: "numeric", year: "numeric" }
+              )
+            : "TBD",
+          location: event.is_virtual
+            ? dict.common.virtual
+            : String(event.location ?? ""),
+          isVirtual: Boolean(event.is_virtual),
+          description: String(event.description ?? ""),
+          category: String(event.category ?? ""),
+          registerHref:
+            typeof event.register_url === "string" && event.register_url
+              ? event.register_url
+              : p(`/contact?inquiry=event&event=${event.slug}`),
+        }))
+      : e.items.map((event) => ({
+          ...event,
+          registerHref: p(`/contact?inquiry=event&event=${event.slug}`),
+        }));
+
   return (
     <>
       <PageHero
@@ -46,11 +91,11 @@ export default async function EventsPage({
             description={e.upcoming.description}
           />
           <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {e.items.map((event) => (
+            {items.map((event) => (
               <EventCard
                 key={event.slug}
                 event={event}
-                href={p(`/contact?inquiry=event&event=${event.slug}`)}
+                href={event.registerHref}
                 registerLabel={dict.common.register}
                 virtualLabel={dict.common.virtual}
               />

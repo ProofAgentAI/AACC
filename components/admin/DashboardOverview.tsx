@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { BellRing, FileText, Heart, Inbox, Users } from "lucide-react";
+import { BellRing, CalendarDays, FileText, Heart, Inbox, ListTodo, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 // Categorical palette — validated (lightness, chroma, CVD separation, contrast)
@@ -144,12 +144,14 @@ export default function DashboardOverview({
   const [content, setContent] = useState<Counts>({});
   const [engagement, setEngagement] = useState({ likes: 0, views: 0 });
   const [subscribers, setSubscribers] = useState(0);
+  const [openTasks, setOpenTasks] = useState<Record<string, unknown>[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<Record<string, unknown>[]>([]);
 
   const load = useCallback(async () => {
     if (!supabase) return;
     setLoading(true);
     const today = new Date().toISOString().slice(0, 10);
-    const [m, b, d, c, k, p, s] = await Promise.all([
+    const [m, b, d, c, k, p, s, t, ev] = await Promise.all([
       supabase
         .from("membership_applications")
         .select("first_name, last_name, tier, status, created_at")
@@ -160,6 +162,20 @@ export default function DashboardOverview({
       supabase.from("crm_contacts").select("status, next_action_date"),
       supabase.from("posts").select("published, approval_status, likes, views"),
       supabase.from("newsletter_subscribers").select("id", { count: "exact", head: true }),
+      // Tasks and events may not exist until schema-v9 runs; their errors are
+      // tolerated silently so the rest of the dashboard still loads.
+      supabase
+        .from("staff_tasks")
+        .select("title, assigned_to, due_date, priority")
+        .eq("status", "open")
+        .order("due_date", { ascending: true, nullsFirst: false })
+        .limit(5),
+      supabase
+        .from("events")
+        .select("title, starts_at, location, is_virtual, published")
+        .gte("starts_at", new Date().toISOString())
+        .order("starts_at", { ascending: true })
+        .limit(3),
     ]);
     setLoading(false);
 
@@ -187,6 +203,8 @@ export default function DashboardOverview({
       views: postRows.reduce((sum, r) => sum + Number(r.views ?? 0), 0),
     });
     setSubscribers(s.count ?? 0);
+    setOpenTasks((t.data as Record<string, unknown>[]) ?? []);
+    setUpcomingEvents((ev.data as Record<string, unknown>[]) ?? []);
   }, [onNotice]);
 
   useEffect(() => {
@@ -206,6 +224,7 @@ export default function DashboardOverview({
     },
     { label: "Pending Approvals", value: content.Pending ?? 0, icon: FileText, tab: "approvals" },
     { label: "Follow-ups Due", value: crmDue, icon: BellRing, tab: "crm" },
+    { label: "Open Tasks", value: openTasks.length, icon: ListTodo, tab: "tasks" },
     { label: "Subscribers", value: subscribers, icon: Users, tab: "subscribers" },
   ];
 
@@ -218,7 +237,7 @@ export default function DashboardOverview({
       </p>
 
       {/* Headline stat tiles */}
-      <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-5">
         {statTiles.map((tile) => (
           <button
             key={tile.label}
@@ -241,6 +260,79 @@ export default function DashboardOverview({
 
       {/* Panels */}
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        <Panel title="Common Tasks" onView={() => goTo("tasks")}>
+          {openTasks.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted">
+              No open tasks. Add one from the Common Tasks section.
+            </p>
+          ) : (
+            <ul className="divide-y divide-navy-50">
+              {openTasks.map((task, i) => (
+                <li key={i} className="flex items-center justify-between gap-3 py-2.5 text-sm">
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium text-ink">
+                      {String(task.title)}
+                    </span>
+                    <span className="block truncate text-xs text-muted">
+                      {String(task.assigned_to ?? "Unassigned")}
+                    </span>
+                  </span>
+                  {typeof task.due_date === "string" && task.due_date && (
+                    <span
+                      className={`shrink-0 text-xs font-semibold ${
+                        task.due_date <= new Date().toISOString().slice(0, 10)
+                          ? "text-red-600"
+                          : "text-muted"
+                      }`}
+                    >
+                      {new Date(`${task.due_date}T00:00:00`).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
+        <Panel title="Upcoming Events" onView={() => goTo("events")}>
+          {upcomingEvents.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted">
+              No upcoming events scheduled.
+            </p>
+          ) : (
+            <ul className="divide-y divide-navy-50">
+              {upcomingEvents.map((event, i) => (
+                <li key={i} className="flex items-start gap-3 py-2.5 text-sm">
+                  <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-gold-600" />
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium text-ink">
+                      {String(event.title)}
+                      {!event.published && (
+                        <span className="ms-2 rounded-full bg-gold-100 px-2 py-0.5 text-[10px] font-semibold text-gold-600">
+                          Draft
+                        </span>
+                      )}
+                    </span>
+                    <span className="block truncate text-xs text-muted">
+                      {event.starts_at
+                        ? new Date(String(event.starts_at)).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })
+                        : "TBD"}
+                      {event.is_virtual ? " · Virtual" : event.location ? ` · ${event.location}` : ""}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
         <Panel title="Applications for Membership" onView={() => goTo("memberships")}>
           {newApplications.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted">

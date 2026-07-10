@@ -6,6 +6,7 @@ import Image from "next/image";
 import {
   BadgeCheck,
   Building2,
+  CalendarDays,
   ClipboardList,
   ContactRound,
   Eye,
@@ -13,6 +14,7 @@ import {
   Inbox,
   KeyRound,
   LayoutDashboard,
+  ListTodo,
   LogOut,
   Mail,
   MailCheck,
@@ -30,14 +32,18 @@ import ContentManager from "@/components/admin/ContentManager";
 import CrmManager from "@/components/admin/CrmManager";
 import ApprovalsManager from "@/components/admin/ApprovalsManager";
 import DashboardOverview from "@/components/admin/DashboardOverview";
+import TasksManager from "@/components/admin/TasksManager";
+import EventsManager from "@/components/admin/EventsManager";
 import { ADMIN_EMAIL } from "@/lib/admin";
 
 type Row = Record<string, unknown>;
 
 const TABS = [
   { key: "dashboard", label: "Dashboard", table: "", icon: LayoutDashboard },
+  { key: "tasks", label: "Common Tasks", table: "", icon: ListTodo },
   { key: "content", label: "Content", table: "", icon: Newspaper },
   { key: "approvals", label: "Approvals", table: "", icon: BadgeCheck },
+  { key: "events", label: "Events", table: "", icon: CalendarDays },
   { key: "crm", label: "CRM", table: "", icon: ContactRound },
   { key: "memberships", label: "Memberships", table: "membership_applications", icon: Inbox },
   { key: "board", label: "Board Applications", table: "board_applications", icon: ClipboardList },
@@ -72,8 +78,10 @@ const statusColors: Record<string, string> = {
 
 const EMAIL_SUBJECTS: Record<TabKey, string> = {
   dashboard: "",
+  tasks: "",
   content: "",
   approvals: "",
+  events: "",
   crm: "",
   memberships: "Your AACC-USA membership application",
   board: "Your AACC-USA founding board application",
@@ -583,6 +591,10 @@ export default function AdminDashboard() {
 
       {tab === "dashboard" ? (
         <DashboardOverview onNotice={setNotice} goTo={(k) => setTab(k as TabKey)} />
+      ) : tab === "tasks" ? (
+        <TasksManager onNotice={setNotice} />
+      ) : tab === "events" ? (
+        <EventsManager onNotice={setNotice} />
       ) : tab === "content" ? (
         <ContentManager onNotice={setNotice} />
       ) : tab === "approvals" ? (
