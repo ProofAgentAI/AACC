@@ -3,7 +3,28 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Eye, KeyRound, LogOut, Mail, RefreshCw, Trash2, UserPlus, ExternalLink, X } from "lucide-react";
+import {
+  BadgeCheck,
+  Building2,
+  ClipboardList,
+  ContactRound,
+  Eye,
+  ExternalLink,
+  Inbox,
+  KeyRound,
+  LayoutDashboard,
+  LogOut,
+  Mail,
+  MailCheck,
+  Menu,
+  MessagesSquare,
+  Newspaper,
+  RefreshCw,
+  Trash2,
+  UserCog,
+  UserPlus,
+  X,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import ContentManager from "@/components/admin/ContentManager";
 import CrmManager from "@/components/admin/CrmManager";
@@ -14,16 +35,16 @@ import { ADMIN_EMAIL } from "@/lib/admin";
 type Row = Record<string, unknown>;
 
 const TABS = [
-  { key: "dashboard", label: "Dashboard", table: "" },
-  { key: "content", label: "Content", table: "" },
-  { key: "approvals", label: "Approvals", table: "" },
-  { key: "crm", label: "CRM", table: "" },
-  { key: "memberships", label: "Memberships", table: "membership_applications" },
-  { key: "board", label: "Board Applications", table: "board_applications" },
-  { key: "directory", label: "Directory Requests", table: "directory_submissions" },
-  { key: "contacts", label: "Contact Messages", table: "contact_messages" },
-  { key: "subscribers", label: "Subscribers", table: "newsletter_subscribers" },
-  { key: "users", label: "Users", table: "" },
+  { key: "dashboard", label: "Dashboard", table: "", icon: LayoutDashboard },
+  { key: "content", label: "Content", table: "", icon: Newspaper },
+  { key: "approvals", label: "Approvals", table: "", icon: BadgeCheck },
+  { key: "crm", label: "CRM", table: "", icon: ContactRound },
+  { key: "memberships", label: "Memberships", table: "membership_applications", icon: Inbox },
+  { key: "board", label: "Board Applications", table: "board_applications", icon: ClipboardList },
+  { key: "directory", label: "Directory Requests", table: "directory_submissions", icon: Building2 },
+  { key: "contacts", label: "Contact Messages", table: "contact_messages", icon: MessagesSquare },
+  { key: "subscribers", label: "Subscribers", table: "newsletter_subscribers", icon: MailCheck },
+  { key: "users", label: "Users", table: "", icon: UserCog },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -169,6 +190,7 @@ export default function AdminDashboard() {
   const [notice, setNotice] = useState("");
   const [detail, setDetail] = useState<Row | null>(null);
   const [pwOpen, setPwOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pwError, setPwError] = useState("");
   const [approvalsCount, setApprovalsCount] = useState(0);
   const isAdmin = email.toLowerCase() === ADMIN_EMAIL;
@@ -421,76 +443,139 @@ export default function AdminDashboard() {
         .filter((entry) => entry.value !== "")
     : [];
 
-  return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-navy-100 pb-6">
-        <div className="flex items-center gap-4">
-          <Image src="/aacc-logo.png" alt="AACC-USA" width={110} height={64} />
-          <div>
-            <h1 className="font-heading text-xl font-bold text-navy">Back Office</h1>
-            <p className="text-xs text-muted">{email}</p>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <a
-            href="/en"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy hover:bg-white"
-          >
-            <ExternalLink className="h-4 w-4" /> View Site
-          </a>
-          <button
-            type="button"
-            onClick={() => {
-              setPwError("");
-              setPwOpen(true);
-            }}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy hover:bg-white"
-          >
-            <KeyRound className="h-4 w-4" /> Password
-          </button>
-          <button
-            type="button"
-            onClick={signOut}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy-600"
-          >
-            <LogOut className="h-4 w-4" /> Sign Out
-          </button>
-        </div>
-      </header>
+  const visibleTabs = TABS.filter(
+    (t) => isAdmin || (t.key !== "users" && t.key !== "approvals")
+  );
+  const currentLabel = TABS.find((t) => t.key === tab)?.label ?? "";
 
-      <nav className="mt-6 flex flex-wrap gap-2">
-        {TABS.filter((t) => isAdmin || (t.key !== "users" && t.key !== "approvals")).map((t) => (
+  const sidebarNav = (
+    <>
+      <div className="flex items-center gap-3 px-5 pb-6 pt-6">
+        <span className="rounded-xl bg-white px-2.5 py-1.5">
+          <Image src="/aacc-logo.png" alt="AACC-USA" width={72} height={42} />
+        </span>
+        <div className="leading-tight">
+          <p className="font-heading text-sm font-bold text-white">Back Office</p>
+          <p className="text-[10px] uppercase tracking-wider text-navy-300">AACC-USA</p>
+        </div>
+      </div>
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3" aria-label="Back office sections">
+        {visibleTabs.map((t) => (
           <button
             key={t.key}
             type="button"
-            onClick={() => setTab(t.key)}
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+            onClick={() => {
+              setTab(t.key);
+              setSidebarOpen(false);
+            }}
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start text-sm font-semibold transition-colors ${
               tab === t.key
-                ? "bg-navy text-white"
-                : "border border-navy-200 bg-white text-navy hover:bg-navy-50"
+                ? "bg-white/10 text-white shadow-[inset_2px_0_0_0_#C9A227]"
+                : "text-navy-200 hover:bg-white/5 hover:text-white"
             }`}
           >
-            {t.label}
+            <t.icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <span className="flex-1">{t.label}</span>
             {t.key === "approvals" && approvalsCount > 0 && (
-              <span className="ms-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-bold text-white">
                 {approvalsCount}
               </span>
             )}
           </button>
         ))}
+      </nav>
+      <div className="space-y-1 border-t border-white/10 p-3">
+        <p className="truncate px-3 pb-1 text-xs text-navy-300">{email}</p>
+        <a
+          href="/en"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold text-navy-200 hover:bg-white/5 hover:text-white"
+        >
+          <ExternalLink className="h-4 w-4" /> View Site
+        </a>
         <button
           type="button"
-          onClick={() => (tab === "users" ? loadUsers() : loadRows())}
-          className="ms-auto inline-flex items-center gap-1.5 rounded-lg border border-navy-200 bg-white px-4 py-2 text-sm font-semibold text-navy hover:bg-navy-50"
-          aria-label="Refresh"
+          onClick={() => {
+            setPwError("");
+            setPwOpen(true);
+            setSidebarOpen(false);
+          }}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-start text-sm font-semibold text-navy-200 hover:bg-white/5 hover:text-white"
         >
-          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh
+          <KeyRound className="h-4 w-4" /> Password
         </button>
-      </nav>
+        <button
+          type="button"
+          onClick={signOut}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-start text-sm font-semibold text-navy-200 hover:bg-white/5 hover:text-white"
+        >
+          <LogOut className="h-4 w-4" /> Sign Out
+        </button>
+      </div>
+    </>
+  );
 
-      {notice && (
+  return (
+    <div className="flex min-h-screen">
+      {/* Desktop sidebar */}
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-navy-900 lg:flex">
+        {sidebarNav}
+      </aside>
+
+      {/* Mobile drawer */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-[90] lg:hidden" role="dialog" aria-modal="true">
+          <div
+            className="absolute inset-0 bg-navy-900/60 backdrop-blur-sm"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+          <aside className="absolute inset-y-0 start-0 flex w-72 flex-col bg-navy-900 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(false)}
+              className="absolute end-3 top-3 rounded-full p-2 text-navy-200 hover:bg-white/10 hover:text-white"
+              aria-label="Close menu"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            {sidebarNav}
+          </aside>
+        </div>
+      )}
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        {/* Mobile top bar */}
+        <div className="flex items-center gap-3 border-b border-navy-100 bg-white px-4 py-3 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(true)}
+            className="rounded-lg border border-navy-200 p-2 text-navy"
+            aria-label="Open menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <Image src="/aacc-logo.png" alt="AACC-USA" width={56} height={32} />
+          <span className="font-heading text-sm font-bold text-navy">Back Office</span>
+        </div>
+
+        <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h1 className="font-heading text-2xl font-bold text-navy">{currentLabel}</h1>
+            {(currentTable || tab === "users") && (
+              <button
+                type="button"
+                onClick={() => (tab === "users" ? loadUsers() : loadRows())}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-navy-200 bg-white px-4 py-2 text-sm font-semibold text-navy hover:bg-navy-50"
+                aria-label="Refresh"
+              >
+                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh
+              </button>
+            )}
+          </div>
+
+          {notice && (
         <p className="mt-4 rounded-lg border border-gold/40 bg-gold-100/50 px-4 py-3 text-sm text-ink">
           {notice}
         </p>
@@ -856,6 +941,8 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-    </main>
+        </main>
+      </div>
+    </div>
   );
 }
