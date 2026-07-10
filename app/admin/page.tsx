@@ -6,11 +6,13 @@ import Image from "next/image";
 import { Eye, KeyRound, LogOut, Mail, RefreshCw, Trash2, UserPlus, ExternalLink, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import ContentManager from "@/components/admin/ContentManager";
+import CrmManager from "@/components/admin/CrmManager";
 
 type Row = Record<string, unknown>;
 
 const TABS = [
   { key: "content", label: "Content", table: "" },
+  { key: "crm", label: "CRM", table: "" },
   { key: "memberships", label: "Memberships", table: "membership_applications" },
   { key: "board", label: "Board Applications", table: "board_applications" },
   { key: "directory", label: "Directory Requests", table: "directory_submissions" },
@@ -44,6 +46,7 @@ const statusColors: Record<string, string> = {
 
 const EMAIL_SUBJECTS: Record<TabKey, string> = {
   content: "",
+  crm: "",
   memberships: "Your AACC-USA membership application",
   board: "Your AACC-USA founding board application",
   directory: "Your AACC-USA business directory request",
@@ -314,6 +317,68 @@ export default function AdminDashboard() {
     setNotice("Password updated.");
   }
 
+  async function addToCrm(row: Row) {
+    if (!supabase) return;
+    const contact: Row = { source: tab, status: "lead", type: "other" };
+    if (tab === "memberships") {
+      Object.assign(contact, {
+        first_name: row.first_name,
+        last_name: row.last_name,
+        email: row.email,
+        phone: row.phone,
+        organization: row.business_name,
+        role_title: row.job_title,
+        type: "member",
+      });
+    } else if (tab === "board") {
+      Object.assign(contact, {
+        first_name: row.first_name,
+        last_name: row.last_name,
+        email: row.email,
+        phone: row.phone,
+        type: "board",
+        notes: row.background,
+      });
+    } else if (tab === "directory") {
+      const [first, ...rest] = String(row.contact_name ?? "").split(/\s+/);
+      Object.assign(contact, {
+        first_name: first || String(row.business_name ?? "Contact"),
+        last_name: rest.join(" ") || null,
+        email: row.email,
+        phone: row.phone,
+        organization: row.business_name,
+        type: "business",
+      });
+    } else if (tab === "contacts") {
+      const [first, ...rest] = String(row.name ?? "").split(/\s+/);
+      const typeByInquiry: Record<string, string> = {
+        sponsorship: "sponsor",
+        partnership: "partner",
+        membership: "member",
+        media: "media",
+      };
+      Object.assign(contact, {
+        first_name: first || "Contact",
+        last_name: rest.join(" ") || null,
+        email: row.email,
+        phone: row.phone,
+        organization: row.organization,
+        type: typeByInquiry[String(row.inquiry_type)] ?? "other",
+        notes: row.message,
+      });
+    } else {
+      return;
+    }
+    const { error } = await supabase.from("crm_contacts").insert(contact);
+    if (!error) {
+      setNotice(`Added to CRM: ${contact.first_name} ${contact.last_name ?? ""}`.trim() + ".");
+    } else if (error.code === "23505") {
+      setNotice("This person is already in the CRM.");
+    } else {
+      setNotice(`Could not add to CRM: ${error.message}`);
+    }
+  }
+
   async function signOut() {
     await supabase?.auth.signOut();
     router.replace("/admin/login");
@@ -405,6 +470,8 @@ export default function AdminDashboard() {
 
       {tab === "content" ? (
         <ContentManager onNotice={setNotice} />
+      ) : tab === "crm" ? (
+        <CrmManager onNotice={setNotice} />
       ) : tab !== "users" ? (
         <div className="mt-6 overflow-x-auto rounded-2xl border border-navy-100 bg-white shadow-card">
           <table className="w-full min-w-[900px] text-sm">
@@ -664,6 +731,13 @@ export default function AdminDashboard() {
               >
                 <Mail className="h-3.5 w-3.5" /> Email Applicant
               </a>
+              <button
+                type="button"
+                onClick={() => addToCrm(detail)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-navy-200 px-4 py-2 text-xs font-semibold text-navy hover:bg-surface"
+              >
+                <UserPlus className="h-3.5 w-3.5" /> Add to CRM
+              </button>
             </div>
             <dl className="mt-6 space-y-4">
               {detailEntries.map((entry) => (
