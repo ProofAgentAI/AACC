@@ -78,27 +78,13 @@ export default function Footer({ locale, dict }: { locale: Locale; dict: Diction
                 <Instagram className="h-4 w-4" />
               </a>
             </div>
-            <div className="mt-6 space-y-2">
+            <div className="mt-6">
               <a
-                href="mailto:info@aacc-usa.org"
+                href="mailto:contact@aacc-usa.org"
                 className="flex items-center gap-2 text-sm text-navy-200 transition-colors hover:text-white"
               >
                 <Mail className="h-4 w-4 text-gold" />
-                info@aacc-usa.org
-              </a>
-              <a
-                href="mailto:membership@aacc-usa.org"
-                className="flex items-center gap-2 text-sm text-navy-200 transition-colors hover:text-white"
-              >
-                <Mail className="h-4 w-4 text-gold" />
-                membership@aacc-usa.org
-              </a>
-              <a
-                href="mailto:sponsorship@aacc-usa.org"
-                className="flex items-center gap-2 text-sm text-navy-200 transition-colors hover:text-white"
-              >
-                <Mail className="h-4 w-4 text-gold" />
-                sponsorship@aacc-usa.org
+                contact@aacc-usa.org
               </a>
             </div>
           </div>

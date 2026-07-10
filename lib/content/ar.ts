@@ -913,7 +913,7 @@ export const ar: typeof en = {
       title: "كن راعياً",
       description: "يحظى الرعاة المؤسسون بتقدير الصدارة مع انطلاق الغرفة، فرصة لا تتكرر لمكانة دائمة.",
       primary: "كن راعياً",
-      secondary: "راسل sponsorship@aacc-usa.org",
+      secondary: "راسل contact@aacc-usa.org",
     },
   },
 

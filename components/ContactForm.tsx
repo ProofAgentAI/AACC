@@ -169,8 +169,8 @@ export default function ContactForm({
         </button>
         <p className="mt-3 text-xs text-muted">
           {dict.disclaimer}{" "}
-          <a href="mailto:info@aacc-usa.org" className="font-semibold text-green-600">
-            info@aacc-usa.org
+          <a href="mailto:contact@aacc-usa.org" className="font-semibold text-green-600">
+            contact@aacc-usa.org
           </a>{" "}
           {dict.disclaimerSuffix}
         </p>

@@ -183,16 +183,16 @@ export default function EarlyMembershipForm({
         {status === "error" && (
           <p className="mt-3 text-sm font-medium text-red-600" role="alert">
             {dict.errorText}{" "}
-            <a href="mailto:membership@aacc-usa.org" className="underline">
-              membership@aacc-usa.org
+            <a href="mailto:contact@aacc-usa.org" className="underline">
+              contact@aacc-usa.org
             </a>
           </p>
         )}
         {!supabase && (
           <p className="mt-3 text-xs text-muted">
             {dict.offlineText}{" "}
-            <a href="mailto:membership@aacc-usa.org" className="font-semibold text-green-600">
-              membership@aacc-usa.org
+            <a href="mailto:contact@aacc-usa.org" className="font-semibold text-green-600">
+              contact@aacc-usa.org
             </a>
           </p>
         )}
