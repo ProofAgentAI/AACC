@@ -3,9 +3,11 @@ import { UserRound } from "lucide-react";
 export default function LeadershipCard({
   role,
   description,
+  badge,
 }: {
   role: string;
   description: string;
+  badge: string;
 }) {
   return (
     <article className="flex flex-col items-center rounded-2xl border border-navy-100 bg-white p-8 text-center shadow-card transition-shadow hover:shadow-card-hover">
@@ -15,7 +17,7 @@ export default function LeadershipCard({
       <h3 className="mt-5 font-heading text-lg font-bold text-navy">{role}</h3>
       <p className="mt-2 text-sm leading-relaxed text-muted">{description}</p>
       <span className="mt-4 rounded-full bg-gold-100 px-3 py-1 text-xs font-semibold text-gold-600">
-        Announcing Soon
+        {badge}
       </span>
     </article>
   );

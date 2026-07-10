@@ -1,0 +1,1083 @@
+export const en = {
+  meta: {
+    siteTitle: "AACC-USA | Algerian American Chamber of Commerce USA",
+    siteDescription:
+      "AACC-USA is a U.S.-based nonprofit chamber-style association connecting Algerian-American entrepreneurs, professionals, investors, and institutions to expand trade, investment, and opportunity between the United States and Algeria.",
+  },
+
+  common: {
+    learnMore: "Learn more",
+    register: "Register",
+    contactUs: "Contact Us",
+    comingSoon: "Coming Soon",
+    announcingSoon: "Announcing Soon",
+    virtual: "Virtual",
+    mostPopular: "Most Popular",
+    placeholderPricing: "Placeholder pricing — founding rates",
+    becomeASponsor: "Become a Sponsor",
+    becomeAFoundingMember: "Become a Founding Member",
+    joinAaccUsa: "Join AACC-USA",
+    partnerWithUs: "Partner With Us",
+    sponsor: "Sponsor",
+    readMore: "Read more",
+    viewAll: "View All",
+    officialWebsite: "Official website",
+  },
+
+  nav: {
+    about: "About",
+    aboutUs: "About the Chamber",
+    advocacy: "Advocacy",
+    diaspora: "Diaspora",
+    membership: "Membership",
+    membershipOverview: "Join the Chamber",
+    sponsors: "Sponsors & Partners",
+    business: "Business",
+    directory: "Business Directory",
+    programs: "Programs",
+    events: "Events",
+    news: "News",
+    contact: "Contact",
+    join: "Join AACC-USA",
+    languageName: "العربية",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+  },
+
+  footer: {
+    tagline:
+      "A U.S.-based nonprofit chamber-style association building the bridge between Algerian talent, trade, and opportunity.",
+    organization: "Organization",
+    resources: "Resources",
+    officialLinks: "Official Algerian Resources",
+    embassy: "Embassy of Algeria — Washington, DC",
+    consulate: "Consulate General of Algeria — New York",
+    mfa: "Ministry of Foreign Affairs of Algeria",
+    contact: "Contact",
+    newsletterTitle: "Stay Connected to the Bridge",
+    newsletterText:
+      "Chamber updates, market insights, and event invitations — straight to your inbox.",
+    emailPlaceholder: "Your email address",
+    subscribe: "Subscribe",
+    newsletterThanks: "Thank you for subscribing. Welcome to the AACC-USA network.",
+    newsletter: "Newsletter",
+    sponsorship: "Sponsorship",
+    legal: "© 2026 AACC-USA. Algerian American Chamber of Commerce USA. All rights reserved.",
+    disclaimer:
+      "AACC-USA is an independent U.S.-based nonprofit chamber-style association and is not a government agency.",
+  },
+
+  home: {
+    hero: {
+      badge: "Founding Initiative",
+      titlePre: "The Algerian American Chamber for",
+      titleHighlight: "Business, Trade, and Community Leadership",
+      subtitle:
+        "AACC-USA connects Algerian-American entrepreneurs, professionals, investors, and institutions to expand trade, investment, innovation, and opportunity between the United States and Algeria.",
+      primary: "Become a Founding Member",
+      secondary: "Partner With Us",
+      tertiary: "Explore the Chamber",
+      trust:
+        "Launching as a U.S.-based nonprofit chamber-style association for Algerian-American economic growth.",
+    },
+    stats: [
+      { value: "12", suffix: "+", label: "U.S. States Represented" },
+      { value: "50", suffix: "+", label: "Founding Members Target" },
+      { value: "20", suffix: "+", label: "Business Sectors" },
+      { value: "2", suffix: "", label: "Countries Connected" },
+    ],
+    mission: {
+      eyebrow: "Our Mission",
+      title: "One Chamber. Two Economies. Endless Opportunity.",
+      description:
+        "AACC-USA exists to strengthen Algerian-American economic ties — through networking, trade, investment, advocacy, and community leadership.",
+      cards: [
+        {
+          title: "Trade & Investment",
+          description:
+            "Expanding commerce, investment channels, and market access between the United States and Algeria.",
+          icon: "chart",
+        },
+        {
+          title: "Business Networking",
+          description:
+            "Connecting Algerian-American entrepreneurs, professionals, and executives across the country.",
+          icon: "handshake",
+        },
+        {
+          title: "Diaspora Economic Voice",
+          description:
+            "Giving the Algerian diaspora in America a structured platform for visibility, opportunity, and influence.",
+          icon: "mic",
+        },
+        {
+          title: "Community Growth",
+          description:
+            "Building programs, media, and partnerships that strengthen the community's socioeconomic footing.",
+          icon: "users",
+        },
+      ],
+    },
+    why: {
+      eyebrow: "Why AACC-USA",
+      title: "The Bridge Our Community Has Been Waiting For",
+      description:
+        "Algerian-American economic potential is real — what it needs is structure, visibility, and a seat at the table.",
+      points: [
+        {
+          title: "A growing business community",
+          description:
+            "Algerian-American businesses and professionals are expanding across the U.S. — in technology, healthcare, trade, real estate, hospitality, and beyond.",
+        },
+        {
+          title: "A missing structure",
+          description:
+            "Until now, there has been no structured chamber to represent Algerian-American business interests, aggregate their voice, and open institutional doors.",
+        },
+        {
+          title: "A two-way bridge",
+          description:
+            "The chamber connects U.S. market access with Algerian investment opportunities — supporting flows of trade, capital, and expertise in both directions.",
+        },
+        {
+          title: "A platform for all",
+          description:
+            "AACC-USA supports Algerian products, entrepreneurs, professionals, and institutions — from first-time founders to established corporations.",
+        },
+      ],
+      panel: {
+        label: "Building the Bridge",
+        quote:
+          "Between Algerian talent, trade, and opportunity stands one missing piece — a chamber that connects them.",
+        usa: "USA",
+        usaDesc: "Market access, capital, and diaspora expertise",
+        algeria: "Algeria",
+        algeriaDesc: "Investment opportunity, talent, and growth sectors",
+      },
+    },
+    services: {
+      eyebrow: "What We Do",
+      title: "Six Ways the Chamber Works for You",
+      description:
+        "Practical services that create exposure, connections, and opportunity for members and partners.",
+      items: [
+        {
+          title: "Business Directory",
+          description:
+            "A professional directory giving Algerian-American businesses visibility with partners in both markets.",
+          icon: "building",
+          href: "/directory",
+        },
+        {
+          title: "Trade Missions",
+          description:
+            "Organized delegations connecting companies and investors between the U.S. and Algeria.",
+          icon: "plane",
+          href: "/programs",
+        },
+        {
+          title: "Investment Forums",
+          description:
+            "Curated events around startups, real estate, technology, energy, agriculture, and services.",
+          icon: "chart",
+          href: "/programs",
+        },
+        {
+          title: "Policy & Advocacy",
+          description:
+            "Nonpartisan advocacy for trade facilitation, direct flights, and diaspora economic opportunity.",
+          icon: "shield",
+          href: "/advocacy",
+        },
+        {
+          title: "Podcasts & Media",
+          description:
+            "Interviews and stories amplifying Algerian-American entrepreneurs and leaders.",
+          icon: "mic",
+          href: "/news",
+        },
+        {
+          title: "Community Programs",
+          description:
+            "Youth development, women in business, and professional programming for the community.",
+          icon: "users",
+          href: "/programs",
+        },
+      ],
+    },
+    founding: {
+      eyebrow: "Founding Network",
+      title: "Founding members, sponsors, advisors, and partners welcome",
+      description:
+        "Join early and help shape the chamber's first programs, priorities, and leadership.",
+      primary: "Become a Founding Member",
+      secondary: "Sponsor the Chamber",
+    },
+    programs: {
+      eyebrow: "Featured Programs",
+      title: "Initiatives That Move the Needle",
+      description:
+        "From trade missions to direct flight advocacy, our programs are designed for measurable economic impact.",
+      viewAll: "View All Programs",
+    },
+    diaspora: {
+      eyebrow: "The Algerian Diaspora",
+      title: "A Community of Builders, in Every U.S. State",
+      description:
+        "Physicians, engineers, founders, academics, and executives — Algerian Americans contribute to the U.S. economy every day. AACC-USA exists to connect that talent and turn it into shared opportunity.",
+      cta: "Discover the Diaspora",
+    },
+    membershipPreview: {
+      eyebrow: "Membership",
+      title: "Find Your Place in the Chamber",
+      description:
+        "Four membership pathways — for professionals, businesses, institutions, and founding supporters.",
+    },
+    logoCloud: "Founding partners and sponsors",
+    logoCloudNote: "Your organization could be here.",
+    logoCloudCta: "Become a founding sponsor",
+    finalCta: {
+      title: "Join the Founding Network of AACC-USA",
+      description:
+        "Be part of the first generation of members, sponsors, and partners building the Algerian-American economic bridge.",
+      primary: "Become a Founding Member",
+      secondary: "Partner With Us",
+    },
+  },
+
+  about: {
+    hero: {
+      eyebrow: "About AACC-USA",
+      title: "An Independent Chamber for Algerian-American Economic Leadership",
+      description:
+        "AACC-USA is a U.S.-based nonprofit chamber-style association — an independent platform for business, trade, investment, community development, and advocacy.",
+    },
+    missionLabel: "Our Mission",
+    mission:
+      "To strengthen Algerian-American economic ties by connecting business leaders, entrepreneurs, investors, professionals, and institutions across the United States and Algeria.",
+    visionLabel: "Our Vision",
+    vision:
+      "To become the leading U.S.-based chamber representing Algerian-American business interests, trade opportunities, innovation, investment, and diaspora economic leadership.",
+    role: {
+      eyebrow: "Our Role",
+      title: "What the Chamber Is — and Is Not",
+      para1:
+        "AACC-USA is an independent nonprofit chamber-style association focused on business, trade, investment, community development, and advocacy. We serve as the connective tissue between Algerian-American entrepreneurs, professionals, companies, and the institutions that can help them grow.",
+      para2:
+        "We are a business and community leadership platform — organizing trade missions, publishing a business directory, hosting investment forums, and advancing nonpartisan advocacy priorities like direct air connectivity between the United States and Algeria.",
+      disclaimer:
+        "Important: AACC-USA is not a government agency and does not represent any government. We are an independent U.S.-based association serving business and community interests.",
+    },
+    founder: {
+      label: "A Message From the Founder",
+      quote:
+        "AACC-USA was created to give Algerian-American entrepreneurs, professionals, and businesses a structured platform to connect, grow, and represent their economic voice across both countries.",
+      attribution: "— Founder, AACC-USA",
+    },
+    leadership: {
+      eyebrow: "Leadership",
+      title: "The People Behind the Platform",
+      description:
+        "Chamber leadership is being assembled from the founding network. Interested in serving? Reach out.",
+      roles: [
+        {
+          role: "Founder",
+          description: "Vision, strategy, and stewardship of the chamber's founding mission.",
+        },
+        {
+          role: "Advisory Board",
+          description:
+            "Senior leaders in business, law, finance, and academia guiding chamber direction.",
+        },
+        {
+          role: "Business Council",
+          description:
+            "Member business leaders shaping trade, directory, and investment programming.",
+        },
+        {
+          role: "Community Council",
+          description:
+            "Community leaders driving youth, professional, and cultural-economic programs.",
+        },
+      ],
+    },
+    values: {
+      eyebrow: "Our Values",
+      title: "The Principles That Guide the Chamber",
+      items: [
+        {
+          title: "Trust",
+          description:
+            "We operate with transparency, professionalism, and integrity in every relationship.",
+          icon: "shield",
+        },
+        {
+          title: "Opportunity",
+          description:
+            "We open doors — to markets, capital, partners, and platforms — for our members.",
+          icon: "chart",
+        },
+        {
+          title: "Collaboration",
+          description: "We build with partners across sectors, institutions, and borders.",
+          icon: "handshake",
+        },
+        {
+          title: "Economic Empowerment",
+          description: "We help Algerian-American businesses and professionals grow and lead.",
+          icon: "briefcase",
+        },
+        {
+          title: "Responsible Leadership",
+          description:
+            "We lead as a nonpartisan, independent, and community-accountable organization.",
+          icon: "users",
+        },
+        {
+          title: "Algeria-U.S. Bridge Building",
+          description:
+            "We invest in the long-term economic relationship between two nations we call home.",
+          icon: "globe",
+        },
+      ],
+    },
+    cta: {
+      title: "Help Us Build the Chamber",
+      description:
+        "Founding members, advisors, and partners are shaping AACC-USA right now. Add your voice.",
+      primary: "Become a Founding Member",
+      secondary: "Contact Us",
+    },
+  },
+
+  membership: {
+    hero: {
+      eyebrow: "Membership",
+      title: "Join the Founding Network of AACC-USA",
+      description:
+        "Membership connects you to the Algerian-American business network — visibility, introductions, insights, and a seat at the table as the chamber takes shape.",
+    },
+    whyJoin: {
+      eyebrow: "Why Join",
+      title: "What Membership Delivers",
+      description:
+        "Practical benefits designed for professionals, businesses, and institutions on both sides of the bridge.",
+      benefits: [
+        {
+          title: "Directory Visibility",
+          description:
+            "A professional presence in the Algerian-American business directory, visible to partners in both markets.",
+          icon: "building",
+        },
+        {
+          title: "Professional Networking",
+          description:
+            "Connect with Algerian-American professionals, founders, and executives across the United States.",
+          icon: "users",
+        },
+        {
+          title: "Events & Roundtables",
+          description:
+            "Access to summits, investment briefings, workshops, and member-only roundtables.",
+          icon: "calendar",
+        },
+        {
+          title: "Trade & Investment Insights",
+          description:
+            "Market intelligence and practical guidance on U.S.–Algeria trade and investment opportunities.",
+          icon: "chart",
+        },
+        {
+          title: "Sponsorship Opportunities",
+          description:
+            "Position your organization in front of a growing cross-border business audience.",
+          icon: "shield",
+        },
+        {
+          title: "Business Introductions",
+          description:
+            "Warm introductions to members, partners, and institutions aligned with your goals.",
+          icon: "handshake",
+        },
+      ],
+    },
+    tiersSection: {
+      eyebrow: "Membership Tiers",
+      title: "Choose Your Membership",
+      description:
+        "Founding-rate placeholder pricing. Every tier includes access to the chamber network and founding-member recognition.",
+    },
+    tiers: [
+      {
+        slug: "individual",
+        name: "Individual Member",
+        price: "$95",
+        period: "/year",
+        audience: "For professionals, founders, students, and community leaders.",
+        benefits: [
+          "Member newsletter and market insights",
+          "Access to chamber events and programs",
+          "Member network and community access",
+          "Podcast participation opportunities",
+        ],
+        featured: false,
+        cta: "Join as an Individual",
+      },
+      {
+        slug: "business",
+        name: "Business Member",
+        price: "$295",
+        period: "/year",
+        audience: "For small businesses, startups, service providers, and entrepreneurs.",
+        benefits: [
+          "Business directory listing",
+          "Event discounts and priority registration",
+          "B2B introductions within the network",
+          "Member spotlight opportunities",
+        ],
+        featured: true,
+        cta: "Join as a Business",
+      },
+      {
+        slug: "corporate",
+        name: "Corporate Partner",
+        price: "$1,500",
+        period: "/year",
+        audience: "For corporations, banks, airlines, universities, and institutions.",
+        benefits: [
+          "Sponsorship placement across chamber platforms",
+          "Speaking opportunities at events and forums",
+          "Strategic introductions and partnership support",
+          "Institutional visibility in both markets",
+        ],
+        featured: false,
+        cta: "Become a Corporate Partner",
+      },
+      {
+        slug: "founding-sponsor",
+        name: "Founding Sponsor",
+        price: "$5,000",
+        period: " founding commitment",
+        audience: "For early supporters who want visibility and legacy positioning.",
+        benefits: [
+          "Homepage and event recognition",
+          "Founding sponsor certificate",
+          "VIP access to summits and roundtables",
+          "Advisory access to chamber leadership",
+        ],
+        featured: false,
+        cta: "Become a Founding Sponsor",
+      },
+    ],
+    form: {
+      eyebrow: "Get Started",
+      title: "Express Your Membership Interest",
+      description:
+        "Tell us about yourself and the membership that fits. Our team will follow up with next steps.",
+      submitLabel: "Submit Membership Interest",
+    },
+  },
+
+  directory: {
+    hero: {
+      eyebrow: "Business Directory",
+      title: "Discover Algerian-American Businesses, Professionals, and Partners",
+      description:
+        "A growing directory of member businesses across the United States — searchable by industry, location, and cross-border market interest.",
+    },
+    explorer: {
+      searchPlaceholder: "Search by name, city, service, or keyword...",
+      searchLabel: "Search businesses",
+      allIndustries: "All Industries",
+      allStates: "All States",
+      allTypes: "All Business Types",
+      algeriaInterest: "Algeria market interest",
+      usInterest: "U.S. market interest",
+      showing: "Showing",
+      of: "of",
+      businesses: "businesses",
+      noResults: "No businesses match your filters",
+      noResultsHint: "Try broadening your search — or be the first to represent this category.",
+      clearFilters: "Clear all filters",
+      contact: "Contact",
+    },
+    cta: {
+      title: "List Your Business",
+      description:
+        "Business members receive a professional directory listing visible to partners, customers, and institutions in both markets.",
+      primary: "List Your Business",
+      secondary: "View Membership Options",
+    },
+  },
+
+  programs: {
+    hero: {
+      eyebrow: "Programs",
+      title: "Initiatives Built for Economic Impact",
+      description:
+        "Eight core programs connecting talent, trade, and opportunity between the United States and Algeria.",
+    },
+    section: {
+      eyebrow: "Chamber Programs",
+      title: "What We're Building Together",
+      description:
+        "Every program is member-driven and partner-supported. Join a program, sponsor one, or propose a new initiative.",
+    },
+    items: [
+      {
+        slug: "trade-missions",
+        title: "Trade Missions",
+        description:
+          "Organized business delegations between the United States and Algeria, connecting companies, investors, and institutions with vetted opportunities on both sides of the Atlantic.",
+        icon: "plane",
+        cta: "Join a Delegation",
+      },
+      {
+        slug: "algeria-market-access",
+        title: "Algeria Market Access",
+        description:
+          "Helping U.S.-based Algerian-American entrepreneurs and companies understand and evaluate opportunities in Algeria — from market entry to local partnerships.",
+        icon: "globe",
+        cta: "Explore Algeria",
+      },
+      {
+        slug: "us-market-access",
+        title: "U.S. Market Access",
+        description:
+          "Supporting Algerian companies as they explore U.S. partnerships, distribution channels, and market exposure through chamber introductions and guidance.",
+        icon: "building",
+        cta: "Enter the U.S. Market",
+      },
+      {
+        slug: "investment-forums",
+        title: "Investment Forums",
+        description:
+          "Curated events around startups, real estate, technology, energy, agriculture, and services — connecting capital with credible cross-border opportunities.",
+        icon: "chart",
+        cta: "Attend a Forum",
+      },
+      {
+        slug: "direct-flight-advocacy",
+        title: "Direct Flight Advocacy Initiative",
+        description:
+          "Building the business and community case for improved air connectivity between the United States and Algeria — a catalyst for trade, tourism, and family ties.",
+        icon: "plane",
+        cta: "Support the Initiative",
+      },
+      {
+        slug: "diaspora-business-podcast",
+        title: "Diaspora Business Podcast",
+        description:
+          "Interviews with entrepreneurs, investors, public leaders, and community voices shaping the Algerian-American economic story.",
+        icon: "mic",
+        cta: "Listen & Participate",
+      },
+      {
+        slug: "youth-professional-development",
+        title: "Youth & Professional Development",
+        description:
+          "Mentorship, career programming, and leadership pathways for students, young professionals, founders, and emerging Algerian-American leaders.",
+        icon: "users",
+        cta: "Get Involved",
+      },
+      {
+        slug: "women-in-business",
+        title: "Women in Business",
+        description:
+          "Championing Algerian-American women entrepreneurs and executives through visibility, networking, and dedicated programming.",
+        icon: "briefcase",
+        cta: "Join the Network",
+      },
+    ],
+    cta: {
+      title: "Want to Lead or Sponsor a Program?",
+      description:
+        "Chamber programs are shaped by founding members and sponsors. Bring your expertise or your organization's support.",
+      primary: "Get Involved",
+      secondary: "Sponsor a Program",
+    },
+  },
+
+  events: {
+    hero: {
+      eyebrow: "Events",
+      title: "Where the Network Comes Together",
+      description:
+        "Summits, investment briefings, workshops, roundtables, and live podcasts — in person and virtual, across the United States.",
+    },
+    upcoming: {
+      eyebrow: "Upcoming Events",
+      title: "Save Your Seat",
+      description:
+        "Placeholder dates for the chamber's inaugural event calendar. Registration details announced to members first.",
+    },
+    items: [
+      {
+        slug: "founding-members-roundtable",
+        title: "Founding Members Roundtable",
+        date: "September 12, 2026",
+        location: "Virtual",
+        isVirtual: true,
+        description:
+          "An invitation-style working session for founding members, advisors, and early sponsors to shape the chamber's first-year priorities and programs.",
+        category: "Roundtable",
+      },
+      {
+        slug: "algerian-american-business-summit",
+        title: "Algerian-American Business Summit",
+        date: "October 24, 2026",
+        location: "New York, NY",
+        isVirtual: false,
+        description:
+          "The flagship gathering of Algerian-American entrepreneurs, professionals, investors, and institutional partners — panels, networking, and partnership announcements.",
+        category: "Summit",
+      },
+      {
+        slug: "algeria-investment-briefing",
+        title: "Algeria Investment Briefing",
+        date: "November 6, 2026",
+        location: "Washington, DC",
+        isVirtual: false,
+        description:
+          "A focused briefing on investment sectors, market conditions, and partnership pathways in Algeria for U.S.-based investors and business leaders.",
+        category: "Briefing",
+      },
+      {
+        slug: "export-import-workshop",
+        title: "Export/Import Workshop",
+        date: "November 20, 2026",
+        location: "Virtual",
+        isVirtual: true,
+        description:
+          "A practical workshop on trade logistics, compliance, documentation, and financing for companies trading between the U.S. and Algeria.",
+        category: "Workshop",
+      },
+      {
+        slug: "diaspora-leadership-podcast-live",
+        title: "Diaspora Leadership Podcast Live",
+        date: "December 10, 2026",
+        location: "Chicago, IL",
+        isVirtual: false,
+        description:
+          "A live recording of the Diaspora Business Podcast featuring Algerian-American founders and community leaders, followed by open networking.",
+        category: "Podcast",
+      },
+    ],
+    past: {
+      eyebrow: "Past Events",
+      title: "Event Archive",
+      emptyTitle: "Our story starts now",
+      emptyText:
+        "AACC-USA is launching its inaugural event season. Past event recaps, photos, and recordings will appear here after our first gatherings.",
+      emptyCta: "Get Event Announcements",
+    },
+    cta: {
+      title: "Host an Event With Us",
+      description:
+        "Partner with AACC-USA to host a summit, briefing, or networking event — and put your organization in front of the Algerian-American business network.",
+      primary: "Become an Event Sponsor",
+      secondary: "Propose an Event",
+    },
+  },
+
+  advocacy: {
+    hero: {
+      eyebrow: "Advocacy",
+      title: "A Professional, Nonpartisan Voice for Economic Cooperation",
+      description:
+        "AACC-USA advocates for policies, partnerships, and initiatives that strengthen Algerian-American economic cooperation and diaspora opportunity.",
+    },
+    priorities: {
+      eyebrow: "Advocacy Priorities",
+      title: "What We Stand For",
+      description:
+        "Our advocacy is nonpartisan, professional, and focused on economic and community development.",
+      items: [
+        {
+          title: "Trade & Investment",
+          description: "Facilitating commerce and investment flows between the U.S. and Algeria.",
+          icon: "chart",
+        },
+        {
+          title: "Direct Air Connectivity",
+          description: "Building the business case for direct flights between the U.S. and Algeria.",
+          icon: "plane",
+        },
+        {
+          title: "Small Business Support",
+          description: "Championing programs and access for Algerian-American small businesses.",
+          icon: "briefcase",
+        },
+        {
+          title: "Diaspora Representation",
+          description: "Ensuring the Algerian-American business community has a professional voice.",
+          icon: "mic",
+        },
+        {
+          title: "Professional Mobility",
+          description: "Supporting pathways for professionals, students, and business travelers.",
+          icon: "users",
+        },
+        {
+          title: "Innovation Partnerships",
+          description: "Encouraging Algeria-U.S. cooperation in technology, energy, and research.",
+          icon: "globe",
+        },
+        {
+          title: "Cultural & Economic Visibility",
+          description: "Elevating Algerian-American contributions to the U.S. economy and society.",
+          icon: "shield",
+        },
+      ],
+    },
+    briefs: {
+      eyebrow: "Policy Briefs",
+      title: "Research That Supports the Case",
+      description:
+        "Forthcoming chamber publications making the economic case for stronger U.S.–Algeria ties.",
+      status: "Policy Brief — Coming Soon",
+      items: [
+        {
+          title: "The Case for Direct U.S.-Algeria Flights",
+          summary:
+            "Why nonstop air connectivity is a trade, tourism, and community imperative — and what it would unlock for both economies.",
+        },
+        {
+          title: "Unlocking Algerian-American Investment",
+          summary:
+            "Mapping the barriers and opportunities for diaspora capital to flow into productive investment in both markets.",
+        },
+        {
+          title: "Strengthening Diaspora Business Networks",
+          summary:
+            "How structured business networks multiply economic outcomes for immigrant and diaspora communities.",
+        },
+      ],
+    },
+    submit: {
+      eyebrow: "Submit an Issue",
+      title: "What Should the Chamber Take On?",
+      description:
+        "Members and community businesses can submit economic or business issues for the chamber's advocacy agenda.",
+      submitLabel: "Submit Issue",
+    },
+    cta: {
+      title: "Advocacy Is Stronger With Members Behind It",
+      description:
+        "Every membership adds weight to the chamber's voice on trade, connectivity, and opportunity.",
+      primary: "Join AACC-USA",
+      secondary: "Read Chamber News",
+    },
+  },
+
+  news: {
+    hero: {
+      eyebrow: "News & Insights",
+      title: "Stories, Insights, and Updates From the Bridge",
+      description:
+        "Chamber updates, market insights, member spotlights, and podcast episodes covering Algerian-American business.",
+    },
+    featured: { eyebrow: "Featured Article", title: "Editor's Pick" },
+    latest: {
+      eyebrow: "Latest News & Insights",
+      title: "Recent Publications",
+      description:
+        "Market insights, advocacy updates, and member spotlights from across the network.",
+    },
+    podcast: {
+      eyebrow: "Diaspora Business Podcast",
+      title: "Voices of the Algerian-American Economy",
+      description:
+        "Conversations with entrepreneurs, investors, and community leaders building across two continents.",
+    },
+    cta: {
+      title: "Have a Story Worth Telling?",
+      description:
+        "Member spotlights and podcast guests are drawn from the chamber network. Share your business story.",
+      primary: "Pitch Your Story",
+      secondary: "Become a Member",
+    },
+  },
+
+  sponsors: {
+    hero: {
+      eyebrow: "Sponsors & Partners",
+      title: "Power the Platform. Share the Stage.",
+      description:
+        "Sponsorship puts your organization at the center of the Algerian-American business network — with visibility, access, and legacy positioning in a founding-era platform.",
+    },
+    benefits: {
+      eyebrow: "Sponsorship Benefits",
+      title: "Why Organizations Sponsor AACC-USA",
+      items: [
+        {
+          title: "Brand Visibility",
+          description: "Placement across the chamber website, events, newsletters, and media.",
+          icon: "shield",
+        },
+        {
+          title: "Business Network Access",
+          description:
+            "Direct access to Algerian-American entrepreneurs, executives, and investors.",
+          icon: "users",
+        },
+        {
+          title: "Speaking Opportunities",
+          description: "Keynotes, panels, and podcast features at chamber events and programs.",
+          icon: "mic",
+        },
+        {
+          title: "Community Goodwill",
+          description: "Meaningful association with a mission-driven diaspora economic platform.",
+          icon: "handshake",
+        },
+        {
+          title: "Cross-Border Exposure",
+          description: "Visibility with partners and opportunities in both the U.S. and Algeria.",
+          icon: "globe",
+        },
+      ],
+    },
+    tiersSection: {
+      eyebrow: "Sponsor Tiers",
+      title: "Choose Your Level of Impact",
+      description: "Placeholder founding-era rates. Custom packages available for strategic partners.",
+    },
+    tiers: [
+      {
+        slug: "platinum",
+        name: "Platinum Sponsor",
+        price: "$25,000",
+        description:
+          "Flagship partnership with premier visibility across all chamber platforms and events.",
+        benefits: [
+          "Premier logo placement on homepage and all events",
+          "Keynote and speaking opportunities",
+          "Dedicated strategic introductions",
+          "Advisory board access",
+          "Year-round media and podcast presence",
+        ],
+        featured: true,
+      },
+      {
+        slug: "gold",
+        name: "Gold Sponsor",
+        price: "$10,000",
+        description: "High-visibility partnership across major chamber programs and communications.",
+        benefits: [
+          "Logo placement on website and major events",
+          "Panel and speaking opportunities",
+          "Business introductions within the network",
+          "Newsletter and media recognition",
+        ],
+        featured: false,
+      },
+      {
+        slug: "silver",
+        name: "Silver Sponsor",
+        price: "$5,000",
+        description: "Strong brand presence at chamber events and in the member network.",
+        benefits: [
+          "Logo placement at chamber events",
+          "Recognition in newsletters",
+          "Event tickets and member access",
+        ],
+        featured: false,
+      },
+      {
+        slug: "community",
+        name: "Community Sponsor",
+        price: "$2,500",
+        description: "Support community programming while gaining goodwill and local visibility.",
+        benefits: [
+          "Recognition in community programs",
+          "Newsletter acknowledgment",
+          "Event participation",
+        ],
+        featured: false,
+      },
+      {
+        slug: "event",
+        name: "Event Sponsor",
+        price: "From $1,000",
+        description: "Sponsor a single summit, workshop, roundtable, or podcast episode.",
+        benefits: ["Event-specific branding", "On-stage recognition", "Attendee networking access"],
+        featured: false,
+      },
+    ],
+    partners: {
+      eyebrow: "Partner Types",
+      title: "Who We Partner With",
+      description:
+        "The chamber welcomes institutional partners whose missions align with Algerian-American economic growth.",
+      types: [
+        { name: "Corporations", icon: "building" },
+        { name: "Airlines", icon: "plane" },
+        { name: "Banks", icon: "chart" },
+        { name: "Universities", icon: "users" },
+        { name: "Law Firms", icon: "shield" },
+        { name: "Consulting Firms", icon: "briefcase" },
+        { name: "Government-Adjacent Institutions", icon: "globe" },
+        { name: "Nonprofit Organizations", icon: "handshake" },
+      ],
+    },
+    cta: {
+      title: "Become a Sponsor",
+      description:
+        "Founding sponsors receive premier recognition as the chamber launches — a one-time opportunity for legacy positioning.",
+      primary: "Become a Sponsor",
+      secondary: "Email sponsorship@aaccusa.org",
+    },
+  },
+
+  contact: {
+    hero: {
+      eyebrow: "Contact",
+      title: "Let's Build the Bridge Together",
+      description:
+        "Whether you're exploring membership, sponsorship, a partnership, or a story — the AACC-USA team wants to hear from you.",
+    },
+    general: "General Inquiries",
+    membershipLabel: "Membership",
+    sponsorshipLabel: "Sponsorship",
+    connect: "Connect",
+    responseTime: "Response Time",
+    responseText:
+      "We aim to respond to all inquiries within 2–3 business days. Founding member and sponsor inquiries are prioritized.",
+    formTitle: "Send Us a Message",
+    formNote: "Fields marked with * are required.",
+  },
+
+  form: {
+    name: "Name",
+    email: "Email",
+    phone: "Phone",
+    organization: "Organization",
+    location: "City / State",
+    inquiryType: "Inquiry Type",
+    membershipInterest: "Membership Interest",
+    message: "Message",
+    namePlaceholder: "Full name",
+    emailPlaceholder: "you@company.com",
+    phonePlaceholder: "(555) 000-0000",
+    organizationPlaceholder: "Company or organization",
+    locationPlaceholder: "e.g. Houston, TX",
+    messagePlaceholder: "Tell us about your goals, business, or how you'd like to get involved...",
+    selectInquiry: "Select an inquiry type",
+    selectTier: "Select a membership tier",
+    send: "Send Message",
+    disclaimer: "This form is a placeholder for the MVP — submissions are not yet transmitted. Email",
+    disclaimerSuffix: "directly for immediate inquiries.",
+    thanksTitle: "Thank you for reaching out",
+    thanksText:
+      "Your message has been received. A member of the AACC-USA team will follow up shortly.",
+    inquiryTypes: [
+      { value: "membership", label: "Membership" },
+      { value: "sponsorship", label: "Sponsorship" },
+      { value: "partnership", label: "Partnership" },
+      { value: "directory", label: "Business Directory" },
+      { value: "event", label: "Event" },
+      { value: "media", label: "Media" },
+      { value: "general", label: "General inquiry" },
+    ],
+    tierOptions: [
+      { value: "individual", label: "Individual Member" },
+      { value: "business", label: "Business Member" },
+      { value: "corporate", label: "Corporate Partner" },
+      { value: "founding-sponsor", label: "Founding Sponsor" },
+    ],
+  },
+
+  diaspora: {
+    hero: {
+      eyebrow: "The Algerian Diaspora in the USA",
+      title: "A Community of Builders, Leaders, and Innovators",
+      description:
+        "From medicine and engineering to entrepreneurship and academia, Algerian Americans strengthen the U.S. economy every day — and form a living bridge to Algeria.",
+    },
+    intro: {
+      eyebrow: "Who We Are",
+      title: "Talent Across Every Sector",
+      para1:
+        "The Algerian-American community spans physicians, engineers, researchers, founders, professors, artists, and executives, concentrated in major metropolitan areas and present in nearly every U.S. state.",
+      para2:
+        "AACC-USA exists to connect this distributed talent — turning individual success stories into a structured network with collective economic weight, visibility, and voice.",
+    },
+    stats: [
+      { value: "100K+", label: "Algerian Americans across the U.S. (community estimate)" },
+      { value: "40+", label: "States with Algerian-American professionals" },
+      { value: "1000s", label: "Physicians, engineers, and researchers" },
+      { value: "2", label: "Cultures, one community" },
+    ],
+    sectors: {
+      eyebrow: "Where We Excel",
+      title: "Sectors of Strength",
+      items: [
+        { title: "Healthcare & Medicine", icon: "shield" },
+        { title: "Engineering & Technology", icon: "chart" },
+        { title: "Academia & Research", icon: "users" },
+        { title: "Entrepreneurship", icon: "briefcase" },
+        { title: "Energy & Industry", icon: "globe" },
+        { title: "Hospitality & Trade", icon: "handshake" },
+      ],
+    },
+    spotlight: {
+      eyebrow: "Community Spotlight",
+      title: "Stories From the Diaspora",
+      description:
+        "Every month, AACC-USA will spotlight Algerian Americans building businesses, leading institutions, and giving back. These placeholder profiles will feature real members at launch.",
+      nominate: "Nominate Someone",
+      profiles: [
+        {
+          name: "The Physician-Entrepreneur",
+          field: "Healthcare · East Coast",
+          story:
+            "A hospital leader building telehealth links that connect U.S. medical expertise with clinics in Algeria.",
+        },
+        {
+          name: "The Tech Founder",
+          field: "Technology · West Coast",
+          story:
+            "A software founder hiring engineering talent in Algiers and Oran to serve U.S. enterprise clients.",
+        },
+        {
+          name: "The Community Builder",
+          field: "Education · Midwest",
+          story:
+            "An educator organizing mentorship programs that guide Algerian students toward U.S. graduate programs and careers.",
+        },
+      ],
+    },
+    resources: {
+      eyebrow: "Official Resources",
+      title: "Algerian Government Resources in the U.S.",
+      description:
+        "For consular services, travel, and official information, Algerian Americans can consult these official government resources.",
+      links: [
+        {
+          name: "Embassy of Algeria in Washington, DC",
+          description: "Visas, consular services, and official bilateral information.",
+          url: "https://embwashington.mfa.gov.dz/en",
+        },
+        {
+          name: "Consulate General of Algeria in New York",
+          description: "Consular services for the New York jurisdiction and surrounding states.",
+          url: "https://www.algeria-cgny.org/",
+        },
+        {
+          name: "Ministry of Foreign Affairs of Algeria",
+          description: "Official portal of Algeria's Ministry of Foreign Affairs and National Community Abroad.",
+          url: "https://www.mfa.gov.dz/",
+        },
+      ],
+      note: "AACC-USA is an independent association and is not affiliated with any government entity. Links are provided as a community service.",
+    },
+    cta: {
+      title: "Be Part of the Network",
+      description:
+        "Join AACC-USA to connect with the Algerian-American professional community — and help write its next chapter.",
+      primary: "Become a Member",
+      secondary: "Nominate a Spotlight",
+    },
+  },
+};

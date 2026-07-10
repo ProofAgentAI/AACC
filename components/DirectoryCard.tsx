@@ -2,7 +2,15 @@ import Link from "next/link";
 import { MapPin, Globe } from "lucide-react";
 import type { DirectoryListing } from "@/data/directory";
 
-export default function DirectoryCard({ listing }: { listing: DirectoryListing }) {
+export default function DirectoryCard({
+  listing,
+  contactLabel,
+  contactHref,
+}: {
+  listing: DirectoryListing;
+  contactLabel: string;
+  contactHref: string;
+}) {
   return (
     <article className="flex flex-col rounded-2xl border border-navy-100 bg-white p-7 shadow-card transition-shadow hover:shadow-card-hover">
       <div className="flex items-start gap-4">
@@ -40,10 +48,10 @@ export default function DirectoryCard({ listing }: { listing: DirectoryListing }
           <span className="truncate">{listing.website}</span>
         </span>
         <Link
-          href={`/contact?inquiry=directory&business=${listing.slug}`}
+          href={contactHref}
           className="shrink-0 rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy transition-colors hover:border-navy hover:bg-surface"
         >
-          Contact
+          {contactLabel}
         </Link>
       </div>
     </article>

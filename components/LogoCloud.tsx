@@ -7,7 +7,17 @@ const placeholders = [
   "Consulting Partner",
 ];
 
-export default function LogoCloud({ title = "Founding partners and sponsors" }: { title?: string }) {
+export default function LogoCloud({
+  title,
+  note,
+  ctaLabel,
+  ctaHref,
+}: {
+  title: string;
+  note: string;
+  ctaLabel: string;
+  ctaHref: string;
+}) {
   return (
     <div>
       <p className="text-center text-sm font-semibold uppercase tracking-[0.16em] text-muted">
@@ -24,9 +34,9 @@ export default function LogoCloud({ title = "Founding partners and sponsors" }: 
         ))}
       </div>
       <p className="mt-6 text-center text-sm text-muted">
-        Your organization could be here.{" "}
-        <a href="/sponsors" className="font-semibold text-green-600 hover:text-green-700">
-          Become a founding sponsor →
+        {note}{" "}
+        <a href={ctaHref} className="font-semibold text-green-600 hover:text-green-700">
+          {ctaLabel} →
         </a>
       </p>
     </div>

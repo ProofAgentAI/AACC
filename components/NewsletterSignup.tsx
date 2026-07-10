@@ -2,14 +2,22 @@
 
 import { useState } from "react";
 
-export default function NewsletterSignup() {
+export default function NewsletterSignup({
+  placeholder = "Your email address",
+  buttonLabel = "Subscribe",
+  thanksMessage = "Thank you for subscribing. Welcome to the AACC-USA network.",
+}: {
+  placeholder?: string;
+  buttonLabel?: string;
+  thanksMessage?: string;
+}) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   if (submitted) {
     return (
       <p className="rounded-lg bg-green/20 px-4 py-3 text-sm font-medium text-white" role="status">
-        Thank you for subscribing. Welcome to the AACC-USA network.
+        {thanksMessage}
       </p>
     );
   }
@@ -23,7 +31,7 @@ export default function NewsletterSignup() {
       }}
     >
       <label htmlFor="newsletter-email" className="sr-only">
-        Email address
+        {placeholder}
       </label>
       <input
         id="newsletter-email"
@@ -31,14 +39,14 @@ export default function NewsletterSignup() {
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Your email address"
+        placeholder={placeholder}
         className="w-full rounded-lg border border-navy-500 bg-navy-800 px-4 py-3 text-sm text-white placeholder:text-navy-300 focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold"
       />
       <button
         type="submit"
         className="shrink-0 rounded-lg bg-gold px-6 py-3 text-sm font-semibold text-navy transition-colors hover:bg-gold-400"
       >
-        Subscribe
+        {buttonLabel}
       </button>
     </form>
   );

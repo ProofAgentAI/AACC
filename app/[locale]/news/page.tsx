@@ -5,31 +5,42 @@ import BlogCard from "@/components/BlogCard";
 import CTASection from "@/components/CTASection";
 import { Mic, Play } from "lucide-react";
 import { posts, podcastEpisodes } from "@/data/posts";
+import { getDictionary, isLocale, type Locale } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "News & Insights — Chamber Updates, Market Insights & Spotlights",
-  description:
-    "Read AACC-USA news, U.S.–Algeria market insights, member spotlights, and diaspora business podcast episodes from the Algerian American Chamber of Commerce USA.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const dict = getDictionary(isLocale(locale) ? locale : "en");
+  return { title: dict.news.hero.title, description: dict.news.hero.description };
+}
 
-export default function NewsPage() {
+export default async function NewsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: rawLocale } = await params;
+  const locale = (isLocale(rawLocale) ? rawLocale : "en") as Locale;
+  const dict = getDictionary(locale);
+  const n = dict.news;
+  const p = (href: string) => `/${locale}${href}`;
+
   const featured = posts.find((post) => post.featured) ?? posts[0];
   const rest = posts.filter((post) => post !== featured);
 
   return (
     <>
-      <PageHero
-        eyebrow="News & Insights"
-        title="Stories, Insights, and Updates From the Bridge"
-        description="Chamber updates, market insights, member spotlights, and podcast episodes covering Algerian-American business."
-      />
+      <PageHero eyebrow={n.hero.eyebrow} title={n.hero.title} description={n.hero.description} />
 
       {/* Featured */}
       <section className="bg-surface py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading eyebrow="Featured Article" title="Editor's Pick" align="left" />
+          <SectionHeading eyebrow={n.featured.eyebrow} title={n.featured.title} align="left" />
           <div className="mt-10">
-            <BlogCard post={featured} large />
+            <BlogCard post={featured} large href={p("/news")} />
           </div>
         </div>
       </section>
@@ -38,13 +49,13 @@ export default function NewsPage() {
       <section className="bg-white py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
-            eyebrow="Latest News & Insights"
-            title="Recent Publications"
-            description="Market insights, advocacy updates, and member spotlights from across the network."
+            eyebrow={n.latest.eyebrow}
+            title={n.latest.title}
+            description={n.latest.description}
           />
           <div className="mt-14 grid gap-6 md:grid-cols-2">
             {rest.map((post) => (
-              <BlogCard key={post.slug} post={post} />
+              <BlogCard key={post.slug} post={post} href={p("/news")} />
             ))}
           </div>
         </div>
@@ -54,9 +65,9 @@ export default function NewsPage() {
       <section className="bg-navy py-20 text-white sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
-            eyebrow="Diaspora Business Podcast"
-            title="Voices of the Algerian-American Economy"
-            description="Conversations with entrepreneurs, investors, and community leaders building across two continents."
+            eyebrow={n.podcast.eyebrow}
+            title={n.podcast.title}
+            description={n.podcast.description}
             dark
           />
           <div className="mt-14 grid gap-6 md:grid-cols-3">
@@ -81,7 +92,7 @@ export default function NewsPage() {
                   className="mt-6 inline-flex items-center gap-2 self-start rounded-lg bg-gold px-5 py-2.5 text-sm font-semibold text-navy transition-colors hover:bg-gold-400"
                 >
                   <Play className="h-4 w-4" aria-hidden="true" />
-                  Coming Soon
+                  {dict.common.comingSoon}
                 </button>
               </article>
             ))}
@@ -90,12 +101,12 @@ export default function NewsPage() {
       </section>
 
       <CTASection
-        title="Have a Story Worth Telling?"
-        description="Member spotlights and podcast guests are drawn from the chamber network. Share your business story."
-        primaryLabel="Pitch Your Story"
-        primaryHref="/contact?inquiry=media"
-        secondaryLabel="Become a Member"
-        secondaryHref="/membership"
+        title={n.cta.title}
+        description={n.cta.description}
+        primaryLabel={n.cta.primary}
+        primaryHref={p("/contact?inquiry=media")}
+        secondaryLabel={n.cta.secondary}
+        secondaryHref={p("/membership")}
       />
     </>
   );

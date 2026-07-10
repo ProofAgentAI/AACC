@@ -1,8 +1,24 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
-import type { SponsorTier } from "@/data/sponsors";
 
-export default function SponsorTierCard({ tier }: { tier: SponsorTier }) {
+export type SponsorTierContent = {
+  slug: string;
+  name: string;
+  price: string;
+  description: string;
+  benefits: string[];
+  featured: boolean;
+};
+
+export default function SponsorTierCard({
+  tier,
+  href,
+  ctaLabel,
+}: {
+  tier: SponsorTierContent;
+  href: string;
+  ctaLabel: string;
+}) {
   return (
     <article
       className={`flex flex-col rounded-2xl border p-8 shadow-card transition-shadow hover:shadow-card-hover ${
@@ -35,14 +51,14 @@ export default function SponsorTierCard({ tier }: { tier: SponsorTier }) {
         ))}
       </ul>
       <Link
-        href={`/contact?inquiry=sponsorship&tier=${tier.slug}`}
+        href={href}
         className={`mt-8 rounded-lg px-5 py-3 text-center text-sm font-semibold transition-colors ${
           tier.featured
             ? "bg-gold text-navy hover:bg-gold-400"
             : "border border-navy-200 text-navy hover:border-navy hover:bg-surface"
         }`}
       >
-        Become a Sponsor
+        {ctaLabel}
       </Link>
     </article>
   );

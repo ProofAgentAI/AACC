@@ -1,8 +1,27 @@
 import Link from "next/link";
 import { Calendar, MapPin, Video } from "lucide-react";
-import type { ChamberEvent } from "@/data/events";
 
-export default function EventCard({ event }: { event: ChamberEvent }) {
+export type EventContent = {
+  slug: string;
+  title: string;
+  date: string;
+  location: string;
+  isVirtual: boolean;
+  description: string;
+  category: string;
+};
+
+export default function EventCard({
+  event,
+  href,
+  registerLabel,
+  virtualLabel,
+}: {
+  event: EventContent;
+  href: string;
+  registerLabel: string;
+  virtualLabel: string;
+}) {
   return (
     <article className="flex flex-col rounded-2xl border border-navy-100 bg-white p-7 shadow-card transition-shadow hover:shadow-card-hover">
       <div className="flex items-center justify-between">
@@ -12,7 +31,7 @@ export default function EventCard({ event }: { event: ChamberEvent }) {
         {event.isVirtual && (
           <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600">
             <Video className="h-3.5 w-3.5" aria-hidden="true" />
-            Virtual
+            {virtualLabel}
           </span>
         )}
       </div>
@@ -29,10 +48,10 @@ export default function EventCard({ event }: { event: ChamberEvent }) {
       </div>
       <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{event.description}</p>
       <Link
-        href={`/contact?inquiry=event&event=${event.slug}`}
+        href={href}
         className="mt-6 rounded-lg bg-navy px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-navy-600"
       >
-        Register
+        {registerLabel}
       </Link>
     </article>
   );

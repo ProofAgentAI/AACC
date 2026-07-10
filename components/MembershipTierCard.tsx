@@ -1,8 +1,28 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
-import type { MembershipTier } from "@/data/membership";
 
-export default function MembershipTierCard({ tier }: { tier: MembershipTier }) {
+export type TierContent = {
+  slug: string;
+  name: string;
+  price: string;
+  period: string;
+  audience: string;
+  benefits: string[];
+  featured: boolean;
+  cta: string;
+};
+
+export default function MembershipTierCard({
+  tier,
+  href,
+  mostPopular,
+  pricingNote,
+}: {
+  tier: TierContent;
+  href: string;
+  mostPopular: string;
+  pricingNote: string;
+}) {
   return (
     <article
       className={`relative flex flex-col rounded-2xl border bg-white p-8 shadow-card transition-shadow hover:shadow-card-hover ${
@@ -10,8 +30,8 @@ export default function MembershipTierCard({ tier }: { tier: MembershipTier }) {
       }`}
     >
       {tier.featured && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gold px-4 py-1 text-xs font-bold uppercase tracking-wider text-navy">
-          Most Popular
+        <span className="absolute -top-3 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 rounded-full bg-gold px-4 py-1 text-xs font-bold uppercase tracking-wider text-navy">
+          {mostPopular}
         </span>
       )}
       <h3 className="font-heading text-lg font-bold text-navy">{tier.name}</h3>
@@ -29,7 +49,7 @@ export default function MembershipTierCard({ tier }: { tier: MembershipTier }) {
         ))}
       </ul>
       <Link
-        href={`/contact?inquiry=membership&tier=${tier.slug}`}
+        href={href}
         className={`mt-8 rounded-lg px-5 py-3 text-center text-sm font-semibold transition-colors ${
           tier.featured
             ? "bg-navy text-white hover:bg-navy-600"
@@ -38,7 +58,7 @@ export default function MembershipTierCard({ tier }: { tier: MembershipTier }) {
       >
         {tier.cta}
       </Link>
-      <p className="mt-3 text-center text-xs text-muted">Placeholder pricing — founding rates</p>
+      <p className="mt-3 text-center text-xs text-muted">{pricingNote}</p>
     </article>
   );
 }

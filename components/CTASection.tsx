@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function CTASection({
   title,
@@ -7,6 +8,7 @@ export default function CTASection({
   primaryHref,
   secondaryLabel,
   secondaryHref,
+  image,
 }: {
   title: string;
   description?: string;
@@ -14,18 +16,23 @@ export default function CTASection({
   primaryHref: string;
   secondaryLabel?: string;
   secondaryHref?: string;
+  image?: string;
 }) {
   return (
     <section className="relative overflow-hidden bg-navy-900">
-      <div className="absolute inset-0 bg-grid-light" aria-hidden="true" />
-      <div
-        className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-green-500/25 blur-3xl animate-float"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-red-500/20 blur-3xl animate-float-slow"
-        aria-hidden="true"
-      />
+      {image && (
+        <>
+          <Image
+            src={image}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-navy-900/80" aria-hidden="true" />
+        </>
+      )}
       <div className="tricolor-bar absolute inset-x-0 top-0 h-0.5" aria-hidden="true" />
       <div className="relative mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 lg:px-8">
         <h2 className="font-heading text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -46,7 +53,7 @@ export default function CTASection({
           {secondaryLabel && secondaryHref && (
             <Link
               href={secondaryHref}
-              className="glass-dark w-full rounded-lg px-8 py-4 text-base font-semibold text-white transition-all hover:border-red-400/60 hover:shadow-glow-red sm:w-auto"
+              className="glass-dark w-full rounded-lg px-8 py-4 text-base font-semibold text-white transition-all hover:border-white/40 sm:w-auto"
             >
               {secondaryLabel}
             </Link>

@@ -8,7 +8,15 @@ const categoryColors: Record<string, string> = {
   "Member Spotlights": "bg-red-50 text-red-700",
 };
 
-export default function BlogCard({ post, large = false }: { post: Post; large?: boolean }) {
+export default function BlogCard({
+  post,
+  large = false,
+  href = "/en/news",
+}: {
+  post: Post;
+  large?: boolean;
+  href?: string;
+}) {
   return (
     <article
       className={`group flex flex-col rounded-2xl border border-navy-100 bg-white shadow-card transition-shadow hover:shadow-card-hover ${
@@ -52,7 +60,7 @@ export default function BlogCard({ post, large = false }: { post: Post; large?: 
             large ? "text-2xl" : "text-lg"
           }`}
         >
-          <Link href="/news">{post.title}</Link>
+          <Link href={href}>{post.title}</Link>
         </h3>
         <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">{post.excerpt}</p>
         <p className="mt-5 text-xs font-medium text-muted">{post.date}</p>

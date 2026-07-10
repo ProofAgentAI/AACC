@@ -1,10 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
+import type { Locale } from "@/lib/i18n";
 
 export default function Logo({
+  locale = "en",
   variant = "dark",
   compact = false,
 }: {
+  locale?: Locale;
   variant?: "dark" | "light";
   compact?: boolean;
 }) {
@@ -20,7 +23,11 @@ export default function Logo({
   );
 
   return (
-    <Link href="/" className="flex items-center gap-3 group" aria-label="AACC-USA home">
+    <Link
+      href={`/${locale}`}
+      className="group flex items-center gap-3"
+      aria-label="AACC-USA home"
+    >
       {variant === "light" ? (
         <span className="inline-block rounded-xl bg-white px-3 py-2 shadow-card transition-transform group-hover:scale-[1.03]">
           {img}
