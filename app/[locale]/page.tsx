@@ -240,14 +240,14 @@ export default async function HomePage({
             title={home.membershipPreview.title}
             description={home.membershipPreview.description}
           />
-          <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
             {dict.membership.tiers.map((tier) => (
               <MembershipTierCard
                 key={tier.slug}
                 tier={tier}
-                href={p(`/contact?inquiry=membership&tier=${tier.slug}`)}
+                href={p("/membership#early-list")}
                 mostPopular={dict.common.mostPopular}
-                pricingNote={dict.common.placeholderPricing}
+                comingSoon={dict.common.comingSoon}
               />
             ))}
           </div>

@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import PageHero from "@/components/PageHero";
-import SectionHeading from "@/components/SectionHeading";
-import SponsorTierCard from "@/components/SponsorTierCard";
 import CTASection from "@/components/CTASection";
-import LogoCloud from "@/components/LogoCloud";
-import Icon from "@/components/Icon";
+import { Award } from "lucide-react";
 import { getDictionary, isLocale, type Locale } from "@/lib/i18n";
 
 export async function generateMetadata({
@@ -37,76 +35,28 @@ export default async function SponsorsPage({
         image="/images/hero-bridge.jpg"
       />
 
-      {/* Benefits */}
-      <section className="bg-white py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading eyebrow={s.benefits.eyebrow} title={s.benefits.title} />
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-            {s.benefits.items.map((benefit) => (
-              <div
-                key={benefit.title}
-                className="rounded-2xl border border-navy-100 bg-white p-6 text-center shadow-card"
-              >
-                <span className="mx-auto inline-flex h-11 w-11 items-center justify-center rounded-xl bg-gold-100 text-gold-600">
-                  <Icon name={benefit.icon} className="h-5 w-5" />
-                </span>
-                <h3 className="mt-4 font-heading text-base font-bold text-navy">{benefit.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted">{benefit.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Tiers */}
+      {/* Sponsorship packages: coming soon */}
       <section className="bg-surface py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow={s.tiersSection.eyebrow}
-            title={s.tiersSection.title}
-            description={s.tiersSection.description}
-          />
-          <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-5">
-            {s.tiers.map((tier) => (
-              <SponsorTierCard
-                key={tier.slug}
-                tier={tier}
-                href={p(`/contact?inquiry=sponsorship&tier=${tier.slug}`)}
-                ctaLabel={dict.common.becomeASponsor}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Partner types */}
-      <section className="bg-white py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow={s.partners.eyebrow}
-            title={s.partners.title}
-            description={s.partners.description}
-          />
-          <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {s.partners.types.map((partner) => (
-              <div
-                key={partner.name}
-                className="flex flex-col items-center gap-3 rounded-2xl border border-navy-100 bg-surface p-6 text-center"
-              >
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white text-navy shadow-sm">
-                  <Icon name={partner.icon} className="h-5 w-5" />
-                </span>
-                <p className="text-sm font-semibold text-navy">{partner.name}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-20">
-            <LogoCloud
-              title={dict.home.logoCloud}
-              note={dict.home.logoCloudNote}
-              ctaLabel={dict.home.logoCloudCta}
-              ctaHref={p("/contact?inquiry=sponsorship")}
-            />
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl border border-dashed border-navy-200 bg-white p-12 text-center shadow-card sm:p-16">
+            <span className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gold-100 text-gold-600">
+              <Award className="h-8 w-8" aria-hidden="true" />
+            </span>
+            <span className="mt-6 inline-block rounded-full bg-gold-100 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-gold-600">
+              {dict.common.comingSoon}
+            </span>
+            <h2 className="mt-4 font-heading text-2xl font-bold text-navy sm:text-3xl">
+              {s.coming.title}
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-muted">
+              {s.coming.text}
+            </p>
+            <Link
+              href={p("/contact?inquiry=sponsorship")}
+              className="mt-8 inline-block rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-8 py-4 text-base font-semibold text-white shadow-glow-green transition-all hover:from-green-500 hover:to-green-400"
+            >
+              {s.coming.cta}
+            </Link>
           </div>
         </div>
       </section>

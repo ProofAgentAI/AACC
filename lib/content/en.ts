@@ -503,14 +503,12 @@ export const en = {
       {
         slug: "individual",
         name: "Individual Member",
-        price: "Coming Soon",
-        period: "",
+        icon: "users",
         audience: "For professionals, founders, students, and community leaders.",
         benefits: [
-          "Member newsletter and market insights",
-          "Access to chamber events and programs",
           "Member network and community access",
-          "Podcast participation opportunities",
+          "Chamber events and programs",
+          "Newsletter and market insights",
         ],
         featured: false,
         cta: "Join as an Individual",
@@ -518,47 +516,28 @@ export const en = {
       {
         slug: "business",
         name: "Business Member",
-        price: "Coming Soon",
-        period: "",
-        audience: "For small businesses, startups, service providers, and entrepreneurs.",
+        icon: "building",
+        audience: "For businesses, startups, service providers, and entrepreneurs.",
         benefits: [
           "Business directory listing",
-          "Event discounts and priority registration",
           "B2B introductions within the network",
-          "Member spotlight opportunities",
+          "Event discounts and member spotlight",
         ],
         featured: true,
         cta: "Join as a Business",
       },
       {
-        slug: "corporate",
-        name: "Corporate Partner",
-        price: "Coming Soon",
-        period: "",
-        audience: "For corporations, banks, airlines, universities, and institutions.",
+        slug: "state-ambassador",
+        name: "State Ambassador",
+        icon: "globe",
+        audience: "Represent the chamber in your state and lead your local community.",
         benefits: [
-          "Sponsorship placement across chamber platforms",
-          "Speaking opportunities at events and forums",
-          "Strategic introductions and partnership support",
-          "Institutional visibility in both markets",
+          "Official chamber representative in your state",
+          "Lead local events, networking, and outreach",
+          "Direct access to the founding board",
         ],
         featured: false,
-        cta: "Become a Corporate Partner",
-      },
-      {
-        slug: "founding-sponsor",
-        name: "Founding Sponsor",
-        price: "Coming Soon",
-        period: "",
-        audience: "For early supporters who want visibility and legacy positioning.",
-        benefits: [
-          "Homepage and event recognition",
-          "Founding sponsor certificate",
-          "VIP access to summits and roundtables",
-          "Advisory access to chamber leadership",
-        ],
-        featured: false,
-        cta: "Become a Founding Sponsor",
+        cta: "Apply as State Ambassador",
       },
     ],
     form: {
@@ -974,6 +953,11 @@ export const en = {
   },
 
   sponsors: {
+    coming: {
+      title: "Sponsorship Packages Coming Soon",
+      text: "We are finalizing founding sponsorship and partnership packages. Leave your details and we will contact you the moment they open.",
+      cta: "Get Notified",
+    },
     hero: {
       eyebrow: "Sponsors & Partners",
       title: "Power the Platform. Share the Stage.",
@@ -1160,8 +1144,7 @@ export const en = {
     tierOptions: [
       { value: "individual", label: "Individual Member" },
       { value: "business", label: "Business Member" },
-      { value: "corporate", label: "Corporate Partner" },
-      { value: "founding-sponsor", label: "Founding Sponsor" },
+      { value: "state-ambassador", label: "State Ambassador" },
     ],
   },
 
