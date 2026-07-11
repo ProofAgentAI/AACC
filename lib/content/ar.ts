@@ -64,6 +64,7 @@ export const ar: typeof en = {
     newsletter: "النشرة البريدية",
     sponsorship: "الرعاية",
     admin: "لوحة الإدارة",
+    memberPortal: "بوابة الأعضاء",
     legal: "© 2026 AACC-USA. غرفة التجارة الجزائرية الأمريكية. جميع الحقوق محفوظة.",
     disclaimer:
       "AACC-USA جمعية أمريكية مستقلة غير ربحية على نمط غرف التجارة، وهي ليست جهة حكومية.",

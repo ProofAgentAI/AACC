@@ -135,6 +135,8 @@ export function newsletterHtml(content: NewsletterContent) {
   return brandedEmail(content.headline || content.subject, body);
 }
 
+const MEMBER_WELCOME_ROLES = ["individual", "business", "ambassador"];
+
 export function welcomeEmailHtml(role: string) {
   const intros: Record<string, string> = {
     admin:
@@ -143,18 +145,30 @@ export function welcomeEmailHtml(role: string) {
       "Welcome to the <strong>founding board</strong> of the Algerian American Chamber of Commerce USA. We are honored to have your leadership as we build the bridge between Algerian talent, trade, and opportunity.",
     staff:
       "Welcome to the <strong>AACC-USA team</strong>. You now have access to the chamber's back office to contribute content, manage tasks, and support our programs.",
+    individual:
+      "Welcome to the Algerian American Chamber of Commerce USA as an <strong>Individual Member</strong>. Your member portal gives you the chamber's events calendar, the full business directory, our newsletters, and curated resources.",
+    business:
+      "Welcome to the Algerian American Chamber of Commerce USA as a <strong>Business Member</strong>. Your member portal gives you the chamber's events calendar, the full business directory, our newsletters, and curated resources for doing business across both markets.",
+    ambassador:
+      "Welcome to the Algerian American Chamber of Commerce USA as a <strong>State Ambassador</strong>. You now represent the chamber in your state — your portal includes the events calendar, business directory, newsletters, resources, and the chamber CRM to manage your local outreach.",
   };
+  const isMember = MEMBER_WELCOME_ROLES.includes(role);
+  const signInPath = isMember ? "portal" : "admin";
+  const salutation = isMember ? "Dear member," : "Dear colleague,";
   const body = `
-    <p>Dear colleague,</p>
+    <p>${salutation}</p>
     <p>${intros[role] ?? intros.staff}</p>
     <p>You will receive a separate email with a secure link to set your password. Once set, sign in anytime at
-    <a href="https://aacc-usa.org/admin" style="color:#007A3D;">aacc-usa.org/admin</a>.</p>
+    <a href="https://aacc-usa.org/${signInPath}" style="color:#007A3D;">aacc-usa.org/${signInPath}</a>.</p>
     <p>Warm regards,<br/><strong>Fouad Bousetouane</strong><br/>President, AACC-USA</p>
   `;
   const titles: Record<string, string> = {
     admin: "Welcome to AACC-USA — Administrator Access",
     board: "Welcome to the AACC-USA Founding Board",
     staff: "Welcome to the AACC-USA Team",
+    individual: "Welcome to AACC-USA — Your Membership Is Active",
+    business: "Welcome to AACC-USA — Your Business Membership Is Active",
+    ambassador: "Welcome to AACC-USA — State Ambassador",
   };
   return { subject: titles[role] ?? titles.staff, html: brandedEmail("", body) };
 }

@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
-import { isMemberUser } from "@/lib/admin";
+import { isStaffUser } from "@/lib/admin";
 
-export default function AdminLoginPage() {
+export default function PortalLoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ export default function AdminLoginPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!supabase) {
-      setError("Back office is not configured (missing Supabase environment variables).");
+      setError("The member portal is not configured (missing Supabase environment variables).");
       return;
     }
     setError("");
@@ -29,8 +29,8 @@ export default function AdminLoginPage() {
       setError("Invalid email or password.");
       return;
     }
-    // Member accounts belong in the member portal, not the back office.
-    router.push(isMemberUser(signedIn.user) ? "/portal" : "/admin");
+    // Staff accounts work here too, but their home is the back office.
+    router.push(isStaffUser(signedIn.user) ? "/admin" : "/portal");
   }
 
   return (
@@ -40,9 +40,11 @@ export default function AdminLoginPage() {
           <Image src="/aacc-logo.png" alt="AACC-USA" width={180} height={104} priority />
         </div>
         <h1 className="mt-6 text-center font-heading text-xl font-bold text-navy">
-          Back Office Sign In
+          Member Portal Sign In
         </h1>
-        <p className="mt-1 text-center text-sm text-muted">Staff access only.</p>
+        <p className="mt-1 text-center text-sm text-muted">
+          For invited AACC-USA members and state ambassadors.
+        </p>
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="email" className="mb-1.5 block text-sm font-semibold text-navy">
@@ -78,11 +80,18 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-navy px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-navy-600 disabled:opacity-60"
+            className="w-full rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:from-green-500 hover:to-green-400 disabled:opacity-60"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
+        <p className="mt-6 text-center text-xs leading-relaxed text-muted">
+          Membership is by invitation. Not a member yet?{" "}
+          <a href="/en/membership" className="font-semibold text-green-600 hover:underline">
+            Apply to join
+          </a>{" "}
+          and the chamber team will send your invitation.
+        </p>
       </div>
     </main>
   );

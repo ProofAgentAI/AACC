@@ -63,6 +63,7 @@ export const en = {
     newsletter: "Newsletter",
     sponsorship: "Sponsorship",
     admin: "Admin",
+    memberPortal: "Member Portal",
     legal: "© 2026 AACC-USA. Algerian American Chamber of Commerce USA. All rights reserved.",
     disclaimer:
       "AACC-USA is an independent U.S.-based nonprofit chamber-style association and is not a government agency.",

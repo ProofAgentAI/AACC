@@ -38,7 +38,15 @@ import TasksManager from "@/components/admin/TasksManager";
 import EventsManager from "@/components/admin/EventsManager";
 import BillingManager from "@/components/admin/BillingManager";
 import NewsletterComposer from "@/components/admin/NewsletterComposer";
-import { ADMIN_EMAIL, ROLE_LABELS, roleOf, type StaffRole } from "@/lib/admin";
+import {
+  ADMIN_EMAIL,
+  ROLE_LABELS,
+  appRoleOf,
+  isMemberRole,
+  roleOf,
+  type AppRole,
+  type StaffRole,
+} from "@/lib/admin";
 
 type Row = Record<string, unknown>;
 
@@ -97,6 +105,15 @@ const EMAIL_SUBJECTS: Record<TabKey, string> = {
   contacts: "Re: your message to AACC-USA",
   subscribers: "AACC-USA newsletter",
   users: "",
+};
+
+// Membership tier on the application -> portal role granted on approval.
+const TIER_TO_ROLE: Record<string, AppRole> = {
+  individual: "individual",
+  business: "business",
+  "state-ambassador": "ambassador",
+  corporate: "business",
+  "founding-sponsor": "business",
 };
 
 const FIELD_LABELS: Record<string, string> = {
@@ -234,6 +251,9 @@ export default function AdminDashboard() {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
         router.replace("/admin/login");
+      } else if (isMemberRole(appRoleOf(data.session.user))) {
+        // Member accounts belong in the member portal, not the back office.
+        router.replace("/portal");
       } else {
         setEmail(data.session.user.email ?? "");
         setMyRole(roleOf(data.session.user));
@@ -314,27 +334,37 @@ export default function AdminDashboard() {
     }
   }
 
-  function welcomeMailto(userEmail: string, role: StaffRole) {
-    const subjects: Record<StaffRole, string> = {
+  function welcomeMailto(userEmail: string, role: AppRole) {
+    const subjects: Record<AppRole, string> = {
       admin: "Welcome to AACC-USA — Administrator Access",
       board: "Welcome to the AACC-USA Founding Board",
       staff: "Welcome to the AACC-USA Team",
+      individual: "Welcome to AACC-USA — Your Membership Is Active",
+      business: "Welcome to AACC-USA — Your Business Membership Is Active",
+      ambassador: "Welcome to AACC-USA — State Ambassador",
     };
-    const intros: Record<StaffRole, string> = {
+    const intros: Record<AppRole, string> = {
       admin:
         "Welcome aboard as an Administrator of the Algerian American Chamber of Commerce USA. You have full access to the chamber's back office, including approvals, billing, and user management.",
       board:
         "Welcome to the founding board of the Algerian American Chamber of Commerce USA. We are honored to have your leadership as we build the bridge between Algerian talent, trade, and opportunity.",
       staff:
         "Welcome to the AACC-USA team. You now have access to the chamber's back office to contribute content, manage tasks, and support our programs.",
+      individual:
+        "Welcome to the Algerian American Chamber of Commerce USA as an Individual Member. Your member portal gives you the chamber's events calendar, the full business directory, our newsletters, and curated resources.",
+      business:
+        "Welcome to the Algerian American Chamber of Commerce USA as a Business Member. Your member portal gives you the chamber's events calendar, the full business directory, our newsletters, and curated resources for doing business across both markets.",
+      ambassador:
+        "Welcome to the Algerian American Chamber of Commerce USA as a State Ambassador. You now represent the chamber in your state — your portal includes the events calendar, business directory, newsletters, resources, and the chamber CRM.",
     };
+    const isMember = isMemberRole(role);
     const body = [
-      "Dear colleague,",
+      isMember ? "Dear member," : "Dear colleague,",
       "",
       intros[role],
       "",
       "You will receive a separate email with a secure link to set your password. Once set, sign in anytime at:",
-      "https://aacc-usa.org/admin",
+      isMember ? "https://aacc-usa.org/portal" : "https://aacc-usa.org/admin",
       "",
       "Warm regards,",
       "Fouad Bousetouane",
@@ -350,7 +380,7 @@ export default function AdminDashboard() {
     const form = e.currentTarget;
     const data = new FormData(form);
     const userEmail = String(data.get("email") ?? "").trim().toLowerCase();
-    const role = (String(data.get("role") ?? "board") as StaffRole) || "board";
+    const role = (String(data.get("role") ?? "board") as AppRole) || "board";
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData.session?.access_token;
     const res = await fetch("/api/admin/users", {
@@ -497,6 +527,48 @@ export default function AdminDashboard() {
       setNotice("This person is already in the CRM.");
     } else {
       setNotice(`Could not add to CRM: ${error.message}`);
+    }
+  }
+
+  // Approve a membership application: create the invite-only portal account
+  // for the applied tier, send the invitation + welcome email, mark approved.
+  async function inviteMember(row: Row) {
+    if (!supabase) return;
+    const memberEmail = String(row.email ?? "").trim().toLowerCase();
+    if (!memberEmail) {
+      setNotice("This application has no email address.");
+      return;
+    }
+    const role = TIER_TO_ROLE[String(row.tier)] ?? "individual";
+    if (
+      !window.confirm(
+        `Approve this application and invite ${memberEmail} as ${ROLE_LABELS[role]}?`
+      )
+    ) {
+      return;
+    }
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+    const res = await fetch("/api/admin/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ email: memberEmail, role }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setNotice(body.error ?? "Could not send the member invitation.");
+      return;
+    }
+    await updateStatus(row.id, "approved");
+    if (body.welcomed) {
+      setNotice(
+        `Application approved. Invitation and welcome email sent to ${memberEmail} (${ROLE_LABELS[role]}) from contact@aacc-usa.org.`
+      );
+    } else {
+      setNotice(
+        `Application approved and invitation emailed to ${memberEmail} (${ROLE_LABELS[role]}). Your personal welcome email is opening now.`
+      );
+      window.location.href = welcomeMailto(memberEmail, role);
     }
   }
 
@@ -904,7 +976,7 @@ export default function AdminDashboard() {
         <div className="mt-6 grid gap-6 lg:grid-cols-3">
           <div className="rounded-2xl border border-navy-100 bg-white p-6 shadow-card">
             <h2 className="inline-flex items-center gap-2 font-heading text-base font-bold text-navy">
-              <UserPlus className="h-4 w-4" /> Add Staff User
+              <UserPlus className="h-4 w-4" /> Add User
             </h2>
             <form className="mt-4 space-y-3" onSubmit={createUser}>
               <input
@@ -919,9 +991,16 @@ export default function AdminDashboard() {
                 defaultValue="board"
                 className="w-full rounded-lg border border-navy-200 px-4 py-2.5 text-sm"
               >
-                <option value="board">Board Member — full operations</option>
-                <option value="staff">Staff — tasks, content & events</option>
-                <option value="admin">Admin — everything incl. billing & users</option>
+                <optgroup label="Back office (staff)">
+                  <option value="board">Board Member — full operations</option>
+                  <option value="staff">Staff — tasks, content & events</option>
+                  <option value="admin">Admin — everything incl. billing & users</option>
+                </optgroup>
+                <optgroup label="Member portal (invite-only)">
+                  <option value="individual">Individual Member — portal access</option>
+                  <option value="business">Business Member — portal access</option>
+                  <option value="ambassador">State Ambassador — portal + CRM</option>
+                </optgroup>
               </select>
               <button
                 type="submit"
@@ -972,9 +1051,16 @@ export default function AdminDashboard() {
                           onChange={(e) => changeRole(user.id, e.target.value)}
                           className="rounded-full border-0 bg-navy-50 px-3 py-1.5 text-xs font-semibold text-navy"
                         >
-                          <option value="admin">Admin</option>
-                          <option value="board">Board Member</option>
-                          <option value="staff">Staff</option>
+                          <optgroup label="Back office">
+                            <option value="admin">Admin</option>
+                            <option value="board">Board Member</option>
+                            <option value="staff">Staff</option>
+                          </optgroup>
+                          <optgroup label="Member portal">
+                            <option value="individual">Individual Member</option>
+                            <option value="business">Business Member</option>
+                            <option value="ambassador">State Ambassador</option>
+                          </optgroup>
                         </select>
                       )}
                     </td>
@@ -1047,6 +1133,15 @@ export default function AdminDashboard() {
               >
                 <Mail className="h-3.5 w-3.5" /> Email Applicant
               </a>
+              {tab === "memberships" && isAdmin && detail.status !== "approved" && (
+                <button
+                  type="button"
+                  onClick={() => inviteMember(detail)}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-navy px-4 py-2 text-xs font-semibold text-white hover:bg-navy-600"
+                >
+                  <MailPlus className="h-3.5 w-3.5" /> Approve &amp; Send Member Invite
+                </button>
+              )}
               {tab !== "users" && tab !== "subscribers" && (
                 <button
                   type="button"

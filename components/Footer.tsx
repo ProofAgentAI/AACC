@@ -30,6 +30,7 @@ export default function Footer({ locale, dict }: { locale: Locale; dict: Diction
     { href: p("/sponsors"), label: f.sponsorship },
     { href: p("/contact"), label: nav.contact },
     { href: "#newsletter", label: f.newsletter },
+    { href: "/portal", label: f.memberPortal },
     { href: "/admin", label: f.admin },
   ];
 

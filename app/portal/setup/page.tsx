@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
-import { isMemberUser } from "@/lib/admin";
+import { isStaffUser } from "@/lib/admin";
 
-export default function AdminSetupPage() {
+export default function PortalSetupPage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
   const [hasSession, setHasSession] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // The invite link signs the user in automatically; they just choose a password.
+  // The invite link signs the member in automatically; they just choose a password.
   useEffect(() => {
     if (!supabase) {
       setReady(true);
@@ -52,7 +52,7 @@ export default function AdminSetupPage() {
       setError(updateError.message);
       return;
     }
-    router.push(isMemberUser(updated.user) ? "/portal" : "/admin");
+    router.push(isStaffUser(updated.user) ? "/admin" : "/portal");
   }
 
   return (
@@ -62,14 +62,14 @@ export default function AdminSetupPage() {
           <Image src="/aacc-logo.png" alt="AACC-USA" width={180} height={104} priority />
         </div>
         <h1 className="mt-6 text-center font-heading text-xl font-bold text-navy">
-          Welcome to the AACC-USA Back Office
+          Welcome to the AACC-USA Member Portal
         </h1>
         {!ready ? (
           <p className="mt-4 text-center text-sm text-muted">Loading...</p>
         ) : hasSession ? (
           <>
             <p className="mt-2 text-center text-sm text-muted">
-              Choose a password to finish setting up your account.
+              Choose a password to activate your membership account.
             </p>
             <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
               <div>
@@ -116,9 +116,9 @@ export default function AdminSetupPage() {
           </>
         ) : (
           <p className="mt-4 text-center text-sm text-muted">
-            This setup link is invalid or has expired. Ask the administrator to send a new
+            This setup link is invalid or has expired. Ask the chamber team for a new
             invitation, or{" "}
-            <a href="/admin/login" className="font-semibold text-green-600 hover:underline">
+            <a href="/portal/login" className="font-semibold text-green-600 hover:underline">
               sign in
             </a>{" "}
             if you already have a password.
