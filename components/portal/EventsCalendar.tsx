@@ -101,7 +101,7 @@ export default function EventsCalendar({ onNotice }: { onNotice: (msg: string) =
   const monthLabel = cursor.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
   return (
-    <div className="mt-6 grid gap-6 xl:grid-cols-3">
+    <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
       {/* Month grid */}
       <div className="rounded-2xl border border-navy-100 bg-white p-5 shadow-card xl:col-span-2">
         <div className="flex items-center justify-between">

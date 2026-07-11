@@ -609,6 +609,9 @@ export const en = {
       noResultsHint: "Try broadening your search, or be the first to represent this category.",
       clearFilters: "Clear all filters",
       contact: "Contact",
+      portalNote:
+        "This page features the chamber's sponsored listings. Members can browse the full business directory in the member portal.",
+      portalCta: "Member sign in",
     },
     cta: {
       title: "List Your Business",

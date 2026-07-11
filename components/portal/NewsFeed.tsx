@@ -65,7 +65,7 @@ export default function NewsFeed({ onNotice }: { onNotice: (msg: string) => void
   }
 
   return (
-    <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+    <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
       {posts.map((post) => (
         <a
           key={post.id}

@@ -15,11 +15,13 @@ import {
   MailOpen,
   Menu,
   Newspaper,
+  Store,
   X,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import EventsCalendar from "@/components/portal/EventsCalendar";
 import DirectoryBrowser from "@/components/portal/DirectoryBrowser";
+import MyBusinessListing from "@/components/portal/MyBusinessListing";
 import NewsFeed from "@/components/portal/NewsFeed";
 import NewslettersList from "@/components/portal/NewslettersList";
 import CrmManager from "@/components/admin/CrmManager";
@@ -29,6 +31,7 @@ const TABS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { key: "events", label: "Events Calendar", icon: CalendarDays },
   { key: "directory", label: "Business Directory", icon: Building2 },
+  { key: "business", label: "My Business", icon: Store },
   { key: "news", label: "News & Articles", icon: Newspaper },
   { key: "newsletters", label: "Newsletters", icon: MailOpen },
   { key: "resources", label: "Resources", icon: Library },
@@ -83,6 +86,9 @@ export default function MemberPortal() {
   const [counts, setCounts] = useState({ events: 0, businesses: 0, posts: 0 });
 
   const hasCrm = role === "ambassador" || isStaffRole(role);
+  // Business members (including influencers/creators) list their business;
+  // staff see the tab to preview the member experience.
+  const hasBusinessTab = role === "business" || isStaffRole(role);
 
   // Session guard: any signed-in account may view the portal; visitors sign in first.
   useEffect(() => {
@@ -170,7 +176,11 @@ export default function MemberPortal() {
     );
   }
 
-  const visibleTabs = TABS.filter((t) => (t.key === "crm" ? hasCrm : true));
+  const visibleTabs = TABS.filter((t) => {
+    if (t.key === "crm") return hasCrm;
+    if (t.key === "business") return hasBusinessTab;
+    return true;
+  });
   const currentLabel = TABS.find((t) => t.key === tab)?.label ?? "";
 
   const statTiles = [
@@ -315,7 +325,7 @@ export default function MemberPortal() {
                     : "Your gateway to the chamber's events, the Algerian-American business network, and member-only updates."}
                 </p>
               </div>
-              <div className="mt-6 grid gap-5 sm:grid-cols-3">
+              <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-3">
                 {statTiles.map((tile) => (
                   <button
                     key={tile.key}
@@ -333,7 +343,7 @@ export default function MemberPortal() {
                   </button>
                 ))}
               </div>
-              <div className="mt-6 grid gap-5 lg:grid-cols-2">
+              <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
                 <div className="rounded-2xl border border-navy-100 bg-white p-6 shadow-card">
                   <h3 className="font-heading text-base font-bold text-navy">Member Benefits</h3>
                   <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted">
@@ -363,11 +373,14 @@ export default function MemberPortal() {
 
           {tab === "events" && <EventsCalendar onNotice={setNotice} />}
           {tab === "directory" && <DirectoryBrowser onNotice={setNotice} />}
+          {tab === "business" && hasBusinessTab && (
+            <MyBusinessListing email={email} onNotice={setNotice} />
+          )}
           {tab === "news" && <NewsFeed onNotice={setNotice} />}
           {tab === "newsletters" && <NewslettersList onNotice={setNotice} />}
 
           {tab === "resources" && (
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
               {RESOURCES.map((resource) => (
                 <a
                   key={resource.url}

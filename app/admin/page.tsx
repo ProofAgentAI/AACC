@@ -24,6 +24,7 @@ import {
   MessagesSquare,
   Newspaper,
   RefreshCw,
+  Star,
   Trash2,
   UserCog,
   UserPlus,
@@ -142,8 +143,13 @@ const FIELD_LABELS: Record<string, string> = {
   aspiration: "Aspiration for AACC-USA",
   category: "Industry",
   business_type: "Business Type",
+  company_size: "Company Size",
   description: "Description",
   website: "Website",
+  logo_url: "Logo URL",
+  social_links: "Social Media",
+  submitted_by: "Submitted By (Member)",
+  featured: "Sponsored (Public Page)",
   services: "Services",
   contact_name: "Contact Name",
   algeria_interest: "Algeria Market Interest",
@@ -201,6 +207,11 @@ function formatValue(key: string, value: unknown): string {
   if (key === "created_at") return formatDate(value);
   if (Array.isArray(value)) return value.join(", ");
   if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>);
+    if (entries.length === 0) return "";
+    return entries.map(([k, v]) => `${k}: ${v}`).join("\n");
+  }
   return String(value);
 }
 
@@ -227,6 +238,7 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pwError, setPwError] = useState("");
   const [approvalsCount, setApprovalsCount] = useState(0);
+  const [directoryLimit, setDirectoryLimit] = useState(50);
   const isAdmin = myRole === "admin";
 
   const loadApprovalsCount = useCallback(async () => {
@@ -310,6 +322,51 @@ export default function AdminDashboard() {
       loadRows();
     }
   }, [ready, tab, loadRows, loadUsers]);
+
+  // How many sponsored listings the public directory page shows.
+  useEffect(() => {
+    if (!ready || tab !== "directory" || !supabase) return;
+    supabase
+      .from("site_settings")
+      .select("value")
+      .eq("key", "directory_public_limit")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value != null) setDirectoryLimit(Number(data.value) || 50);
+      });
+  }, [ready, tab]);
+
+  async function saveDirectoryLimit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!supabase) return;
+    const { error } = await supabase.from("site_settings").upsert({
+      key: "directory_public_limit",
+      value: directoryLimit,
+      updated_at: new Date().toISOString(),
+    });
+    setNotice(
+      error
+        ? `Could not save the limit: ${error.message}`
+        : `Public directory now shows up to ${directoryLimit} sponsored listings.`
+    );
+  }
+
+  async function toggleFeatured(row: Row) {
+    if (!supabase) return;
+    const next = !row.featured;
+    const { error } = await supabase
+      .from("directory_submissions")
+      .update({ featured: next })
+      .eq("id", row.id);
+    if (error) {
+      setNotice(`Could not update the sponsored flag: ${error.message}`);
+      return;
+    }
+    setRows((current) => current.map((r) => (r.id === row.id ? { ...r, featured: next } : r)));
+    setDetail((current) =>
+      current && current.id === row.id ? { ...current, featured: next } : current
+    );
+  }
 
   async function updateStatus(id: unknown, status: string) {
     if (!supabase || !currentTable) return;
@@ -750,6 +807,37 @@ export default function AdminDashboard() {
         <CrmManager onNotice={setNotice} />
       ) : tab !== "users" ? (
         <>
+        {/* Sponsored listings: what the public directory page shows */}
+        {tab === "directory" && isAdmin && (
+          <div className="mt-6 flex flex-wrap items-center gap-4 rounded-2xl border border-gold/40 bg-gold-100/30 px-5 py-4">
+            <Star className="h-5 w-5 shrink-0 text-gold-600" aria-hidden="true" />
+            <p className="min-w-48 flex-1 text-sm text-ink">
+              The public directory page shows only <strong>sponsored</strong> listings (
+              {rows.filter((r) => r.featured).length} of {rows.length} marked). Members see the
+              full directory in the portal. Use the star to sponsor a listing.
+            </p>
+            <form onSubmit={saveDirectoryLimit} className="flex items-center gap-2">
+              <label htmlFor="dir-limit" className="text-sm font-semibold text-navy">
+                Public limit
+              </label>
+              <input
+                id="dir-limit"
+                type="number"
+                min={1}
+                max={500}
+                value={directoryLimit}
+                onChange={(e) => setDirectoryLimit(Number(e.target.value))}
+                className="w-20 rounded-lg border border-navy-200 px-3 py-2 text-sm"
+              />
+              <button
+                type="submit"
+                className="rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy-600"
+              >
+                Save
+              </button>
+            </form>
+          </div>
+        )}
         {/* Mobile: cards instead of a wide table */}
         <div className="mt-6 space-y-3 md:hidden">
           {rows.length === 0 && !loading && (
@@ -937,6 +1025,25 @@ export default function AdminDashboard() {
                     </td>
                   )}
                   <td className="whitespace-nowrap px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    {tab === "directory" && isAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => toggleFeatured(row)}
+                        className={`rounded-lg p-2 transition-colors ${
+                          row.featured
+                            ? "text-gold-600 hover:bg-gold-100"
+                            : "text-muted hover:bg-gold-100 hover:text-gold-600"
+                        }`}
+                        aria-label={row.featured ? "Remove sponsored" : "Mark as sponsored"}
+                        title={
+                          row.featured
+                            ? "Sponsored — shown on the public page"
+                            : "Sponsor: show on the public page"
+                        }
+                      >
+                        <Star className={`h-4 w-4 ${row.featured ? "fill-current" : ""}`} />
+                      </button>
+                    )}
                     {tab !== "subscribers" && (
                       <button
                         type="button"
@@ -1133,6 +1240,20 @@ export default function AdminDashboard() {
               >
                 <Mail className="h-3.5 w-3.5" /> Email Applicant
               </a>
+              {tab === "directory" && isAdmin && (
+                <button
+                  type="button"
+                  onClick={() => toggleFeatured(detail)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold ${
+                    detail.featured
+                      ? "bg-gold text-navy hover:bg-gold-400"
+                      : "border border-navy-200 text-navy hover:bg-surface"
+                  }`}
+                >
+                  <Star className={`h-3.5 w-3.5 ${detail.featured ? "fill-current" : ""}`} />
+                  {detail.featured ? "Sponsored — Remove" : "Mark as Sponsored"}
+                </button>
+              )}
               {tab === "memberships" && isAdmin && detail.status !== "approved" && (
                 <button
                   type="button"

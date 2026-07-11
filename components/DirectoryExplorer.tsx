@@ -41,31 +41,46 @@ export default function DirectoryExplorer({
 
   useEffect(() => {
     if (!supabase) return;
-    supabase
-      .from("directory_submissions")
-      .select(
-        "id, business_name, category, business_type, city, state, description, website, services, algeria_interest, us_interest"
-      )
-      .order("created_at", { ascending: true })
-      .then(({ data, error }) => {
-        if (error || !data || data.length === 0) return;
-        setListings(
-          data.map((row) => ({
-            slug: row.id as string,
-            name: row.business_name as string,
-            category: (row.category as string) ?? "",
-            businessType: (row.business_type as string) ?? "",
-            city: (row.city as string) ?? "",
-            state: (row.state as string) ?? "",
-            description: (row.description as string) ?? "",
-            website: (row.website as string) ?? "",
-            services: (row.services as string[]) ?? [],
-            algeriaInterest: Boolean(row.algeria_interest),
-            usInterest: Boolean(row.us_interest),
-            initials: initialsOf(row.business_name as string),
-          }))
-        );
-      });
+    const client = supabase;
+    async function loadSponsored() {
+      // The public page shows only sponsored listings, capped by the
+      // admin-managed limit; the full directory lives in the member portal.
+      let limit = 50;
+      const { data: setting } = await client
+        .from("site_settings")
+        .select("value")
+        .eq("key", "directory_public_limit")
+        .maybeSingle();
+      if (setting?.value != null) limit = Number(setting.value) || 50;
+
+      const { data, error } = await client
+        .from("directory_submissions")
+        .select(
+          "id, business_name, category, business_type, city, state, description, website, logo_url, services, algeria_interest, us_interest"
+        )
+        .eq("featured", true)
+        .order("created_at", { ascending: true })
+        .limit(limit);
+      if (error || !data || data.length === 0) return;
+      setListings(
+        data.map((row) => ({
+          slug: row.id as string,
+          name: row.business_name as string,
+          category: (row.category as string) ?? "",
+          businessType: (row.business_type as string) ?? "",
+          city: (row.city as string) ?? "",
+          state: (row.state as string) ?? "",
+          description: (row.description as string) ?? "",
+          website: (row.website as string) ?? "",
+          logoUrl: (row.logo_url as string) ?? "",
+          services: (row.services as string[]) ?? [],
+          algeriaInterest: Boolean(row.algeria_interest),
+          usInterest: Boolean(row.us_interest),
+          initials: initialsOf(row.business_name as string),
+        }))
+      );
+    }
+    loadSponsored();
   }, []);
 
   const industries = useMemo(
@@ -210,7 +225,14 @@ export default function DirectoryExplorer({
         {dict.showing} {filtered.length} {dict.of} {listings.length} {dict.businesses}
       </p>
 
-      <div className="mt-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <p className="mt-2 text-sm text-muted">
+        {dict.portalNote}{" "}
+        <a href="/portal/login" className="font-semibold text-green-600 hover:underline">
+          {dict.portalCta}
+        </a>
+      </p>
+
+      <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filtered.map((listing) => (
           <DirectoryCard
             key={listing.slug}

@@ -1,7 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Building2, Globe, Mail, MapPin, Phone, Search } from "lucide-react";
+import {
+  Building2,
+  Facebook,
+  Globe,
+  Instagram,
+  Link2,
+  Linkedin,
+  Mail,
+  MapPin,
+  Phone,
+  Search,
+  Twitter,
+  Youtube,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 type Listing = {
@@ -9,14 +22,25 @@ type Listing = {
   business_name: string;
   category: string;
   business_type: string | null;
+  company_size: string | null;
   city: string | null;
   state: string | null;
   description: string;
   website: string | null;
+  logo_url: string | null;
+  social_links: Record<string, string> | null;
   services: string[];
   contact_name: string;
   email: string;
   phone: string | null;
+};
+
+const SOCIAL_ICONS: Record<string, typeof Instagram> = {
+  instagram: Instagram,
+  linkedin: Linkedin,
+  facebook: Facebook,
+  x: Twitter,
+  youtube: Youtube,
 };
 
 export default function DirectoryBrowser({ onNotice }: { onNotice: (msg: string) => void }) {
@@ -31,7 +55,7 @@ export default function DirectoryBrowser({ onNotice }: { onNotice: (msg: string)
     const { data, error } = await supabase
       .from("directory_submissions")
       .select(
-        "id, business_name, category, business_type, city, state, description, website, services, contact_name, email, phone"
+        "id, business_name, category, business_type, company_size, city, state, description, website, logo_url, social_links, services, contact_name, email, phone"
       )
       .eq("status", "approved")
       .order("business_name", { ascending: true });
@@ -106,16 +130,25 @@ export default function DirectoryBrowser({ onNotice }: { onNotice: (msg: string)
             : "No businesses match your search."}
         </p>
       ) : (
-        <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           {filtered.map((listing) => (
             <article
               key={listing.id}
               className="flex flex-col rounded-2xl border border-navy-100 bg-white p-6 shadow-card transition-shadow hover:shadow-card-hover"
             >
               <div className="flex items-start gap-3">
-                <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-navy-50 text-navy">
-                  <Building2 className="h-5 w-5" />
-                </span>
+                {listing.logo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={listing.logo_url}
+                    alt=""
+                    className="h-11 w-11 shrink-0 rounded-xl border border-navy-50 object-cover"
+                  />
+                ) : (
+                  <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-navy-50 text-navy">
+                    <Building2 className="h-5 w-5" />
+                  </span>
+                )}
                 <div className="min-w-0">
                   <h3 className="font-heading text-base font-bold leading-tight text-navy">
                     {listing.business_name}
@@ -123,10 +156,19 @@ export default function DirectoryBrowser({ onNotice }: { onNotice: (msg: string)
                   <p className="mt-0.5 text-xs font-semibold text-gold-600">{listing.category}</p>
                 </div>
               </div>
-              {(listing.city || listing.state) && (
-                <p className="mt-3 inline-flex items-center gap-1.5 text-xs text-muted">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {[listing.city, listing.state].filter(Boolean).join(", ")}
+              {(listing.city || listing.state || listing.company_size) && (
+                <p className="mt-3 inline-flex flex-wrap items-center gap-1.5 text-xs text-muted">
+                  {(listing.city || listing.state) && (
+                    <>
+                      <MapPin className="h-3.5 w-3.5" />
+                      {[listing.city, listing.state].filter(Boolean).join(", ")}
+                    </>
+                  )}
+                  {listing.company_size && (
+                    <span className="rounded-full bg-surface px-2 py-0.5 font-medium">
+                      {listing.company_size}
+                    </span>
+                  )}
                 </p>
               )}
               <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-muted">
@@ -175,6 +217,22 @@ export default function DirectoryBrowser({ onNotice }: { onNotice: (msg: string)
                     <Globe className="h-4 w-4" />
                   </a>
                 )}
+                {Object.entries(listing.social_links ?? {}).map(([platform, url]) => {
+                  const SocialIcon = SOCIAL_ICONS[platform] ?? Link2;
+                  return (
+                    <a
+                      key={platform}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg p-2 text-muted hover:bg-navy-50 hover:text-navy"
+                      aria-label={`${listing.business_name} on ${platform}`}
+                      title={url}
+                    >
+                      <SocialIcon className="h-4 w-4" />
+                    </a>
+                  );
+                })}
                 <span className="ms-auto truncate text-xs text-muted">{listing.contact_name}</span>
               </div>
             </article>

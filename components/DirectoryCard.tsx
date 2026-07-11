@@ -14,12 +14,22 @@ export default function DirectoryCard({
   return (
     <article className="flex flex-col rounded-2xl border border-navy-100 bg-white p-7 shadow-card transition-shadow hover:shadow-card-hover">
       <div className="flex items-start gap-4">
-        <span
-          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-navy to-navy-500 font-heading text-lg font-bold text-gold"
-          aria-hidden="true"
-        >
-          {listing.initials}
-        </span>
+        {listing.logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={listing.logoUrl}
+            alt=""
+            className="h-14 w-14 shrink-0 rounded-xl border border-navy-50 object-cover"
+            aria-hidden="true"
+          />
+        ) : (
+          <span
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-navy to-navy-500 font-heading text-lg font-bold text-gold"
+            aria-hidden="true"
+          >
+            {listing.initials}
+          </span>
+        )}
         <div>
           <h3 className="font-heading text-lg font-bold leading-snug text-navy">{listing.name}</h3>
           <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-green-600">
@@ -43,7 +53,7 @@ export default function DirectoryCard({
         ))}
       </div>
       <div className="mt-6 flex items-center justify-between gap-3 border-t border-navy-50 pt-5">
-        <span className="inline-flex items-center gap-1.5 truncate text-sm text-muted">
+        <span className="inline-flex min-w-0 items-center gap-1.5 text-sm text-muted">
           <Globe className="h-4 w-4 shrink-0 text-gold-600" aria-hidden="true" />
           <span className="truncate">{listing.website}</span>
         </span>

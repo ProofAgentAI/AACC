@@ -11,6 +11,7 @@ export type DirectoryListing = {
   algeriaInterest: boolean;
   usInterest: boolean;
   initials: string;
+  logoUrl?: string;
 };
 
 export const industries = [

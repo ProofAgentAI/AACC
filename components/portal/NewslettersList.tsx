@@ -72,7 +72,7 @@ export default function NewslettersList({ onNotice }: { onNotice: (msg: string) 
 
   return (
     <>
-      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {newsletters.map((newsletter) => (
           <button
             key={newsletter.id}
