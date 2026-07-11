@@ -16,6 +16,7 @@ import {
   Menu,
   Newspaper,
   Store,
+  UserCircle,
   X,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -24,6 +25,7 @@ import DirectoryBrowser from "@/components/portal/DirectoryBrowser";
 import MyBusinessListing from "@/components/portal/MyBusinessListing";
 import NewsFeed from "@/components/portal/NewsFeed";
 import NewslettersList from "@/components/portal/NewslettersList";
+import ProfileEditor from "@/components/portal/ProfileEditor";
 import CrmManager from "@/components/admin/CrmManager";
 import { ROLE_LABELS, appRoleOf, isStaffRole, type AppRole } from "@/lib/admin";
 
@@ -36,6 +38,7 @@ const TABS = [
   { key: "newsletters", label: "Newsletters", icon: MailOpen },
   { key: "resources", label: "Resources", icon: Library },
   { key: "crm", label: "CRM", icon: ContactRound },
+  { key: "profile", label: "My Profile", icon: UserCircle },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -77,6 +80,7 @@ export default function MemberPortal() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<AppRole>("individual");
   const [tab, setTab] = useState<TabKey>("dashboard");
   const [notice, setNotice] = useState("");
@@ -117,6 +121,7 @@ export default function MemberPortal() {
         await client.auth.refreshSession();
       }
       setEmail(user.email ?? "");
+      setFullName(String(user.user_metadata?.full_name ?? ""));
       setRole(appRoleOf(user));
       setReady(true);
     });
@@ -216,6 +221,9 @@ export default function MemberPortal() {
         </div>
       </div>
       <div className="mx-3 mb-4 rounded-xl bg-white/5 px-4 py-3">
+        {fullName && (
+          <p className="truncate font-heading text-sm font-bold text-white">{fullName}</p>
+        )}
         <p className="truncate text-xs text-navy-200">{email}</p>
         <span className="mt-1.5 inline-block rounded-full bg-gold px-2.5 py-0.5 text-[11px] font-bold text-navy">
           {ROLE_LABELS[role]}
@@ -422,6 +430,10 @@ export default function MemberPortal() {
           )}
 
           {tab === "crm" && hasCrm && <CrmManager onNotice={setNotice} />}
+
+          {tab === "profile" && (
+            <ProfileEditor email={email} onSaved={setFullName} onNotice={setNotice} />
+          )}
 
           {/* Change password dialog */}
           {pwOpen && (

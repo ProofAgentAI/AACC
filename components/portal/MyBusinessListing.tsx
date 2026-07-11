@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Building2, ImagePlus, Star, X } from "lucide-react";
+import { Building2, ImagePlus, Pencil, Star, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 type Submission = {
@@ -12,6 +12,22 @@ type Submission = {
   status: string;
   featured: boolean;
   logo_url: string | null;
+};
+
+// Full row loaded when the member edits one of their listings.
+type FullListing = Submission & {
+  business_type: string | null;
+  company_size: string | null;
+  city: string | null;
+  state: string | null;
+  description: string;
+  website: string | null;
+  social_links: Record<string, string> | null;
+  services: string[];
+  contact_name: string;
+  phone: string | null;
+  algeria_interest: boolean;
+  us_interest: boolean;
 };
 
 const INDUSTRIES = [
@@ -79,6 +95,7 @@ export default function MyBusinessListing({
   const [mine, setMine] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<FullListing | null>(null);
   const [saving, setSaving] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -125,6 +142,22 @@ export default function MyBusinessListing({
     setLogoUrl(data.publicUrl);
   }
 
+  async function startEditing(id: string) {
+    if (!supabase) return;
+    const { data, error } = await supabase
+      .from("directory_submissions")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (error || !data) {
+      onNotice("Could not load that listing for editing.");
+      return;
+    }
+    setEditing(data as FullListing);
+    setLogoUrl((data as FullListing).logo_url ?? "");
+    setFormOpen(true);
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!supabase) return;
@@ -141,7 +174,9 @@ export default function MyBusinessListing({
       .filter(Boolean);
 
     setSaving(true);
-    const { error } = await supabase.from("directory_submissions").insert({
+    // Every member submission or edit goes back through review as pending;
+    // only the administrator can approve or sponsor a listing.
+    const payload = {
       business_name: String(data.get("business_name") ?? "").trim(),
       category: String(data.get("category") ?? ""),
       business_type: String(data.get("business_type") ?? "") || null,
@@ -160,7 +195,11 @@ export default function MyBusinessListing({
       us_interest: data.get("us_interest") === "on",
       submitted_by: email,
       status: "pending",
-    });
+      featured: false,
+    };
+    const { error } = editing
+      ? await supabase.from("directory_submissions").update(payload).eq("id", editing.id)
+      : await supabase.from("directory_submissions").insert(payload);
     setSaving(false);
     if (error) {
       onNotice(`Could not submit your listing: ${error.message}`);
@@ -170,8 +209,11 @@ export default function MyBusinessListing({
     setLogoUrl("");
     setFormOpen(false);
     onNotice(
-      "Your business listing was submitted. The chamber team reviews every request; once approved it appears in the member directory."
+      editing
+        ? "Your changes were submitted. The listing is back in review and returns to the directory once re-approved."
+        : "Your business listing was submitted. The chamber team reviews every request; once approved it appears in the member directory."
     );
+    setEditing(null);
     load();
   }
 
@@ -185,7 +227,17 @@ export default function MyBusinessListing({
           </h2>
           <button
             type="button"
-            onClick={() => setFormOpen((v) => !v)}
+            onClick={() => {
+              if (formOpen) {
+                setFormOpen(false);
+                setEditing(null);
+                setLogoUrl("");
+              } else {
+                setEditing(null);
+                setLogoUrl("");
+                setFormOpen(true);
+              }
+            }}
             className="rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-5 py-2.5 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400"
           >
             {formOpen ? "Close Form" : "Submit a Business Listing"}
@@ -235,6 +287,13 @@ export default function MyBusinessListing({
                 >
                   {submission.status === "pending" ? "In review" : submission.status}
                 </span>
+                <button
+                  type="button"
+                  onClick={() => startEditing(submission.id)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-navy-200 px-3 py-1.5 text-xs font-semibold text-navy hover:bg-surface"
+                >
+                  <Pencil className="h-3.5 w-3.5" /> Edit
+                </button>
               </li>
             ))}
           </ul>
@@ -244,13 +303,17 @@ export default function MyBusinessListing({
       {/* Submission form */}
       {formOpen && (
         <form
+          key={editing?.id ?? "new"}
           onSubmit={handleSubmit}
           className="rounded-2xl border border-navy-100 bg-white p-6 shadow-card sm:p-8"
         >
-          <h3 className="font-heading text-base font-bold text-navy">New Business Listing</h3>
+          <h3 className="font-heading text-base font-bold text-navy">
+            {editing ? `Edit: ${editing.business_name}` : "New Business Listing"}
+          </h3>
           <p className="mt-1 text-sm text-muted">
-            Influencers and content creators are welcome — list your brand like any small
-            business, with your social channels front and center.
+            {editing
+              ? "Update your listing below. Saved changes go back through review before reappearing in the directory."
+              : "Influencers and content creators are welcome — list your brand like any small business, with your social channels front and center."}
           </p>
 
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -258,13 +321,25 @@ export default function MyBusinessListing({
               <label className="mb-1.5 block text-sm font-semibold text-navy" htmlFor="biz-name">
                 Business / Brand Name *
               </label>
-              <input id="biz-name" name="business_name" required className={inputClasses} />
+              <input
+                id="biz-name"
+                name="business_name"
+                required
+                defaultValue={editing?.business_name ?? ""}
+                className={inputClasses}
+              />
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-navy" htmlFor="biz-cat">
                 Industry *
               </label>
-              <select id="biz-cat" name="category" required className={inputClasses}>
+              <select
+                id="biz-cat"
+                name="category"
+                required
+                defaultValue={editing?.category ?? ""}
+                className={inputClasses}
+              >
                 <option value="">Select an industry</option>
                 {INDUSTRIES.map((industry) => (
                   <option key={industry} value={industry}>
@@ -277,7 +352,12 @@ export default function MyBusinessListing({
               <label className="mb-1.5 block text-sm font-semibold text-navy" htmlFor="biz-type">
                 Business Type
               </label>
-              <select id="biz-type" name="business_type" className={inputClasses}>
+              <select
+                id="biz-type"
+                name="business_type"
+                defaultValue={editing?.business_type ?? ""}
+                className={inputClasses}
+              >
                 <option value="">Select a type</option>
                 {BUSINESS_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -290,7 +370,12 @@ export default function MyBusinessListing({
               <label className="mb-1.5 block text-sm font-semibold text-navy" htmlFor="biz-size">
                 Company Size
               </label>
-              <select id="biz-size" name="company_size" className={inputClasses}>
+              <select
+                id="biz-size"
+                name="company_size"
+                defaultValue={editing?.company_size ?? ""}
+                className={inputClasses}
+              >
                 <option value="">Select a size</option>
                 {COMPANY_SIZES.map((size) => (
                   <option key={size} value={size}>
@@ -303,7 +388,12 @@ export default function MyBusinessListing({
               <label className="mb-1.5 block text-sm font-semibold text-navy" htmlFor="biz-state">
                 State
               </label>
-              <select id="biz-state" name="state" className={inputClasses}>
+              <select
+                id="biz-state"
+                name="state"
+                defaultValue={editing?.state ?? ""}
+                className={inputClasses}
+              >
                 <option value="">Select a state</option>
                 {US_STATES.map((state) => (
                   <option key={state} value={state}>
@@ -316,7 +406,12 @@ export default function MyBusinessListing({
               <label className="mb-1.5 block text-sm font-semibold text-navy" htmlFor="biz-city">
                 City
               </label>
-              <input id="biz-city" name="city" className={inputClasses} />
+              <input
+                id="biz-city"
+                name="city"
+                defaultValue={editing?.city ?? ""}
+                className={inputClasses}
+              />
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-navy" htmlFor="biz-web">
@@ -327,6 +422,7 @@ export default function MyBusinessListing({
                 name="website"
                 type="url"
                 placeholder="https://..."
+                defaultValue={editing?.website ?? ""}
                 className={inputClasses}
               />
             </div>
@@ -339,6 +435,7 @@ export default function MyBusinessListing({
                 name="description"
                 required
                 rows={4}
+                defaultValue={editing?.description ?? ""}
                 className={inputClasses}
               />
             </div>
@@ -350,6 +447,7 @@ export default function MyBusinessListing({
                 id="biz-serv"
                 name="services"
                 placeholder="Consulting, Distribution, Content..."
+                defaultValue={(editing?.services ?? []).join(", ")}
                 className={inputClasses}
               />
             </div>
@@ -406,6 +504,7 @@ export default function MyBusinessListing({
                       name={`social_${platform.key}`}
                       type="url"
                       placeholder={platform.placeholder}
+                      defaultValue={editing?.social_links?.[platform.key] ?? ""}
                       className={inputClasses}
                     />
                   </div>
@@ -417,19 +516,32 @@ export default function MyBusinessListing({
               <label className="mb-1.5 block text-sm font-semibold text-navy" htmlFor="biz-contact">
                 Contact Name *
               </label>
-              <input id="biz-contact" name="contact_name" required className={inputClasses} />
+              <input
+                id="biz-contact"
+                name="contact_name"
+                required
+                defaultValue={editing?.contact_name ?? ""}
+                className={inputClasses}
+              />
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-navy" htmlFor="biz-phone">
                 Phone
               </label>
-              <input id="biz-phone" name="phone" type="tel" className={inputClasses} />
+              <input
+                id="biz-phone"
+                name="phone"
+                type="tel"
+                defaultValue={editing?.phone ?? ""}
+                className={inputClasses}
+              />
             </div>
             <div className="flex flex-wrap gap-5 sm:col-span-2">
               <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-navy">
                 <input
                   type="checkbox"
                   name="algeria_interest"
+                  defaultChecked={editing?.algeria_interest ?? false}
                   className="h-4 w-4 rounded border-navy-200 accent-[#007A3D]"
                 />
                 Interested in the Algerian market
@@ -438,6 +550,7 @@ export default function MyBusinessListing({
                 <input
                   type="checkbox"
                   name="us_interest"
+                  defaultChecked={editing?.us_interest ?? false}
                   className="h-4 w-4 rounded border-navy-200 accent-[#0B1F3A]"
                 />
                 Interested in the U.S. market
@@ -450,7 +563,7 @@ export default function MyBusinessListing({
             disabled={saving || uploading}
             className="mt-6 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-8 py-3 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400 disabled:opacity-60"
           >
-            {saving ? "Submitting..." : "Submit for Review"}
+            {saving ? "Submitting..." : editing ? "Save & Resubmit for Review" : "Submit for Review"}
           </button>
           <p className="mt-3 text-xs text-muted">
             Submitted as {email}. The chamber team reviews every listing before it appears in the

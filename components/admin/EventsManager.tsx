@@ -1,10 +1,30 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CalendarDays, CalendarPlus, Globe, List, Pencil, Trash2, X } from "lucide-react";
+import {
+  CalendarDays,
+  CalendarPlus,
+  Download,
+  Globe,
+  List,
+  Pencil,
+  Trash2,
+  Users,
+  X,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { isAdminUser } from "@/lib/admin";
+import { downloadCsv } from "@/lib/csv";
 import EventsCalendar, { type CalendarEvent } from "@/components/portal/EventsCalendar";
+
+type Rsvp = {
+  event_id: string;
+  name: string | null;
+  email: string;
+  role: string | null;
+  status: string;
+  created_at: string;
+};
 
 type Row = Record<string, unknown>;
 
@@ -61,6 +81,8 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
   const [email, setEmail] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [view, setView] = useState<"calendar" | "list">("calendar");
+  const [rsvps, setRsvps] = useState<Rsvp[]>([]);
+  const [attendeesFor, setAttendeesFor] = useState<Row | null>(null);
 
   useEffect(() => {
     supabase?.auth.getSession().then(({ data }) => {
@@ -82,7 +104,35 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
     } else {
       setEvents((data as Row[]) ?? []);
     }
+    // RSVPs power the attendee counts; ignore errors so the events list still
+    // works before schema v17 is applied.
+    const { data: rsvpData } = await supabase
+      .from("event_rsvps")
+      .select("event_id, name, email, role, status, created_at")
+      .order("created_at", { ascending: true });
+    setRsvps((rsvpData as Rsvp[]) ?? []);
   }, [onNotice]);
+
+  const goingFor = (eventId: unknown) =>
+    rsvps.filter((r) => r.event_id === eventId && r.status === "going");
+
+  function exportAttendees(event: Row) {
+    const attendees = goingFor(event.id);
+    if (attendees.length === 0) {
+      onNotice("No confirmed attendees to export yet.");
+      return;
+    }
+    downloadCsv(
+      `attendees-${String(event.slug ?? event.id)}`,
+      [
+        { key: "name", label: "Name" },
+        { key: "email", label: "Email" },
+        { key: "role", label: "Membership" },
+        { key: "created_at", label: "RSVP Date" },
+      ],
+      attendees.map((a) => ({ ...a, created_at: formatDateTime(a.created_at) }))
+    );
+  }
 
   useEffect(() => {
     load();
@@ -417,6 +467,15 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
                 <td className="whitespace-nowrap px-4 py-3">
                   <button
                     type="button"
+                    onClick={() => setAttendeesFor(event)}
+                    className="inline-flex items-center gap-1 rounded-lg p-2 text-xs font-semibold text-muted hover:bg-green-50 hover:text-green-700"
+                    aria-label="View attendees"
+                    title="RSVPs / attendees"
+                  >
+                    <Users className="h-4 w-4" /> {goingFor(event.id).length}
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setDraft({ ...event })}
                     className="rounded-lg p-2 text-muted hover:bg-navy-50 hover:text-navy"
                     aria-label="Edit"
@@ -450,6 +509,74 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
           </tbody>
         </table>
       </div>
+
+      {/* Attendees dialog */}
+      {attendeesFor && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Event attendees"
+        >
+          <div
+            className="absolute inset-0 bg-navy-900/70 backdrop-blur-sm"
+            onClick={() => setAttendeesFor(null)}
+            aria-hidden="true"
+          />
+          <div className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-8 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setAttendeesFor(null)}
+              className="absolute end-4 top-4 rounded-full p-2 text-muted hover:bg-surface hover:text-navy"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <h2 className="pe-8 font-heading text-lg font-bold text-navy">
+              Attendees — {String(attendeesFor.title)}
+            </h2>
+            <p className="mt-1 text-sm text-muted">
+              {goingFor(attendeesFor.id).length} confirmed · {formatDateTime(attendeesFor.starts_at) || "date TBD"}
+            </p>
+            {goingFor(attendeesFor.id).length > 0 && (
+              <button
+                type="button"
+                onClick={() => exportAttendees(attendeesFor)}
+                className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-navy px-4 py-2 text-xs font-semibold text-white hover:bg-navy-600"
+              >
+                <Download className="h-3.5 w-3.5" /> Export CSV
+              </button>
+            )}
+            <ul className="mt-5 space-y-2">
+              {goingFor(attendeesFor.id).length === 0 && (
+                <li className="rounded-xl border border-dashed border-navy-200 p-5 text-center text-sm text-muted">
+                  No RSVPs yet. Members RSVP from the portal events calendar.
+                </li>
+              )}
+              {goingFor(attendeesFor.id).map((attendee) => (
+                <li
+                  key={attendee.email}
+                  className="flex flex-wrap items-center gap-2 rounded-xl border border-navy-100 px-4 py-3"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-navy">
+                      {attendee.name || attendee.email}
+                    </span>
+                    {attendee.name && (
+                      <span className="block truncate text-xs text-muted">{attendee.email}</span>
+                    )}
+                  </span>
+                  {attendee.role && (
+                    <span className="rounded-full bg-navy-50 px-2.5 py-0.5 text-[11px] font-semibold text-navy">
+                      {attendee.role}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

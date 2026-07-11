@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { isMemberUser } from "@/lib/admin";
+import ForgotPassword from "@/components/ForgotPassword";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -90,6 +91,7 @@ export default function AdminLoginPage() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
+        <ForgotPassword />
       </div>
     </main>
   );

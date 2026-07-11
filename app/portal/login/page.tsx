@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { isStaffUser } from "@/lib/admin";
+import ForgotPassword from "@/components/ForgotPassword";
 
 export default function PortalLoginPage() {
   const router = useRouter();
@@ -92,6 +93,7 @@ export default function PortalLoginPage() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
+        <ForgotPassword />
         <p className="mt-6 text-center text-xs leading-relaxed text-muted">
           Membership is by invitation. Not a member yet?{" "}
           <a href="/en/membership" className="font-semibold text-green-600 hover:underline">

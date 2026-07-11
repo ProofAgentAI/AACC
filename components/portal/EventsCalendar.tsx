@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CalendarDays,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
   MapPin,
+  Users,
   Video,
   X,
 } from "lucide-react";
@@ -60,6 +62,75 @@ export default function EventsCalendar({
   const [selected, setSelected] = useState<CalendarEvent | null>(null);
 
   const events = externalEvents ?? fetched;
+
+  // RSVP state (portal mode only): the signed-in email, my RSVPs by event id,
+  // and the going-count for the event open in the dialog.
+  const [myEmail, setMyEmail] = useState("");
+  const [myRsvps, setMyRsvps] = useState<Record<string, string>>({});
+  const [goingCount, setGoingCount] = useState<number | null>(null);
+  const [rsvpBusy, setRsvpBusy] = useState(false);
+
+  useEffect(() => {
+    if (externalEvents || !supabase) return;
+    supabase.auth.getSession().then(({ data }) => {
+      setMyEmail(data.session?.user.email ?? "");
+    });
+  }, [externalEvents]);
+
+  const loadMyRsvps = useCallback(async () => {
+    if (!supabase || externalEvents || !myEmail) return;
+    const { data } = await supabase
+      .from("event_rsvps")
+      .select("event_id, status")
+      .eq("email", myEmail);
+    const map: Record<string, string> = {};
+    for (const row of (data as { event_id: string; status: string }[]) ?? []) {
+      map[row.event_id] = row.status;
+    }
+    setMyRsvps(map);
+  }, [externalEvents, myEmail]);
+
+  useEffect(() => {
+    loadMyRsvps();
+  }, [loadMyRsvps]);
+
+  // Count of confirmed attendees for the selected event (names stay private).
+  useEffect(() => {
+    if (!supabase || externalEvents || !selected) {
+      setGoingCount(null);
+      return;
+    }
+    supabase.rpc("event_rsvp_count", { p_event_id: selected.id }).then(({ data }) => {
+      setGoingCount(typeof data === "number" ? data : null);
+    });
+  }, [selected, externalEvents]);
+
+  async function toggleRsvp(event: CalendarEvent) {
+    if (!supabase || !myEmail) return;
+    const going = myRsvps[event.id] === "going";
+    setRsvpBusy(true);
+    const { data: userData } = await supabase.auth.getUser();
+    const meta = userData.user?.user_metadata ?? {};
+    const { error } = await supabase.from("event_rsvps").upsert(
+      {
+        event_id: event.id,
+        email: myEmail,
+        name: String(meta.full_name ?? "") || null,
+        role: String(meta.role ?? "") || null,
+        status: going ? "cancelled" : "going",
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "event_id,email" }
+    );
+    setRsvpBusy(false);
+    if (error) {
+      onNotice(`Could not update your RSVP: ${error.message}`);
+      return;
+    }
+    setMyRsvps((current) => ({ ...current, [event.id]: going ? "cancelled" : "going" }));
+    setGoingCount((current) => (current === null ? current : current + (going ? -1 : 1)));
+    onNotice(going ? "Your RSVP was cancelled." : `You are attending: ${event.title}.`);
+  }
 
   const load = useCallback(async () => {
     if (!supabase || externalEvents) return;
@@ -225,6 +296,11 @@ export default function EventsCalendar({
                     Pending approval
                   </span>
                 )}
+                {!externalEvents && myRsvps[event.id] === "going" && (
+                  <span className="ms-2 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-semibold text-green-700">
+                    Attending
+                  </span>
+                )}
               </p>
               <p className="mt-1 text-xs text-muted">{formatEventDate(event.starts_at)}</p>
               <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted">
@@ -297,16 +373,39 @@ export default function EventsCalendar({
                 {selected.description}
               </p>
             )}
-            {selected.register_url && (
-              <a
-                href={selected.register_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-6 py-3 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400"
-              >
-                Register <ExternalLink className="h-4 w-4" />
-              </a>
+            {!externalEvents && goingCount !== null && (
+              <p className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-navy">
+                <Users className="h-4 w-4 text-green-600" />
+                {goingCount} attending
+              </p>
             )}
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              {!externalEvents && myEmail && (
+                <button
+                  type="button"
+                  disabled={rsvpBusy}
+                  onClick={() => toggleRsvp(selected)}
+                  className={`inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold transition-all disabled:opacity-60 ${
+                    myRsvps[selected.id] === "going"
+                      ? "border border-green-600 bg-green-50 text-green-700 hover:bg-green-100"
+                      : "bg-gradient-to-r from-green-600 to-green-500 text-white hover:from-green-500 hover:to-green-400"
+                  }`}
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  {myRsvps[selected.id] === "going" ? "Attending — Cancel RSVP" : "RSVP — I'm Attending"}
+                </button>
+              )}
+              {selected.register_url && (
+                <a
+                  href={selected.register_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-navy-200 px-6 py-3 text-sm font-semibold text-navy hover:bg-surface"
+                >
+                  Register <ExternalLink className="h-4 w-4" />
+                </a>
+              )}
+            </div>
           </div>
         </div>
       )}

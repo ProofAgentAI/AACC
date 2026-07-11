@@ -150,7 +150,17 @@ export default function Footer({ locale, dict }: { locale: Locale; dict: Diction
         </div>
 
         <div className="mt-14 border-t border-navy-600 pt-8">
-          <p className="text-xs text-navy-300">{f.legal}</p>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <p className="text-xs text-navy-300">{f.legal}</p>
+            <span className="flex gap-4">
+              <Link href={p("/privacy")} className="text-xs text-navy-200 hover:text-white">
+                {f.privacyPolicy}
+              </Link>
+              <Link href={p("/terms")} className="text-xs text-navy-200 hover:text-white">
+                {f.termsOfUse}
+              </Link>
+            </span>
+          </div>
           <p className="mt-2 text-xs text-navy-300">{f.disclaimer}</p>
         </div>
       </div>

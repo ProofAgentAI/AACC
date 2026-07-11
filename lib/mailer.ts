@@ -161,6 +161,21 @@ const ROLE_TITLES: Record<string, string> = {
   ambassador: "Welcome to AACC-USA — State Ambassador",
 };
 
+// Password reset: a one-time link emailed from contact@aacc-usa.org.
+export function resetEmailHtml(resetUrl: string) {
+  const body = `
+    <p>We received a request to reset the password for your AACC-USA account.</p>
+    <p style="margin:24px 0;">
+      <a href="${resetUrl}" style="display:inline-block;background:linear-gradient(90deg,#0E8A4C,#15A85F);color:#ffffff;font-weight:bold;font-size:15px;padding:13px 30px;border-radius:8px;text-decoration:none;">Choose a New Password</a>
+    </p>
+    <p style="font-size:13px;color:#6B7280;">This link works once and expires in 60 minutes. If the button does not open, copy this address into your browser:<br/>
+    <span style="word-break:break-all;color:#0B1F3A;">${resetUrl}</span></p>
+    <p style="font-size:13px;color:#6B7280;">If you did not request this, you can safely ignore this email — your password stays unchanged.</p>
+    <p>Warm regards,<br/><strong>AACC-USA</strong><br/>contact@aacc-usa.org</p>
+  `;
+  return { subject: "Reset your AACC-USA password", html: brandedEmail("Password Reset", body) };
+}
+
 // The single onboarding email: welcome + sign-in link + temporary password +
 // first-login steps. Sent from contact@aacc-usa.org; no Supabase email involved.
 export function credentialsEmailHtml(role: string, email: string, tempPassword: string) {

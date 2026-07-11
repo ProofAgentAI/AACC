@@ -65,6 +65,8 @@ export const en = {
     sponsorship: "Sponsorship",
     admin: "Admin",
     memberPortal: "Member Portal",
+    privacyPolicy: "Privacy Policy",
+    termsOfUse: "Terms of Use",
     legal: "© 2026 AACC-USA. Algerian American Chamber of Commerce USA. All rights reserved.",
     disclaimer:
       "AACC-USA is an independent U.S.-based nonprofit chamber-style association and is not a government agency.",
@@ -1244,5 +1246,87 @@ export const en = {
       primary: "Become a Member",
       secondary: "Nominate a Spotlight",
     },
+  },
+
+  privacy: {
+    title: "Privacy Policy",
+    updated: "Last updated: July 11, 2026",
+    intro:
+      "The Algerian American Chamber of Commerce USA (“AACC-USA”, “we”) respects your privacy. This policy explains what information we collect through aacc-usa.org, how we use it, and the choices you have.",
+    sections: [
+      {
+        heading: "Information We Collect",
+        body: "We collect the information you submit through our forms: membership and board applications (name, email, phone, professional background), business directory listings (business details, logo, website, social media), contact messages, event RSVPs, and newsletter subscriptions. We also keep account information for members of our portal (email, role, and profile details you choose to add).",
+      },
+      {
+        heading: "How We Use It",
+        body: "We use your information to review applications, operate the member portal and business directory, organize events, respond to your messages, and send chamber communications such as newsletters and event invitations. We do not sell or rent your personal information to anyone.",
+      },
+      {
+        heading: "Public Information",
+        body: "Approved business directory listings are displayed publicly on this website and in the member portal, including the business name, description, location, website, logo, and social media links you provide. Personal contact details on applications are never published.",
+      },
+      {
+        heading: "Where Your Data Lives",
+        body: "Data is stored securely with our infrastructure providers: Supabase (database and authentication) and Vercel (website hosting), in data centers located in the United States. Access to member data is restricted to authorized chamber administrators and staff.",
+      },
+      {
+        heading: "Emails",
+        body: "Chamber emails are sent from contact@aacc-usa.org. Every newsletter includes a way to unsubscribe; you can also opt out any time by emailing us. Transactional emails (such as account credentials and password resets) are sent only when you or an administrator initiates them.",
+      },
+      {
+        heading: "Cookies",
+        body: "We use only the cookies and local storage needed to keep members signed in to the portal and back office. We do not run third-party advertising or tracking cookies.",
+      },
+      {
+        heading: "Your Choices",
+        body: "You may ask us to correct or delete your information, withdraw a directory listing, close your portal account, or unsubscribe from communications at any time by emailing contact@aacc-usa.org. We respond to every request.",
+      },
+      {
+        heading: "Contact",
+        body: "For any privacy question or request, contact the chamber at contact@aacc-usa.org. If this policy changes, the new version will be posted on this page with an updated date.",
+      },
+    ],
+  },
+
+  terms: {
+    title: "Terms of Use",
+    updated: "Last updated: July 11, 2026",
+    intro:
+      "These terms govern your use of aacc-usa.org, the AACC-USA member portal, and chamber services. By using this website or holding a membership, you agree to them.",
+    sections: [
+      {
+        heading: "About AACC-USA",
+        body: "The Algerian American Chamber of Commerce USA is an independent, U.S.-based nonprofit chamber-style association. It is not a government agency and is not affiliated with any government entity. Links to official resources are provided as a community service.",
+      },
+      {
+        heading: "Membership & Accounts",
+        body: "Membership is granted by invitation after review of an application. You are responsible for keeping your sign-in credentials confidential and for activity under your account. The chamber may suspend or remove accounts that misuse the platform or misrepresent themselves.",
+      },
+      {
+        heading: "Member Content",
+        body: "Information you submit for the business directory or other chamber platforms must be accurate and yours to share. By submitting a listing, you grant AACC-USA permission to display it on the website, the member portal, and chamber communications. The chamber reviews all submissions and may decline or remove any listing at its discretion.",
+      },
+      {
+        heading: "Acceptable Use",
+        body: "You agree not to misuse the website or portal: no unauthorized access attempts, scraping of member data, spam, or content that is unlawful, misleading, or infringes the rights of others.",
+      },
+      {
+        heading: "No Professional Advice",
+        body: "Content on this website — including market insights, articles, and resources — is provided for general information only and is not legal, financial, or investment advice. Verify independently before acting on it.",
+      },
+      {
+        heading: "Third-Party Links",
+        body: "The website links to third-party sites, including official government resources and member businesses. AACC-USA does not control and is not responsible for their content or practices.",
+      },
+      {
+        heading: "Limitation of Liability",
+        body: "The website and portal are provided “as is”. To the fullest extent permitted by law, AACC-USA is not liable for indirect or consequential damages arising from use of the website, the portal, or reliance on published content.",
+      },
+      {
+        heading: "Changes & Contact",
+        body: "We may update these terms from time to time; the current version is always posted on this page. Questions: contact@aacc-usa.org.",
+      },
+    ],
   },
 };
