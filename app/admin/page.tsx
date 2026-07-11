@@ -263,6 +263,9 @@ export default function AdminDashboard() {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
         router.replace("/admin/login");
+      } else if (data.session.user.user_metadata?.must_change_password) {
+        // Still on the temporary password: choose a real one first.
+        router.replace("/admin/setup");
       } else if (isMemberRole(appRoleOf(data.session.user))) {
         // Member accounts belong in the member portal, not the back office.
         router.replace("/portal");
@@ -391,7 +394,7 @@ export default function AdminDashboard() {
     }
   }
 
-  function welcomeMailto(userEmail: string, role: AppRole) {
+  function welcomeMailto(userEmail: string, role: AppRole, tempPassword?: string) {
     const subjects: Record<AppRole, string> = {
       admin: "Welcome to AACC-USA — Administrator Access",
       board: "Welcome to the AACC-USA Founding Board",
@@ -415,19 +418,33 @@ export default function AdminDashboard() {
         "Welcome to the Algerian American Chamber of Commerce USA as a State Ambassador. You now represent the chamber in your state — your portal includes the events calendar, business directory, newsletters, resources, and the chamber CRM.",
     };
     const isMember = isMemberRole(role);
+    const signInUrl = isMember
+      ? "https://aacc-usa.org/portal/login"
+      : "https://aacc-usa.org/admin/login";
     const body = [
       isMember ? "Dear member," : "Dear colleague,",
       "",
       intros[role],
       "",
-      "You will receive a separate email with a secure link to set your password. Once set, sign in anytime at:",
-      isMember ? "https://aacc-usa.org/portal" : "https://aacc-usa.org/admin",
+      "Your sign-in details:",
+      `Sign-in page: ${signInUrl}`,
+      `Email: ${userEmail}`,
+      tempPassword ? `Temporary password: ${tempPassword}` : "",
+      "",
+      "First sign-in - three quick steps:",
+      `1. Open ${signInUrl}`,
+      "2. Sign in with your email and the temporary password above",
+      "3. You will be asked to create your own password",
+      "",
+      "For your security, the temporary password works only until you replace it.",
       "",
       "Warm regards,",
       "Fouad Bousetouane",
       "President, AACC-USA",
       "contact@aacc-usa.org",
-    ].join("\n");
+    ]
+      .filter((line) => line !== null)
+      .join("\n");
     return `mailto:${userEmail}?subject=${encodeURIComponent(subjects[role])}&body=${encodeURIComponent(body)}`;
   }
 
@@ -453,16 +470,17 @@ export default function AdminDashboard() {
     form.reset();
     loadUsers();
     if (body.welcomed) {
-      // The server sent the welcome from contact@aacc-usa.org via SMTP.
+      // One email from contact@aacc-usa.org with the link, email, and
+      // temporary password. No Supabase email involved.
       setNotice(
-        `Invitation and welcome email sent to ${userEmail} (${ROLE_LABELS[role]}) from contact@aacc-usa.org.`
+        `Account created for ${userEmail} (${ROLE_LABELS[role]}). Sign-in details with a temporary password were emailed from contact@aacc-usa.org.`
       );
     } else {
       setNotice(
-        `Invitation emailed to ${userEmail} (${ROLE_LABELS[role]}). Your personal welcome email is opening now.`
+        `Account created for ${userEmail} (${ROLE_LABELS[role]}), but the email could not be sent automatically. A draft with their temporary password is opening in your mail client — please send it.`
       );
-      // SMTP not configured: open the welcome message in the admin's mail client.
-      window.location.href = welcomeMailto(userEmail, role);
+      // SMTP not configured or failed: the admin sends the credentials personally.
+      window.location.href = welcomeMailto(userEmail, role, body.tempPassword);
     }
   }
 
@@ -619,13 +637,13 @@ export default function AdminDashboard() {
     await updateStatus(row.id, "approved");
     if (body.welcomed) {
       setNotice(
-        `Application approved. Invitation and welcome email sent to ${memberEmail} (${ROLE_LABELS[role]}) from contact@aacc-usa.org.`
+        `Application approved. Sign-in details with a temporary password were emailed to ${memberEmail} (${ROLE_LABELS[role]}) from contact@aacc-usa.org.`
       );
     } else {
       setNotice(
-        `Application approved and invitation emailed to ${memberEmail} (${ROLE_LABELS[role]}). Your personal welcome email is opening now.`
+        `Application approved and the account created for ${memberEmail} (${ROLE_LABELS[role]}), but the email could not be sent automatically. A draft with their temporary password is opening in your mail client — please send it.`
       );
-      window.location.href = welcomeMailto(memberEmail, role);
+      window.location.href = welcomeMailto(memberEmail, role, body.tempPassword);
     }
   }
 
@@ -1113,11 +1131,11 @@ export default function AdminDashboard() {
                 type="submit"
                 className="w-full rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400"
               >
-                Create & Send Invite
+                Create Account & Email Sign-In Details
               </button>
               <p className="text-xs text-muted">
-                They receive an email with a secure link to set their own password, and your
-                personal welcome message opens ready to send.
+                One email from contact@aacc-usa.org with the sign-in link, their email, and a
+                temporary password. They choose their own password at first sign-in.
               </p>
             </form>
           </div>

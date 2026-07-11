@@ -99,6 +99,9 @@ export default function MemberPortal() {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
         router.replace("/portal/login");
+      } else if (data.session.user.user_metadata?.must_change_password) {
+        // Still on the temporary password: choose a real one first.
+        router.replace("/portal/setup");
       } else {
         setEmail(data.session.user.email ?? "");
         setRole(appRoleOf(data.session.user));

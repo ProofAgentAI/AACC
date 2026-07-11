@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { randomBytes } from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import type { User } from "@supabase/supabase-js";
-import { ADMIN_EMAIL, MEMBER_ROLES, STAFF_ROLES, isMemberRole } from "@/lib/admin";
-import { getTransporter, sendMail, welcomeEmailHtml } from "@/lib/mailer";
+import { ADMIN_EMAIL, MEMBER_ROLES, STAFF_ROLES } from "@/lib/admin";
+import { getTransporter, sendMail, credentialsEmailHtml } from "@/lib/mailer";
 
 const ALL_ROLES: readonly string[] = [...STAFF_ROLES, ...MEMBER_ROLES];
+
+// Readable temporary password: no ambiguous characters (0/O, 1/l/I).
+function generateTempPassword() {
+  const charset = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+  return Array.from(randomBytes(14), (b) => charset[b % charset.length]).join("");
+}
 
 // User management requires the service-role key, which must only ever live in
 // server-side environment variables (never NEXT_PUBLIC_*, never in the repo).
@@ -108,23 +115,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ user: { id: data.user.id, email: data.user.email }, invited: false });
   }
 
-  // Invite mode: Supabase emails a secure link where the user sets their own
-  // password — staff land on /admin/setup, members on /portal/setup.
-  const origin = request.nextUrl.origin;
-  const setupPath = isMemberRole(role) ? "/portal/setup" : "/admin/setup";
-  const { data, error } = await auth.admin.auth.admin.inviteUserByEmail(email, {
-    data: { role },
-    redirectTo: `${origin}${setupPath}`,
+  // Standard mode: create the account with a generated temporary password and
+  // send ONE email from contact@aacc-usa.org with the link, the email, and the
+  // temporary password. Supabase's own email service is never used, so its
+  // rate limits do not apply. must_change_password forces a new password on
+  // first sign-in.
+  const tempPassword = generateTempPassword();
+  const { data, error } = await auth.admin.auth.admin.createUser({
+    email,
+    password: tempPassword,
+    email_confirm: true,
+    user_metadata: { role, must_change_password: true },
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-  // Send the role-specific welcome from contact@aacc-usa.org when SMTP is
-  // configured; otherwise the dashboard falls back to a mailto draft.
   let welcomed = false;
   if (getTransporter()) {
     try {
-      const welcome = welcomeEmailHtml(role);
-      await sendMail({ to: email, subject: welcome.subject, html: welcome.html });
+      const credentials = credentialsEmailHtml(role, email, tempPassword);
+      await sendMail({ to: email, subject: credentials.subject, html: credentials.html });
       welcomed = true;
     } catch {
       welcomed = false;
@@ -135,6 +144,9 @@ export async function POST(request: NextRequest) {
     user: { id: data.user.id, email: data.user.email },
     invited: true,
     welcomed,
+    // Only exposed when the email could not be sent, so the administrator can
+    // deliver the credentials personally (mailto fallback in the dashboard).
+    tempPassword: welcomed ? undefined : tempPassword,
   });
 }
 

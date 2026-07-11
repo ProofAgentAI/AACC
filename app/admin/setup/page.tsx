@@ -46,7 +46,11 @@ export default function AdminSetupPage() {
     }
     setError("");
     setSaving(true);
-    const { error: updateError, data: updated } = await supabase.auth.updateUser({ password });
+    // Setting the password also clears the first-sign-in flag.
+    const { error: updateError, data: updated } = await supabase.auth.updateUser({
+      password,
+      data: { must_change_password: false },
+    });
     setSaving(false);
     if (updateError) {
       setError(updateError.message);

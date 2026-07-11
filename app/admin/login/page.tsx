@@ -29,8 +29,15 @@ export default function AdminLoginPage() {
       setError("Invalid email or password.");
       return;
     }
+    // First sign-in with a temporary password: choose a real password first.
+    const mustChange = Boolean(signedIn.user?.user_metadata?.must_change_password);
+    const isMember = isMemberUser(signedIn.user);
+    if (mustChange) {
+      router.push(isMember ? "/portal/setup" : "/admin/setup");
+      return;
+    }
     // Member accounts belong in the member portal, not the back office.
-    router.push(isMemberUser(signedIn.user) ? "/portal" : "/admin");
+    router.push(isMember ? "/portal" : "/admin");
   }
 
   return (

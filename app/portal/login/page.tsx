@@ -29,8 +29,15 @@ export default function PortalLoginPage() {
       setError("Invalid email or password.");
       return;
     }
+    // First sign-in with a temporary password: choose a real password first.
+    const mustChange = Boolean(signedIn.user?.user_metadata?.must_change_password);
+    const isStaff = isStaffUser(signedIn.user);
+    if (mustChange) {
+      router.push(isStaff ? "/admin/setup" : "/portal/setup");
+      return;
+    }
     // Staff accounts work here too, but their home is the back office.
-    router.push(isStaffUser(signedIn.user) ? "/admin" : "/portal");
+    router.push(isStaff ? "/admin" : "/portal");
   }
 
   return (

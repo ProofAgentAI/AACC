@@ -137,38 +137,57 @@ export function newsletterHtml(content: NewsletterContent) {
 
 const MEMBER_WELCOME_ROLES = ["individual", "business", "ambassador"];
 
-export function welcomeEmailHtml(role: string) {
-  const intros: Record<string, string> = {
-    admin:
-      "Welcome aboard as an <strong>Administrator</strong> of the Algerian American Chamber of Commerce USA. You have full access to the chamber's back office, including approvals, billing, and user management.",
-    board:
-      "Welcome to the <strong>founding board</strong> of the Algerian American Chamber of Commerce USA. We are honored to have your leadership as we build the bridge between Algerian talent, trade, and opportunity.",
-    staff:
-      "Welcome to the <strong>AACC-USA team</strong>. You now have access to the chamber's back office to contribute content, manage tasks, and support our programs.",
-    individual:
-      "Welcome to the Algerian American Chamber of Commerce USA as an <strong>Individual Member</strong>. Your member portal gives you the chamber's events calendar, the full business directory, our newsletters, and curated resources.",
-    business:
-      "Welcome to the Algerian American Chamber of Commerce USA as a <strong>Business Member</strong>. Your member portal gives you the chamber's events calendar, the full business directory, our newsletters, and curated resources for doing business across both markets.",
-    ambassador:
-      "Welcome to the Algerian American Chamber of Commerce USA as a <strong>State Ambassador</strong>. You now represent the chamber in your state — your portal includes the events calendar, business directory, newsletters, resources, and the chamber CRM to manage your local outreach.",
-  };
+const ROLE_INTROS: Record<string, string> = {
+  admin:
+    "Welcome aboard as an <strong>Administrator</strong> of the Algerian American Chamber of Commerce USA. You have full access to the chamber's back office, including approvals, billing, and user management.",
+  board:
+    "Welcome to the <strong>founding board</strong> of the Algerian American Chamber of Commerce USA. We are honored to have your leadership as we build the bridge between Algerian talent, trade, and opportunity.",
+  staff:
+    "Welcome to the <strong>AACC-USA team</strong>. You now have access to the chamber's back office to contribute content, manage tasks, and support our programs.",
+  individual:
+    "Welcome to the Algerian American Chamber of Commerce USA as an <strong>Individual Member</strong>. Your member portal gives you the chamber's events calendar, the full business directory, our newsletters, and curated resources.",
+  business:
+    "Welcome to the Algerian American Chamber of Commerce USA as a <strong>Business Member</strong>. Your member portal gives you the chamber's events calendar, the full business directory, our newsletters, and curated resources for doing business across both markets.",
+  ambassador:
+    "Welcome to the Algerian American Chamber of Commerce USA as a <strong>State Ambassador</strong>. You now represent the chamber in your state — your portal includes the events calendar, business directory, newsletters, resources, and the chamber CRM to manage your local outreach.",
+};
+
+const ROLE_TITLES: Record<string, string> = {
+  admin: "Welcome to AACC-USA — Administrator Access",
+  board: "Welcome to the AACC-USA Founding Board",
+  staff: "Welcome to the AACC-USA Team",
+  individual: "Welcome to AACC-USA — Your Membership Is Active",
+  business: "Welcome to AACC-USA — Your Business Membership Is Active",
+  ambassador: "Welcome to AACC-USA — State Ambassador",
+};
+
+// The single onboarding email: welcome + sign-in link + temporary password +
+// first-login steps. Sent from contact@aacc-usa.org; no Supabase email involved.
+export function credentialsEmailHtml(role: string, email: string, tempPassword: string) {
   const isMember = MEMBER_WELCOME_ROLES.includes(role);
-  const signInPath = isMember ? "portal" : "admin";
+  const signInUrl = isMember
+    ? "https://aacc-usa.org/portal/login"
+    : "https://aacc-usa.org/admin/login";
   const salutation = isMember ? "Dear member," : "Dear colleague,";
   const body = `
     <p>${salutation}</p>
-    <p>${intros[role] ?? intros.staff}</p>
-    <p>You will receive a separate email with a secure link to set your password. Once set, sign in anytime at
-    <a href="https://aacc-usa.org/${signInPath}" style="color:#007A3D;">aacc-usa.org/${signInPath}</a>.</p>
+    <p>${ROLE_INTROS[role] ?? ROLE_INTROS.staff}</p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:20px 0;border:1px solid #e5e7eb;border-radius:10px;background-color:#F7F8FA;">
+      <tr><td style="padding:18px 22px;font-family:Arial,sans-serif;font-size:14px;color:#111827;line-height:2;">
+        <strong style="color:#0B1F3A;">Your sign-in details</strong><br/>
+        Sign-in page: <a href="${signInUrl}" style="color:#007A3D;font-weight:bold;">${signInUrl.replace("https://", "")}</a><br/>
+        Email: <strong>${email}</strong><br/>
+        Temporary password: <span style="font-family:Consolas,Menlo,monospace;font-size:16px;font-weight:bold;color:#0B1F3A;background-color:#ffffff;border:1px solid #e5e7eb;border-radius:6px;padding:2px 10px;">${tempPassword}</span>
+      </td></tr>
+    </table>
+    <p><strong>First sign-in — three quick steps:</strong></p>
+    <ol style="margin:0 0 16px;padding-left:20px;line-height:1.9;">
+      <li>Open <a href="${signInUrl}" style="color:#007A3D;">${signInUrl.replace("https://", "")}</a></li>
+      <li>Sign in with your email and the temporary password above</li>
+      <li>You will be asked to create your own password — choose one only you know</li>
+    </ol>
+    <p style="font-size:13px;color:#6B7280;">For your security, this temporary password works only until you replace it. Please do not forward this email.</p>
     <p>Warm regards,<br/><strong>Fouad Bousetouane</strong><br/>President, AACC-USA</p>
   `;
-  const titles: Record<string, string> = {
-    admin: "Welcome to AACC-USA — Administrator Access",
-    board: "Welcome to the AACC-USA Founding Board",
-    staff: "Welcome to the AACC-USA Team",
-    individual: "Welcome to AACC-USA — Your Membership Is Active",
-    business: "Welcome to AACC-USA — Your Business Membership Is Active",
-    ambassador: "Welcome to AACC-USA — State Ambassador",
-  };
-  return { subject: titles[role] ?? titles.staff, html: brandedEmail("", body) };
+  return { subject: ROLE_TITLES[role] ?? ROLE_TITLES.staff, html: brandedEmail("", body) };
 }
