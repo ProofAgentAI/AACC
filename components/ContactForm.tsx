@@ -25,6 +25,7 @@ export default function ContactForm({
   submitLabel?: string;
 }) {
   const [status, setStatus] = useState<Status>("idle");
+  const [errorDetail, setErrorDetail] = useState("");
 
   if (status === "success") {
     return (
@@ -60,6 +61,7 @@ export default function ContactForm({
       locale,
     });
 
+    if (error) setErrorDetail(error.message ?? "");
     setStatus(error ? "error" : "success");
   }
 
@@ -205,6 +207,11 @@ export default function ContactForm({
             <a href="mailto:contact@aacc-usa.org" className="underline">
               contact@aacc-usa.org
             </a>
+            {errorDetail && (
+              <span className="mt-1 block text-xs font-normal text-red-500">
+                ({errorDetail})
+              </span>
+            )}
           </p>
         )}
       </div>

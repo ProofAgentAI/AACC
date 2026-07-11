@@ -23,6 +23,7 @@ export default function DirectorySubmitForm({
   formDict: FormDict;
 }) {
   const [status, setStatus] = useState<Status>("idle");
+  const [errorDetail, setErrorDetail] = useState("");
 
   if (status === "success" || status === "duplicate") {
     return (
@@ -75,6 +76,7 @@ export default function DirectorySubmitForm({
     } else if (error.code === DUPLICATE_KEY_CODE) {
       setStatus("duplicate");
     } else {
+      setErrorDetail(error.message ?? "");
       setStatus("error");
     }
   }
@@ -226,6 +228,11 @@ export default function DirectorySubmitForm({
             <a href="mailto:contact@aacc-usa.org" className="underline">
               contact@aacc-usa.org
             </a>
+            {errorDetail && (
+              <span className="mt-1 block text-xs font-normal text-red-500">
+                ({errorDetail})
+              </span>
+            )}
           </p>
         )}
         {!supabase && (
