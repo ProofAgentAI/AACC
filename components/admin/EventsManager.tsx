@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { CalendarPlus, Globe, Pencil, Trash2, X } from "lucide-react";
+import { CalendarDays, CalendarPlus, Globe, List, Pencil, Trash2, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { isAdminUser } from "@/lib/admin";
+import EventsCalendar, { type CalendarEvent } from "@/components/portal/EventsCalendar";
 
 type Row = Record<string, unknown>;
 
@@ -59,6 +60,7 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
   const [saving, setSaving] = useState(false);
   const [email, setEmail] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [view, setView] = useState<"calendar" | "list">("calendar");
 
   useEffect(() => {
     supabase?.auth.getSession().then(({ data }) => {
@@ -129,9 +131,9 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
     }
     onNotice(
       published
-        ? "Event published."
+        ? "Event approved and published — it now appears on every member's and staff calendar."
         : wantsPublish
-          ? "Saved. Ask the administrator to publish this event."
+          ? "Submitted for approval. Once the administrator approves it, the event appears on everyone's calendar."
           : "Event saved as draft."
     );
     setDraft(null);
@@ -147,6 +149,11 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
     if (error) {
       onNotice(`Update failed: ${error.message}`);
     } else {
+      onNotice(
+        event.published
+          ? "Event unpublished — removed from calendars and the public page."
+          : "Event approved — it is now on every member's and staff calendar with its date and time."
+      );
       load();
     }
   }
@@ -302,20 +309,51 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
 
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted">
-          Published events appear on the public Events page in their language.
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="min-w-48 flex-1 text-sm text-muted">
+          Events submitted by staff go to the administrator for approval; approved events appear
+          on every member and staff calendar and on the public Events page.
         </p>
-        <button
-          type="button"
-          onClick={() => setDraft({ ...emptyEvent })}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-5 py-2.5 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400"
-        >
-          <CalendarPlus className="h-4 w-4" /> New Event
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-lg border border-navy-200 p-0.5">
+            <button
+              type="button"
+              onClick={() => setView("calendar")}
+              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-xs font-semibold ${
+                view === "calendar" ? "bg-navy text-white" : "text-navy hover:bg-surface"
+              }`}
+            >
+              <CalendarDays className="h-3.5 w-3.5" /> Calendar
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("list")}
+              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-xs font-semibold ${
+                view === "list" ? "bg-navy text-white" : "text-navy hover:bg-surface"
+              }`}
+            >
+              <List className="h-3.5 w-3.5" /> List
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => setDraft({ ...emptyEvent })}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-5 py-2.5 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400"
+          >
+            <CalendarPlus className="h-4 w-4" /> New Event
+          </button>
+        </div>
       </div>
 
-      <div className="mt-4 overflow-x-auto rounded-2xl border border-navy-100 bg-white shadow-card">
+      {view === "calendar" && (
+        <EventsCalendar onNotice={onNotice} events={events as unknown as CalendarEvent[]} />
+      )}
+
+      <div
+        className={`mt-4 overflow-x-auto rounded-2xl border border-navy-100 bg-white shadow-card ${
+          view === "calendar" ? "hidden" : ""
+        }`}
+      >
         <table className="w-full min-w-[800px] text-sm">
           <thead>
             <tr className="border-b border-navy-100 bg-surface text-xs uppercase tracking-wider text-muted">
@@ -358,9 +396,13 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${
                         event.published ? "bg-green-50 text-green-700" : "bg-gold-100 text-gold-600"
                       }`}
-                      title="Click to toggle"
+                      title={
+                        event.published
+                          ? "Click to unpublish"
+                          : "Click to approve — the event goes live on every calendar"
+                      }
                     >
-                      {event.published ? "Published" : "Draft"}
+                      {event.published ? "Published" : "Approve"}
                     </button>
                   ) : (
                     <span
@@ -368,7 +410,7 @@ export default function EventsManager({ onNotice }: { onNotice: (msg: string) =>
                         event.published ? "bg-green-50 text-green-700" : "bg-gold-100 text-gold-600"
                       }`}
                     >
-                      {event.published ? "Published" : "Draft"}
+                      {event.published ? "Published" : "Pending approval"}
                     </span>
                   )}
                 </td>

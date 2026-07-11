@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
-type EventRow = {
+export type CalendarEvent = {
   id: string;
   slug: string;
   title: string;
@@ -22,6 +22,8 @@ type EventRow = {
   is_virtual: boolean;
   starts_at: string | null;
   register_url: string | null;
+  // Present in the back-office view; member queries only return published events.
+  published?: boolean;
 };
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -42,15 +44,25 @@ function formatEventDate(value: string | null) {
   });
 }
 
-export default function EventsCalendar({ onNotice }: { onNotice: (msg: string) => void }) {
+export default function EventsCalendar({
+  onNotice,
+  events: externalEvents,
+}: {
+  onNotice: (msg: string) => void;
+  // When provided (back office), the calendar renders these events — including
+  // unpublished ones awaiting approval — instead of fetching its own.
+  events?: CalendarEvent[];
+}) {
   const today = useMemo(() => new Date(), []);
   const [cursor, setCursor] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
-  const [events, setEvents] = useState<EventRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<EventRow | null>(null);
+  const [fetched, setFetched] = useState<CalendarEvent[]>([]);
+  const [loading, setLoading] = useState(!externalEvents);
+  const [selected, setSelected] = useState<CalendarEvent | null>(null);
+
+  const events = externalEvents ?? fetched;
 
   const load = useCallback(async () => {
-    if (!supabase) return;
+    if (!supabase || externalEvents) return;
     setLoading(true);
     const { data, error } = await supabase
       .from("events")
@@ -62,15 +74,15 @@ export default function EventsCalendar({ onNotice }: { onNotice: (msg: string) =
       onNotice(`Could not load events: ${error.message}`);
       return;
     }
-    setEvents((data as EventRow[]) ?? []);
-  }, [onNotice]);
+    setFetched((data as CalendarEvent[]) ?? []);
+  }, [onNotice, externalEvents]);
 
   useEffect(() => {
     load();
   }, [load]);
 
   const byDay = useMemo(() => {
-    const map = new Map<string, EventRow[]>();
+    const map = new Map<string, CalendarEvent[]>();
     for (const event of events) {
       if (!event.starts_at) continue;
       const key = dayKey(new Date(event.starts_at));
@@ -163,8 +175,14 @@ export default function EventsCalendar({ onNotice }: { onNotice: (msg: string) =
                       key={event.id}
                       type="button"
                       onClick={() => setSelected(event)}
-                      className="block w-full truncate rounded bg-navy px-1.5 py-0.5 text-start text-[10px] font-semibold text-white hover:bg-navy-600"
-                      title={event.title}
+                      className={`block w-full truncate rounded px-1.5 py-0.5 text-start text-[10px] font-semibold ${
+                        event.published === false
+                          ? "bg-gold-100 text-gold-600 hover:bg-gold-100/70"
+                          : "bg-navy text-white hover:bg-navy-600"
+                      }`}
+                      title={`${event.title} — ${formatEventDate(event.starts_at)}${
+                        event.published === false ? " (pending approval)" : ""
+                      }`}
                     >
                       {event.title}
                     </button>
@@ -200,7 +218,14 @@ export default function EventsCalendar({ onNotice }: { onNotice: (msg: string) =
               onClick={() => setSelected(event)}
               className="block w-full rounded-xl border border-navy-100 p-3.5 text-start transition-colors hover:border-navy hover:bg-surface"
             >
-              <p className="font-heading text-sm font-bold text-navy">{event.title}</p>
+              <p className="font-heading text-sm font-bold text-navy">
+                {event.title}
+                {event.published === false && (
+                  <span className="ms-2 rounded-full bg-gold-100 px-2 py-0.5 text-[10px] font-semibold text-gold-600">
+                    Pending approval
+                  </span>
+                )}
+              </p>
               <p className="mt-1 text-xs text-muted">{formatEventDate(event.starts_at)}</p>
               <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted">
                 {event.is_virtual ? (
@@ -240,11 +265,18 @@ export default function EventsCalendar({ onNotice }: { onNotice: (msg: string) =
             >
               <X className="h-5 w-5" />
             </button>
-            {selected.category && (
-              <span className="rounded-full bg-navy-50 px-3 py-1 text-xs font-semibold text-navy">
-                {selected.category}
-              </span>
-            )}
+            <span className="flex flex-wrap items-center gap-2">
+              {selected.category && (
+                <span className="rounded-full bg-navy-50 px-3 py-1 text-xs font-semibold text-navy">
+                  {selected.category}
+                </span>
+              )}
+              {selected.published === false && (
+                <span className="rounded-full bg-gold-100 px-3 py-1 text-xs font-semibold text-gold-600">
+                  Pending approval — not yet visible to members
+                </span>
+              )}
+            </span>
             <h2 className="mt-3 pe-8 font-heading text-xl font-bold text-navy">{selected.title}</h2>
             <p className="mt-2 text-sm font-semibold text-gold-600">
               {formatEventDate(selected.starts_at)}
