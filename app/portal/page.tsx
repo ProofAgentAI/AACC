@@ -96,17 +96,29 @@ export default function MemberPortal() {
       router.replace("/portal/login");
       return;
     }
-    supabase.auth.getSession().then(({ data }) => {
+    const client = supabase;
+    client.auth.getSession().then(async ({ data }) => {
       if (!data.session) {
         router.replace("/portal/login");
-      } else if (data.session.user.user_metadata?.must_change_password) {
+        return;
+      }
+      // Fetch the authoritative user record so an admin's role change applies
+      // as soon as this member refreshes — not at their next sign-in.
+      const { data: fresh } = await client.auth.getUser();
+      const user = fresh?.user ?? data.session.user;
+      if (user.user_metadata?.must_change_password) {
         // Still on the temporary password: choose a real one first.
         router.replace("/portal/setup");
-      } else {
-        setEmail(data.session.user.email ?? "");
-        setRole(appRoleOf(data.session.user));
-        setReady(true);
+        return;
       }
+      // If the signed-in token still carries the old role, mint a new one so
+      // database policies see the new role immediately too.
+      if (appRoleOf(data.session.user) !== appRoleOf(user)) {
+        await client.auth.refreshSession();
+      }
+      setEmail(user.email ?? "");
+      setRole(appRoleOf(user));
+      setReady(true);
     });
   }, [router]);
 

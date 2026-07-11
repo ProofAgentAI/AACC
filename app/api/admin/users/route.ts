@@ -160,8 +160,14 @@ export async function PATCH(request: NextRequest) {
   if (!id || !role) {
     return NextResponse.json({ error: "A user id and a valid role are required." }, { status: 400 });
   }
+  // Merge into the existing metadata so flags like must_change_password
+  // survive a role change.
+  const { data: existing, error: fetchError } = await auth.admin.auth.admin.getUserById(id);
+  if (fetchError || !existing.user) {
+    return NextResponse.json({ error: fetchError?.message ?? "User not found." }, { status: 400 });
+  }
   const { error } = await auth.admin.auth.admin.updateUserById(id, {
-    user_metadata: { role },
+    user_metadata: { ...existing.user.user_metadata, role },
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ ok: true });

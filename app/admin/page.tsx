@@ -260,20 +260,34 @@ export default function AdminDashboard() {
       router.replace("/admin/login");
       return;
     }
-    supabase.auth.getSession().then(({ data }) => {
+    const client = supabase;
+    client.auth.getSession().then(async ({ data }) => {
       if (!data.session) {
         router.replace("/admin/login");
-      } else if (data.session.user.user_metadata?.must_change_password) {
+        return;
+      }
+      // Fetch the authoritative user record so an admin's role change applies
+      // as soon as this user refreshes — not at their next sign-in.
+      const { data: fresh } = await client.auth.getUser();
+      const user = fresh?.user ?? data.session.user;
+      if (user.user_metadata?.must_change_password) {
         // Still on the temporary password: choose a real one first.
         router.replace("/admin/setup");
-      } else if (isMemberRole(appRoleOf(data.session.user))) {
+        return;
+      }
+      if (isMemberRole(appRoleOf(user))) {
         // Member accounts belong in the member portal, not the back office.
         router.replace("/portal");
-      } else {
-        setEmail(data.session.user.email ?? "");
-        setMyRole(roleOf(data.session.user));
-        setReady(true);
+        return;
       }
+      // If the signed-in token still carries the old role, mint a new one so
+      // database policies see the new role immediately too.
+      if (appRoleOf(data.session.user) !== appRoleOf(user)) {
+        await client.auth.refreshSession();
+      }
+      setEmail(user.email ?? "");
+      setMyRole(roleOf(user));
+      setReady(true);
     });
   }, [router]);
 
@@ -498,7 +512,9 @@ export default function AdminDashboard() {
       setNotice(body.error ?? "Could not change role.");
       return;
     }
-    setNotice("Role updated. It takes effect the next time that user signs in.");
+    setNotice(
+      "Role updated — it applies immediately; the user sees their new dashboard as soon as they refresh."
+    );
     loadUsers();
   }
 
