@@ -39,6 +39,7 @@ export const en = {
     news: "News",
     contact: "Contact",
     join: "Join AACC-USA",
+    memberLogin: "Member Login",
     languageName: "العربية",
     openMenu: "Open menu",
     closeMenu: "Close menu",

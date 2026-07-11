@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronDown, Globe } from "lucide-react";
+import { Menu, X, ChevronDown, Globe, LogIn } from "lucide-react";
 import Logo from "./Logo";
 import type { Locale, Dictionary } from "@/lib/i18n";
 
@@ -147,6 +147,13 @@ export default function Header({ locale, nav }: { locale: Locale; nav: NavDict }
             <Globe className="h-4 w-4" aria-hidden="true" />
             {nav.languageName}
           </Link>
+          <a
+            href="/portal/login"
+            className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-navy-200 px-3 py-2 text-sm font-semibold text-navy transition-colors hover:border-navy hover:bg-surface"
+          >
+            <LogIn className="h-4 w-4" aria-hidden="true" />
+            {nav.memberLogin}
+          </a>
           <Link
             href={p("/membership")}
             className="whitespace-nowrap rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:from-green-500 hover:to-green-400 hover:shadow-glow-green"
@@ -201,6 +208,14 @@ export default function Header({ locale, nav }: { locale: Locale; nav: NavDict }
             ))}
           </div>
           <div className="mt-3 flex flex-col gap-3">
+            <a
+              href="/portal/login"
+              onClick={() => setOpen(false)}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-navy-200 px-4 py-3 text-center text-sm font-semibold text-navy"
+            >
+              <LogIn className="h-4 w-4" aria-hidden="true" />
+              {nav.memberLogin}
+            </a>
             <Link
               href={p("/membership")}
               onClick={() => setOpen(false)}

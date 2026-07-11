@@ -41,6 +41,7 @@ export const ar: typeof en = {
     news: "الأخبار",
     contact: "اتصل بنا",
     join: "انضم إلى الغرفة",
+    memberLogin: "دخول الأعضاء",
     languageName: "English",
     openMenu: "فتح القائمة",
     closeMenu: "إغلاق القائمة",
