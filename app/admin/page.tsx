@@ -701,6 +701,12 @@ export default function AdminDashboard() {
           <p className="text-[10px] uppercase tracking-wider text-navy-300">AACC-USA</p>
         </div>
       </div>
+      <div className="mx-3 mb-4 rounded-xl bg-white/5 px-4 py-3">
+        <p className="truncate text-xs text-navy-200">{email}</p>
+        <span className="mt-1.5 inline-block rounded-full bg-gold px-2.5 py-0.5 text-[11px] font-bold text-navy">
+          {ROLE_LABELS[myRole]}
+        </span>
+      </div>
       <nav className="flex-1 space-y-1 overflow-y-auto px-3" aria-label="Back office sections">
         {visibleTabs.map((t) => (
           <button
@@ -727,7 +733,6 @@ export default function AdminDashboard() {
         ))}
       </nav>
       <div className="space-y-1 border-t border-white/10 p-3">
-        <p className="truncate px-3 pb-1 text-xs text-navy-300">{email}</p>
         <a
           href="/en"
           target="_blank"
