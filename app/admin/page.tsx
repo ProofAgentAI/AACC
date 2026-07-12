@@ -8,6 +8,7 @@ import {
   Building2,
   CalendarDays,
   CircleDollarSign,
+  ClipboardCheck,
   ClipboardList,
   ContactRound,
   Eye,
@@ -65,6 +66,7 @@ const TABS = [
   { key: "team", label: "Team Page", table: "", icon: Users2 },
   { key: "memberships", label: "Memberships", table: "membership_applications", icon: Inbox },
   { key: "board", label: "Board Applications", table: "board_applications", icon: ClipboardList },
+  { key: "roleapps", label: "Role Applications", table: "role_applications", icon: ClipboardCheck },
   { key: "directory", label: "Directory Requests", table: "directory_submissions", icon: Building2 },
   { key: "contacts", label: "Contact Messages", table: "contact_messages", icon: MessagesSquare },
   { key: "subscribers", label: "Subscribers", table: "newsletter_subscribers", icon: MailCheck },
@@ -76,6 +78,7 @@ type TabKey = (typeof TABS)[number]["key"];
 const STATUS_OPTIONS: Record<string, string[]> = {
   membership_applications: ["new", "contacted", "approved", "declined"],
   board_applications: ["new", "reviewing", "interviewed", "accepted", "declined"],
+  role_applications: ["new", "reviewing", "approved", "declined"],
   directory_submissions: ["pending", "approved", "rejected"],
   contact_messages: ["new", "replied", "closed"],
 };
@@ -106,6 +109,7 @@ const EMAIL_SUBJECTS: Record<TabKey, string> = {
   team: "",
   memberships: "Your AACC-USA membership application",
   board: "Your AACC-USA founding board application",
+  roleapps: "Your AACC-USA role application",
   directory: "Your AACC-USA business directory request",
   contacts: "Re: your message to AACC-USA",
   subscribers: "AACC-USA newsletter",
@@ -140,6 +144,8 @@ const FIELD_LABELS: Record<string, string> = {
   message: "Message",
   linkedin: "LinkedIn",
   areas: "Board Areas",
+  role_title: "Role Applied For",
+  motivation: "Motivation",
   background: "Professional Background & Experience",
   leadership: "Leadership & Board Experience",
   businesses: "Businesses & Ventures",
@@ -184,6 +190,8 @@ const FIELD_ORDER = [
   "tier",
   "inquiry_type",
   "linkedin",
+  "role_title",
+  "motivation",
   "areas",
   "background",
   "leadership",
@@ -585,6 +593,16 @@ export default function AdminDashboard() {
         type: "board",
         notes: row.background,
       });
+    } else if (tab === "roleapps") {
+      const [first, ...rest] = String(row.name ?? "").split(/\s+/);
+      Object.assign(contact, {
+        first_name: first || "Applicant",
+        last_name: rest.join(" ") || null,
+        email: row.email,
+        phone: row.phone,
+        type: "community",
+        notes: `${row.role_title}: ${row.motivation ?? ""}`,
+      });
     } else if (tab === "directory") {
       const [first, ...rest] = String(row.contact_name ?? "").split(/\s+/);
       Object.assign(contact, {
@@ -903,7 +921,7 @@ export default function AdminDashboard() {
                   <p className="truncate font-heading text-sm font-bold text-navy">
                     {tab === "directory"
                       ? String(row.business_name ?? "")
-                      : tab === "contacts"
+                      : tab === "contacts" || tab === "roleapps"
                         ? String(row.name ?? "")
                         : tab === "subscribers"
                           ? String(row.email ?? "")
@@ -917,6 +935,7 @@ export default function AdminDashboard() {
                     {tab === "board" && ((row.areas as string[]) ?? []).join(", ")}
                     {tab === "directory" && `${row.category ?? ""}${row.city ? ` · ${row.city}` : ""}`}
                     {tab === "contacts" && `${row.inquiry_type ?? ""}${row.organization ? ` · ${row.organization}` : ""}`}
+                    {tab === "roleapps" && `${row.role_title ?? ""}${row.city_state ? ` · ${row.city_state}` : ""}`}
                     {tab === "subscribers" && String(row.locale ?? "")}
                   </p>
                 </div>
@@ -998,7 +1017,7 @@ export default function AdminDashboard() {
                   <td className="px-4 py-3 font-semibold text-navy">
                     {tab === "directory"
                       ? String(row.business_name ?? "")
-                      : tab === "contacts"
+                      : tab === "contacts" || tab === "roleapps"
                         ? String(row.name ?? "")
                         : `${row.first_name ?? ""} ${row.last_name ?? ""}`}
                     {tab === "directory" && (
@@ -1032,6 +1051,17 @@ export default function AdminDashboard() {
                       <span className="font-medium text-ink">
                         {((row.areas as string[]) ?? []).join(", ")}
                       </span>
+                    )}
+                    {tab === "roleapps" && (
+                      <>
+                        <span className="font-medium text-ink">{String(row.role_title ?? "")}</span>
+                        {row.city_state ? ` · ${row.city_state}` : ""}
+                        {row.motivation ? (
+                          <span className="mt-1 block truncate text-xs">
+                            {String(row.motivation)}
+                          </span>
+                        ) : null}
+                      </>
                     )}
                     {tab === "directory" && (
                       <>

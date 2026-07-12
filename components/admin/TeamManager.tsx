@@ -25,13 +25,23 @@ const TIERS = [
   { value: "executive", label: "Executive Committee" },
   { value: "board", label: "Board of Directors" },
   { value: "leadership", label: "Leadership Team" },
+  { value: "ambassadors", label: "Chamber Ambassadors" },
   { value: "advisory", label: "Advisory Council" },
+] as const;
+
+const SEAT_STATUSES = [
+  { value: "open", label: "Open" },
+  { value: "priority", label: "Priority Vacancy" },
+  { value: "candidate", label: "Candidate Identified" },
+  { value: "future", label: "Future Role" },
+  { value: "confirmed", label: "Confirmed (filled)" },
 ] as const;
 
 const TIER_LABELS: Record<string, string> = {
   executive: "Executive Committee",
   board: "Board of Directors",
   leadership: "Leadership Team",
+  ambassadors: "Chamber Ambassadors",
   advisory: "Advisory Council",
   team: "Leadership Team",
 };
@@ -48,6 +58,8 @@ const emptyRole: Row = {
   duties: "",
   duties_ar: "",
   suggested_profile: "",
+  suggested_profile_ar: "",
+  seat_status: "open",
   linkedin: "",
   sort_order: 100,
   published: true,
@@ -135,6 +147,8 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
       duties: String(draft.duties ?? "").trim() || null,
       duties_ar: String(draft.duties_ar ?? "").trim() || null,
       suggested_profile: String(draft.suggested_profile ?? "").trim() || null,
+      suggested_profile_ar: String(draft.suggested_profile_ar ?? "").trim() || null,
+      seat_status: String(draft.seat_status ?? "open") || "open",
       linkedin: String(draft.linkedin ?? "").trim() || null,
       sort_order: Number(draft.sort_order) || 100,
       published: publish,
@@ -296,16 +310,41 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-semibold text-navy">
-                Suggested Profile
-              </label>
-              <input
-                value={String(draft.suggested_profile ?? "")}
-                onChange={(e) => set("suggested_profile", e.target.value)}
+              <label className="mb-1.5 block text-sm font-semibold text-navy">Seat Status</label>
+              <select
+                value={String(draft.seat_status ?? "open")}
+                onChange={(e) => set("seat_status", e.target.value)}
                 className={inputClasses}
-                placeholder="e.g. CPA / CFO"
-              />
+              >
+                {SEAT_STATUSES.map((status) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+                ))}
+              </select>
             </div>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-navy">
+              Ideal Profile / Requirements (English)
+            </label>
+            <input
+              value={String(draft.suggested_profile ?? "")}
+              onChange={(e) => set("suggested_profile", e.target.value)}
+              className={inputClasses}
+              placeholder="e.g. CPA / CFO / Controller"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-navy">
+              Ideal Profile (Arabic)
+            </label>
+            <input
+              dir="rtl"
+              value={String(draft.suggested_profile_ar ?? "")}
+              onChange={(e) => set("suggested_profile_ar", e.target.value)}
+              className={inputClasses}
+            />
           </div>
 
           {/* Photo */}
