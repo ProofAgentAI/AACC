@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Award, Linkedin, UserRound, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import BioHtml from "@/components/BioHtml";
 import type { Locale, Dictionary } from "@/lib/i18n";
 
 type TeamDict = Dictionary["team"];
@@ -64,10 +65,7 @@ export default function TeamDirectory({
   const isAr = locale === "ar";
   const nameOf = (m: TeamMember) => (isAr && m.name_ar ? m.name_ar : m.name);
   const roleOf = (m: TeamMember) => (isAr && m.role_title_ar ? m.role_title_ar : m.role_title);
-  const bioOf = (m: TeamMember) => {
-    const text = isAr && m.bio_ar ? m.bio_ar : m.bio;
-    return (text ?? "").split(/\n\s*\n/).filter(Boolean);
-  };
+  const bioOf = (m: TeamMember) => (isAr && m.bio_ar ? m.bio_ar : m.bio) ?? "";
 
   // Fallback seats per tier, from the dictionary (Executive Committee,
   // Board of Directors, Our Team in that order).
@@ -207,17 +205,8 @@ export default function TeamDirectory({
               </div>
             </div>
             <div className="p-8">
-              {bioOf(selected).length > 0 ? (
-                <div className="space-y-4">
-                  {bioOf(selected).map((paragraph) => (
-                    <p
-                      key={paragraph.slice(0, 40)}
-                      className="text-sm leading-relaxed text-ink sm:text-base"
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
+              {bioOf(selected).trim() ? (
+                <BioHtml text={bioOf(selected)} />
               ) : (
                 <p className="inline-flex items-center gap-2 text-sm text-muted">
                   <Award className="h-4 w-4 text-gold-600" /> {roleOf(selected)}

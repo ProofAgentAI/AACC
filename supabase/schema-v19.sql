@@ -65,20 +65,28 @@ values (
   'الرئيس والمؤسس',
   'executive',
   '/images/team/fouad-bousetouane.png',
-  'Dr. Fouad Bousetouane is a distinguished AI leader, innovator, author, investor, and entrepreneur specializing in enterprise AI, AI governance, and deep tech. He is the founder of ProofAgent.AI, a company specialized in AI governance, an adjunct associate professor of Generative AI at the University of Chicago, and the author of the book AI Agents for Everyone. He is also a member of Algeria''s Higher Council of Artificial Intelligence.
-
-He holds a Ph.D. accredited by the University of Nevada, Las Vegas, has authored more than 50 AI publications, patents, and trade secrets, and has led AI transformation initiatives for Fortune 500 organizations.
-
-A strong advocate for the responsible adoption of AI, he is a frequent keynote speaker, researcher, and educator, helping organizations and future leaders build trustworthy, scalable, and business-ready AI systems.
-
-Recognition: Timmy Award — Best Tech Manager, Chicago · Top 30 AI Scientists — MIT Technology Review · Marquis Emerging Leaders, United States · Fortune''s America''s Most Innovative Teams · Judge, AWS Generative AI Awards.',
-  'الدكتور فؤاد بوستوان قائد بارز في مجال الذكاء الاصطناعي ومبتكر ومؤلف ومستثمر ورائد أعمال، متخصص في الذكاء الاصطناعي المؤسسي وحوكمة الذكاء الاصطناعي والتقنيات العميقة. وهو مؤسس شركة ProofAgent.AI المتخصصة في حوكمة الذكاء الاصطناعي، وأستاذ مساعد مشارك للذكاء الاصطناعي التوليدي في جامعة شيكاغو، ومؤلف كتاب AI Agents for Everyone. وهو أيضاً عضو المجلس الأعلى للذكاء الاصطناعي في الجزائر.
-
-حاصل على درجة الدكتوراه المعتمدة من جامعة نيفادا في لاس فيغاس، وله أكثر من 50 منشوراً علمياً وبراءة اختراع وسراً تجارياً في مجال الذكاء الاصطناعي، وقاد مبادرات التحول بالذكاء الاصطناعي لمؤسسات ضمن قائمة Fortune 500.
-
-بوصفه مدافعاً قوياً عن التبني المسؤول للذكاء الاصطناعي، فهو متحدث رئيسي وباحث ومعلّم، يساعد المؤسسات وقادة المستقبل على بناء أنظمة ذكاء اصطناعي موثوقة وقابلة للتوسع وجاهزة للأعمال.
-
-التكريمات: جائزة Timmy — أفضل مدير تقني في شيكاغو · ضمن أفضل 30 عالِم ذكاء اصطناعي — MIT Technology Review · قادة Marquis الصاعدون، الولايات المتحدة · فرق Fortune الأكثر ابتكاراً في أمريكا · محكّم في جوائز AWS للذكاء الاصطناعي التوليدي.',
+  '<p>Dr. Fouad Bousetouane is a distinguished AI leader, innovator, author, investor, and entrepreneur specializing in enterprise AI, AI governance, and deep tech. He is the founder of ProofAgent.AI, a company specialized in AI governance, an adjunct associate professor of Generative AI at the University of Chicago, and the author of the book <em>AI Agents for Everyone</em>. He is also a member of Algeria''s Higher Council of Artificial Intelligence.</p>
+<p>He holds a Ph.D. accredited by the University of Nevada, Las Vegas, has authored more than 50 AI publications, patents, and trade secrets, and has led AI transformation initiatives for Fortune 500 organizations.</p>
+<p>A strong advocate for the responsible adoption of AI, he is a frequent keynote speaker, researcher, and educator, helping organizations and future leaders build trustworthy, scalable, and business-ready AI systems.</p>
+<h3>Recognition</h3>
+<ul>
+<li>Timmy Award — Best Tech Manager, Chicago</li>
+<li>Top 30 AI Scientists — MIT Technology Review</li>
+<li>Marquis Emerging Leaders, United States</li>
+<li>Fortune''s America''s Most Innovative Teams</li>
+<li>Judge, AWS Generative AI Awards</li>
+</ul>',
+  '<p>الدكتور فؤاد بوستوان قائد بارز في مجال الذكاء الاصطناعي ومبتكر ومؤلف ومستثمر ورائد أعمال، متخصص في الذكاء الاصطناعي المؤسسي وحوكمة الذكاء الاصطناعي والتقنيات العميقة. وهو مؤسس شركة ProofAgent.AI المتخصصة في حوكمة الذكاء الاصطناعي، وأستاذ مساعد مشارك للذكاء الاصطناعي التوليدي في جامعة شيكاغو، ومؤلف كتاب <em>AI Agents for Everyone</em>. وهو أيضاً عضو المجلس الأعلى للذكاء الاصطناعي في الجزائر.</p>
+<p>حاصل على درجة الدكتوراه المعتمدة من جامعة نيفادا في لاس فيغاس، وله أكثر من 50 منشوراً علمياً وبراءة اختراع وسراً تجارياً في مجال الذكاء الاصطناعي، وقاد مبادرات التحول بالذكاء الاصطناعي لمؤسسات ضمن قائمة Fortune 500.</p>
+<p>بوصفه مدافعاً قوياً عن التبني المسؤول للذكاء الاصطناعي، فهو متحدث رئيسي وباحث ومعلّم، يساعد المؤسسات وقادة المستقبل على بناء أنظمة ذكاء اصطناعي موثوقة وقابلة للتوسع وجاهزة للأعمال.</p>
+<h3>التكريمات</h3>
+<ul>
+<li>جائزة Timmy — أفضل مدير تقني في شيكاغو</li>
+<li>ضمن أفضل 30 عالِم ذكاء اصطناعي — MIT Technology Review</li>
+<li>قادة Marquis الصاعدون، الولايات المتحدة</li>
+<li>فرق Fortune الأكثر ابتكاراً في أمريكا</li>
+<li>محكّم في جوائز AWS للذكاء الاصطناعي التوليدي</li>
+</ul>',
   'https://www.linkedin.com/in/fouad-bousetouane-ph-d-83382614/',
   1
 );

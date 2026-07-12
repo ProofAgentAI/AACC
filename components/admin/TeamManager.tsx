@@ -1,8 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ExternalLink, ImagePlus, Pencil, Trash2, UserPlus, UserRound, X } from "lucide-react";
+import {
+  ExternalLink,
+  Eye,
+  ImagePlus,
+  Pencil,
+  Trash2,
+  UserPlus,
+  UserRound,
+  X,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import BioHtml from "@/components/BioHtml";
 
 type Row = Record<string, unknown>;
 
@@ -43,6 +53,7 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
   const [draft, setDraft] = useState<Row | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [previewLang, setPreviewLang] = useState<"en" | "ar" | null>(null);
 
   const load = useCallback(async () => {
     if (!supabase) return;
@@ -91,7 +102,7 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
     void ext;
   }
 
-  async function save() {
+  async function save(publish: boolean) {
     if (!supabase || !draft) return;
     const name = String(draft.name ?? "").trim();
     const roleTitle = String(draft.role_title ?? "").trim();
@@ -111,7 +122,7 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
       bio_ar: String(draft.bio_ar ?? "").trim() || null,
       linkedin: String(draft.linkedin ?? "").trim() || null,
       sort_order: Number(draft.sort_order) || 100,
-      published: Boolean(draft.published),
+      published: publish,
       updated_at: new Date().toISOString(),
     };
     const result = draft.id
@@ -122,8 +133,13 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
       onNotice(`Save failed: ${result.error.message}`);
       return;
     }
-    onNotice(draft.id ? "Team member updated." : `${name} added to the team page.`);
+    onNotice(
+      publish
+        ? `${name} is live on the Team page.`
+        : `${name} saved as a hidden draft — preview and publish when ready.`
+    );
     setDraft(null);
+    setPreviewLang(null);
     load();
   }
 
@@ -223,26 +239,15 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
               ))}
             </select>
           </div>
-          <div className="grid grid-cols-2 items-end gap-3">
-            <div>
-              <label className="mb-1.5 block text-sm font-semibold text-navy">Order</label>
-              <input
-                type="number"
-                min={1}
-                value={Number(draft.sort_order ?? 100)}
-                onChange={(e) => set("sort_order", Number(e.target.value))}
-                className={inputClasses}
-              />
-            </div>
-            <label className="inline-flex cursor-pointer items-center gap-2 pb-2.5 text-sm font-medium text-navy">
-              <input
-                type="checkbox"
-                checked={Boolean(draft.published)}
-                onChange={(e) => set("published", e.target.checked)}
-                className="h-4 w-4 accent-[#007A3D]"
-              />
-              Visible on the site
-            </label>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-navy">Order</label>
+            <input
+              type="number"
+              min={1}
+              value={Number(draft.sort_order ?? 100)}
+              onChange={(e) => set("sort_order", Number(e.target.value))}
+              className={inputClasses}
+            />
           </div>
 
           {/* Photo */}
@@ -285,23 +290,32 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
           </div>
 
           <div className="sm:col-span-2">
-            <label className="mb-1.5 block text-sm font-semibold text-navy">Bio (English)</label>
+            <label className="mb-1.5 block text-sm font-semibold text-navy">
+              Bio (English) — HTML
+            </label>
             <textarea
-              rows={6}
+              rows={8}
               value={String(draft.bio ?? "")}
               onChange={(e) => set("bio", e.target.value)}
-              className={inputClasses}
-              placeholder="Separate paragraphs with a blank line."
+              className={`${inputClasses} font-mono text-xs leading-relaxed`}
+              placeholder={'<p>First paragraph...</p>\n<p>Second paragraph with <strong>bold</strong>.</p>\n<h3>Recognition</h3>\n<ul>\n  <li>Award one</li>\n</ul>'}
             />
+            <p className="mt-1 text-xs text-muted">
+              HTML renders exactly like article content: &lt;p&gt;, &lt;h3&gt;, &lt;strong&gt;,
+              &lt;ul&gt;/&lt;li&gt;, &lt;a&gt;. Plain text with blank-line paragraphs also works.
+              Use Preview before publishing.
+            </p>
           </div>
           <div className="sm:col-span-2">
-            <label className="mb-1.5 block text-sm font-semibold text-navy">Bio (Arabic)</label>
+            <label className="mb-1.5 block text-sm font-semibold text-navy">
+              Bio (Arabic) — HTML
+            </label>
             <textarea
               dir="rtl"
-              rows={6}
+              rows={8}
               value={String(draft.bio_ar ?? "")}
               onChange={(e) => set("bio_ar", e.target.value)}
-              className={inputClasses}
+              className={`${inputClasses} font-mono text-xs leading-relaxed`}
             />
           </div>
           <div className="sm:col-span-2">
@@ -318,20 +332,128 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
         <div className="mt-6 flex flex-wrap gap-3">
           <button
             type="button"
+            onClick={() => setPreviewLang("en")}
+            className="inline-flex items-center gap-2 rounded-lg border border-navy-200 px-6 py-3 text-sm font-semibold text-navy hover:border-navy hover:bg-surface"
+          >
+            <Eye className="h-4 w-4" /> Preview
+          </button>
+          <button
+            type="button"
             disabled={saving || uploading}
-            onClick={save}
+            onClick={() => save(false)}
+            className="rounded-lg border border-navy-200 px-6 py-3 text-sm font-semibold text-navy hover:bg-surface disabled:opacity-60"
+          >
+            {saving ? "Saving..." : "Save Draft (Hidden)"}
+          </button>
+          <button
+            type="button"
+            disabled={saving || uploading}
+            onClick={() => save(true)}
             className="rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-6 py-3 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400 disabled:opacity-60"
           >
-            {saving ? "Saving..." : draft.id ? "Save Changes" : "Add to Team Page"}
+            {saving ? "Saving..." : "Save & Publish"}
           </button>
           <button
             type="button"
             onClick={() => setDraft(null)}
-            className="rounded-lg border border-navy-200 px-6 py-3 text-sm font-semibold text-navy hover:bg-surface"
+            className="rounded-lg px-6 py-3 text-sm font-semibold text-muted hover:bg-surface hover:text-navy"
           >
             Cancel
           </button>
         </div>
+
+        {/* Live preview: exactly how the bio dialog appears on the Team page */}
+        {previewLang && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Bio preview"
+          >
+            <div
+              className="absolute inset-0 bg-navy-900/70 backdrop-blur-sm"
+              onClick={() => setPreviewLang(null)}
+              aria-hidden="true"
+            />
+            <div
+              className="relative max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white shadow-2xl"
+              dir={previewLang === "ar" ? "rtl" : "ltr"}
+            >
+              <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-navy-100 bg-surface px-6 py-3">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted">
+                  Preview — this is what members and visitors see
+                </span>
+                <span className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewLang("en")}
+                    className={`rounded-md px-3 py-1.5 text-xs font-semibold ${
+                      previewLang === "en" ? "bg-navy text-white" : "text-navy hover:bg-white"
+                    }`}
+                  >
+                    English
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewLang("ar")}
+                    className={`rounded-md px-3 py-1.5 text-xs font-semibold ${
+                      previewLang === "ar" ? "bg-navy text-white" : "text-navy hover:bg-white"
+                    }`}
+                  >
+                    العربية
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewLang(null)}
+                    className="ms-2 rounded-full p-2 text-muted hover:bg-white hover:text-navy"
+                    aria-label="Close preview"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-5 bg-navy-900 px-8 py-7">
+                {draft.photo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={String(draft.photo_url)}
+                    alt=""
+                    className="h-20 w-20 rounded-2xl border border-white/20 object-cover"
+                  />
+                ) : (
+                  <span className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 text-navy-200">
+                    <UserRound className="h-10 w-10" aria-hidden="true" />
+                  </span>
+                )}
+                <div>
+                  <h2 className="font-heading text-xl font-bold text-white">
+                    {previewLang === "ar"
+                      ? String(draft.name_ar || draft.name || "")
+                      : String(draft.name || "Name")}
+                  </h2>
+                  <p className="mt-0.5 text-sm font-semibold text-gold">
+                    {previewLang === "ar"
+                      ? String(draft.role_title_ar || draft.role_title || "")
+                      : String(draft.role_title || "Role")}
+                  </p>
+                </div>
+              </div>
+              <div className="p-8">
+                {String(
+                  (previewLang === "ar" ? draft.bio_ar || draft.bio : draft.bio) ?? ""
+                ).trim() ? (
+                  <BioHtml
+                    text={String(
+                      (previewLang === "ar" ? draft.bio_ar || draft.bio : draft.bio) ?? ""
+                    )}
+                  />
+                ) : (
+                  <p className="text-sm text-muted">No bio yet — the card will open without one.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
