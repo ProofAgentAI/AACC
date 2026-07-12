@@ -334,7 +334,7 @@ export const en = {
         photo: "/images/team/fouad-bousetouane.png",
         readBio: "Read Bio",
         bio: [
-          "Dr. Fouad Bousetouane is a distinguished AI leader, innovator, author, investor, and entrepreneur specializing in enterprise AI, AI governance, and deep tech. He is the founder of ProofAgent.AI, a company specialized in AI governance, an adjunct associate professor of Generative AI at the University of Chicago, and the author of the book AI Agents for Everyone.",
+          "Dr. Fouad Bousetouane is a distinguished AI leader, innovator, author, investor, and entrepreneur specializing in enterprise AI, AI governance, and deep tech. He is the founder of ProofAgent.AI, a company specialized in AI governance, an adjunct associate professor of Generative AI at the University of Chicago, and the author of the book AI Agents for Everyone. He is also a member of Algeria's Higher Council of Artificial Intelligence.",
           "He holds a Ph.D. accredited by the University of Nevada, Las Vegas, has authored more than 50 AI publications, patents, and trade secrets, and has led AI transformation initiatives for Fortune 500 organizations.",
           "A strong advocate for the responsible adoption of AI, he is a frequent keynote speaker, researcher, and educator, helping organizations and future leaders build trustworthy, scalable, and business-ready AI systems.",
         ],
