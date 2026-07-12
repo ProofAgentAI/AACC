@@ -876,9 +876,28 @@ export const en = {
           icon: "chart",
         },
         {
-          title: "Direct Air Connectivity",
-          description: "Building the business case for direct flights between the U.S. and Algeria.",
-          icon: "plane",
+          title: "Cross-Border Collaboration",
+          description:
+            "Building partnerships among American and Algerian companies, institutions, and universities.",
+          icon: "handshake",
+        },
+        {
+          title: "Innovation & Entrepreneurship",
+          description:
+            "Backing startups, founders, and Algeria-U.S. cooperation in technology, energy, and research.",
+          icon: "cpu",
+        },
+        {
+          title: "Technology Transfer",
+          description:
+            "Promoting the transfer of technology, know-how, and expertise between U.S. and Algerian industries.",
+          icon: "globe",
+        },
+        {
+          title: "Business Opportunities",
+          description:
+            "Opening doors to contracts, projects, and market opportunities for members in both economies.",
+          icon: "building",
         },
         {
           title: "Small Business Support",
@@ -894,11 +913,6 @@ export const en = {
           title: "Professional Mobility",
           description: "Supporting pathways for professionals, students, and business travelers.",
           icon: "users",
-        },
-        {
-          title: "Innovation Partnerships",
-          description: "Encouraging Algeria-U.S. cooperation in technology, energy, and research.",
-          icon: "globe",
         },
         {
           title: "Cultural & Economic Visibility",
