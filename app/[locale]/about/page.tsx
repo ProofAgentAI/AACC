@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import SectionHeading from "@/components/SectionHeading";
-import LeadershipCard from "@/components/LeadershipCard";
+import LeadershipOrgChart from "@/components/LeadershipOrgChart";
 import BoardApplyModal from "@/components/BoardApplyModal";
 import CTASection from "@/components/CTASection";
 import Icon from "@/components/Icon";
@@ -98,21 +98,7 @@ export default async function AboutPage({
             title={about.leadership.title}
             description={about.leadership.description}
           />
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <LeadershipCard
-              person={about.leadership.president.name}
-              role={about.leadership.president.role}
-              description={about.leadership.president.description}
-            />
-            {about.leadership.roles.map((leader) => (
-              <LeadershipCard
-                key={leader.role}
-                role={leader.role}
-                description={leader.description}
-                badge={dict.common.comingSoon}
-              />
-            ))}
-          </div>
+          <LeadershipOrgChart leadership={about.leadership} comingSoon={dict.common.comingSoon} />
           <div className="mt-12 text-center">
             <BoardApplyModal
               locale={locale}

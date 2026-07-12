@@ -329,25 +329,43 @@ export const en = {
       description:
         "The founding board is being assembled now. Bring your expertise to the table and help build the chamber from day one.",
       president: {
-        name: "Fouad Bousetouane",
-        role: "President",
-        description: "Vision, strategy, and stewardship of the chamber's founding mission.",
+        name: "Dr. Fouad Bousetouane",
+        role: "President & Founder",
+        photo: "/images/team/fouad-bousetouane.png",
+        readBio: "Read Bio",
+        bio: [
+          "Dr. Fouad Bousetouane is a distinguished AI leader, innovator, author, investor, and entrepreneur specializing in enterprise AI, AI governance, and deep tech. He is the founder of ProofAgent.AI, a company specialized in AI governance, an adjunct associate professor of Generative AI at the University of Chicago, and the author of the book AI Agents for Everyone.",
+          "He holds a Ph.D. accredited by the University of Nevada, Las Vegas, has authored more than 50 AI publications, patents, and trade secrets, and has led AI transformation initiatives for Fortune 500 organizations.",
+          "A strong advocate for the responsible adoption of AI, he is a frequent keynote speaker, researcher, and educator, helping organizations and future leaders build trustworthy, scalable, and business-ready AI systems.",
+        ],
+        recognitionTitle: "Recognition",
+        recognition: [
+          "Timmy Award — Best Tech Manager, Chicago",
+          "Top 30 AI Scientists — MIT Technology Review",
+          "Marquis Emerging Leaders, United States",
+          "Fortune's America's Most Innovative Teams",
+          "Judge, AWS Generative AI Awards",
+        ],
+        linkedin: "",
+        medium: "",
       },
-      roles: [
+      tiers: [
         {
-          role: "Board Members",
-          description:
-            "Founding board seats across finance, legal, business development, and more. Apply below.",
+          title: "Executive Committee",
+          roles: ["Vice President", "Treasurer", "Secretary", "General Counsel"],
         },
         {
-          role: "Advisory Board",
-          description:
-            "Senior leaders in business, law, finance, and academia guiding chamber direction.",
+          title: "Board of Directors",
+          roles: [
+            "Business Development",
+            "Trade & Algeria Relations",
+            "Sponsorship & Fundraising",
+            "Marketing & Media",
+          ],
         },
         {
-          role: "Community Council",
-          description:
-            "Community leaders driving youth, professional, and cultural-economic programs.",
+          title: "Our Team",
+          roles: ["Operations", "Communications & Media", "Membership & Community"],
         },
       ],
       applyCta: "Apply to Join the Founding Board",
