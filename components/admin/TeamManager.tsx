@@ -5,6 +5,8 @@ import {
   ExternalLink,
   Eye,
   ImagePlus,
+  List,
+  Network,
   Pencil,
   Trash2,
   UserPlus,
@@ -22,16 +24,19 @@ const inputClasses =
 const TIERS = [
   { value: "executive", label: "Executive Committee" },
   { value: "board", label: "Board of Directors" },
-  { value: "team", label: "Our Team (staff & volunteers)" },
+  { value: "leadership", label: "Leadership Team" },
+  { value: "advisory", label: "Advisory Council" },
 ] as const;
 
 const TIER_LABELS: Record<string, string> = {
   executive: "Executive Committee",
   board: "Board of Directors",
-  team: "Our Team",
+  leadership: "Leadership Team",
+  advisory: "Advisory Council",
+  team: "Leadership Team",
 };
 
-const emptyMember: Row = {
+const emptyRole: Row = {
   name: "",
   name_ar: "",
   role_title: "",
@@ -40,13 +45,18 @@ const emptyMember: Row = {
   photo_url: "",
   bio: "",
   bio_ar: "",
+  duties: "",
+  duties_ar: "",
+  suggested_profile: "",
   linkedin: "",
   sort_order: 100,
   published: true,
 };
 
-// Admin-only management of the public Our Team page: add members, change
-// titles and tiers, upload photos, and edit bios (English and Arabic).
+// Admin-only management of the organization structure shown on the public
+// Our Team page: create or delete roles, fill them with people (photo + HTML
+// bio), keep short public duties, and validate (publish) each change. The
+// Chart view tracks the whole structure at a glance.
 export default function TeamManager({ onNotice }: { onNotice: (msg: string) => void }) {
   const [members, setMembers] = useState<Row[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,6 +64,7 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [previewLang, setPreviewLang] = useState<"en" | "ar" | null>(null);
+  const [view, setView] = useState<"chart" | "list">("chart");
 
   const load = useCallback(async () => {
     if (!supabase) return;
@@ -61,11 +72,10 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
     const { data, error } = await supabase
       .from("team_members")
       .select("*")
-      .order("tier", { ascending: true })
       .order("sort_order", { ascending: true });
     setLoading(false);
     if (error) {
-      onNotice(`Could not load the team: ${error.message}`);
+      onNotice(`Could not load the organization: ${error.message}`);
     } else {
       setMembers((data as Row[]) ?? []);
     }
@@ -79,6 +89,10 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
     setDraft((d) => (d ? { ...d, [field]: value } : d));
   }
 
+  const tierOf = (row: Row) => (row.tier === "team" ? "leadership" : String(row.tier));
+  const membersIn = (tier: string) => members.filter((m) => tierOf(m) === tier);
+  const isFilled = (row: Row) => Boolean(String(row.name ?? "").trim());
+
   async function uploadPhoto(file: File) {
     if (!supabase) return;
     if (file.size > 2 * 1024 * 1024) {
@@ -86,7 +100,6 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
       return;
     }
     setUploading(true);
-    const ext = file.name.split(".").pop()?.toLowerCase() || "png";
     const path = `${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, "-").toLowerCase()}`;
     const { error } = await supabase.storage.from("team-photos").upload(path, file, {
       cacheControl: "3600",
@@ -99,27 +112,29 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
     }
     const { data } = supabase.storage.from("team-photos").getPublicUrl(path);
     set("photo_url", data.publicUrl);
-    void ext;
   }
 
   async function save(publish: boolean) {
     if (!supabase || !draft) return;
-    const name = String(draft.name ?? "").trim();
     const roleTitle = String(draft.role_title ?? "").trim();
-    if (!name || !roleTitle) {
-      onNotice("A name and a role title are required.");
+    if (!roleTitle) {
+      onNotice("A role title is required.");
       return;
     }
     setSaving(true);
+    const name = String(draft.name ?? "").trim();
     const payload: Row = {
-      name,
+      name: name || null,
       name_ar: String(draft.name_ar ?? "").trim() || null,
       role_title: roleTitle,
       role_title_ar: String(draft.role_title_ar ?? "").trim() || null,
-      tier: draft.tier ?? "team",
+      tier: draft.tier === "team" ? "leadership" : draft.tier ?? "leadership",
       photo_url: String(draft.photo_url ?? "").trim() || null,
       bio: String(draft.bio ?? "").trim() || null,
       bio_ar: String(draft.bio_ar ?? "").trim() || null,
+      duties: String(draft.duties ?? "").trim() || null,
+      duties_ar: String(draft.duties_ar ?? "").trim() || null,
+      suggested_profile: String(draft.suggested_profile ?? "").trim() || null,
       linkedin: String(draft.linkedin ?? "").trim() || null,
       sort_order: Number(draft.sort_order) || 100,
       published: publish,
@@ -135,8 +150,8 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
     }
     onNotice(
       publish
-        ? `${name} is live on the Team page.`
-        : `${name} saved as a hidden draft — preview and publish when ready.`
+        ? `${name || roleTitle} is live on the public Team page.`
+        : `${name || roleTitle} saved as a hidden draft — preview and publish when ready.`
     );
     setDraft(null);
     setPreviewLang(null);
@@ -152,18 +167,24 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
     if (error) {
       onNotice(`Update failed: ${error.message}`);
     } else {
+      onNotice(
+        member.published
+          ? `${member.name || member.role_title} hidden from the public page.`
+          : `${member.name || member.role_title} validated and published.`
+      );
       load();
     }
   }
 
   async function remove(member: Row) {
     if (!supabase) return;
-    if (!window.confirm(`Remove ${member.name} from the team page?`)) return;
+    if (!window.confirm(`Delete the role "${member.role_title}"${member.name ? ` (${member.name})` : ""}?`))
+      return;
     const { error } = await supabase.from("team_members").delete().eq("id", member.id);
     if (error) {
       onNotice(`Delete failed: ${error.message}`);
     } else {
-      onNotice(`${member.name} removed.`);
+      onNotice(`Role "${member.role_title}" deleted.`);
       load();
     }
   }
@@ -173,7 +194,7 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
       <div className="mt-6 rounded-2xl border border-navy-100 bg-white p-6 shadow-card sm:p-8">
         <div className="flex items-center justify-between">
           <h2 className="font-heading text-lg font-bold text-navy">
-            {draft.id ? `Edit: ${draft.name}` : "Add Team Member"}
+            {draft.id ? `Edit: ${draft.name || draft.role_title}` : "New Role"}
           </h2>
           <button
             type="button"
@@ -186,7 +207,53 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
         </div>
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-navy">Name (English) *</label>
+            <label className="mb-1.5 block text-sm font-semibold text-navy">
+              Role / Title (English) *
+            </label>
+            <input
+              value={String(draft.role_title ?? "")}
+              onChange={(e) => set("role_title", e.target.value)}
+              className={inputClasses}
+              placeholder="e.g. Director – Trade & Investment"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-navy">
+              Role / Title (Arabic)
+            </label>
+            <input
+              dir="rtl"
+              value={String(draft.role_title_ar ?? "")}
+              onChange={(e) => set("role_title_ar", e.target.value)}
+              className={inputClasses}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="mb-1.5 block text-sm font-semibold text-navy">
+              Duties — few public words (English)
+            </label>
+            <input
+              value={String(draft.duties ?? "")}
+              onChange={(e) => set("duties", e.target.value)}
+              className={inputClasses}
+              placeholder="e.g. Trade, investment, market access"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="mb-1.5 block text-sm font-semibold text-navy">
+              Duties (Arabic)
+            </label>
+            <input
+              dir="rtl"
+              value={String(draft.duties_ar ?? "")}
+              onChange={(e) => set("duties_ar", e.target.value)}
+              className={inputClasses}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-navy">
+              Name (English) — leave empty for an open role
+            </label>
             <input
               value={String(draft.name ?? "")}
               onChange={(e) => set("name", e.target.value)}
@@ -204,31 +271,9 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-navy">
-              Role / Title (English) *
-            </label>
-            <input
-              value={String(draft.role_title ?? "")}
-              onChange={(e) => set("role_title", e.target.value)}
-              className={inputClasses}
-              placeholder="e.g. Treasurer"
-            />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-semibold text-navy">
-              Role / Title (Arabic)
-            </label>
-            <input
-              dir="rtl"
-              value={String(draft.role_title_ar ?? "")}
-              onChange={(e) => set("role_title_ar", e.target.value)}
-              className={inputClasses}
-            />
-          </div>
-          <div>
             <label className="mb-1.5 block text-sm font-semibold text-navy">Section</label>
             <select
-              value={String(draft.tier ?? "team")}
+              value={String(draft.tier === "team" ? "leadership" : draft.tier ?? "leadership")}
               onChange={(e) => set("tier", e.target.value)}
               className={inputClasses}
             >
@@ -239,15 +284,28 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
               ))}
             </select>
           </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-semibold text-navy">Order</label>
-            <input
-              type="number"
-              min={1}
-              value={Number(draft.sort_order ?? 100)}
-              onChange={(e) => set("sort_order", Number(e.target.value))}
-              className={inputClasses}
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-navy">Order</label>
+              <input
+                type="number"
+                min={1}
+                value={Number(draft.sort_order ?? 100)}
+                onChange={(e) => set("sort_order", Number(e.target.value))}
+                className={inputClasses}
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-navy">
+                Suggested Profile
+              </label>
+              <input
+                value={String(draft.suggested_profile ?? "")}
+                onChange={(e) => set("suggested_profile", e.target.value)}
+                className={inputClasses}
+                placeholder="e.g. CPA / CFO"
+              />
+            </div>
           </div>
 
           {/* Photo */}
@@ -351,7 +409,7 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
             onClick={() => save(true)}
             className="rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-6 py-3 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400 disabled:opacity-60"
           >
-            {saving ? "Saving..." : "Save & Publish"}
+            {saving ? "Saving..." : "Validate & Publish"}
           </button>
           <button
             type="button"
@@ -362,7 +420,7 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
           </button>
         </div>
 
-        {/* Live preview: exactly how the bio dialog appears on the Team page */}
+        {/* Live preview: exactly how the popup appears on the Team page */}
         {previewLang && (
           <div
             className="fixed inset-0 z-[100] flex items-center justify-center p-4"
@@ -428,8 +486,8 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
                 <div>
                   <h2 className="font-heading text-xl font-bold text-white">
                     {previewLang === "ar"
-                      ? String(draft.name_ar || draft.name || "")
-                      : String(draft.name || "Name")}
+                      ? String(draft.name_ar || draft.name || draft.role_title_ar || draft.role_title || "")
+                      : String(draft.name || draft.role_title || "Role")}
                   </h2>
                   <p className="mt-0.5 text-sm font-semibold text-gold">
                     {previewLang === "ar"
@@ -439,16 +497,28 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
                 </div>
               </div>
               <div className="p-8">
-                {String(
-                  (previewLang === "ar" ? draft.bio_ar || draft.bio : draft.bio) ?? ""
-                ).trim() ? (
+                {String((previewLang === "ar" ? draft.duties_ar || draft.duties : draft.duties) ?? "").trim() && (
+                  <div className="mb-6 rounded-xl border border-navy-100 bg-surface p-5">
+                    <p className="text-xs font-bold uppercase tracking-wider text-navy">
+                      {previewLang === "ar" ? "المسؤوليات" : "Responsibilities"}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-ink">
+                      {String(
+                        (previewLang === "ar" ? draft.duties_ar || draft.duties : draft.duties) ?? ""
+                      )}
+                    </p>
+                  </div>
+                )}
+                {String((previewLang === "ar" ? draft.bio_ar || draft.bio : draft.bio) ?? "").trim() ? (
                   <BioHtml
                     text={String(
                       (previewLang === "ar" ? draft.bio_ar || draft.bio : draft.bio) ?? ""
                     )}
                   />
                 ) : (
-                  <p className="text-sm text-muted">No bio yet — the card will open without one.</p>
+                  <p className="text-sm text-muted">
+                    No bio — the popup will show the responsibilities only.
+                  </p>
                 )}
               </div>
             </div>
@@ -462,7 +532,7 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
     <div className="mt-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="min-w-48 flex-1 text-sm text-muted">
-          These people appear on the public{" "}
+          The organization structure on the public{" "}
           <a
             href="/en/team"
             target="_blank"
@@ -471,98 +541,176 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
           >
             Our Team page <ExternalLink className="inline h-3 w-3" />
           </a>
-          , grouped by section and ordered by the Order field.
+          . Create or delete roles, fill seats, and validate to publish.
         </p>
-        <button
-          type="button"
-          onClick={() => setDraft({ ...emptyMember })}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-5 py-2.5 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400"
-        >
-          <UserPlus className="h-4 w-4" /> Add Team Member
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-lg border border-navy-200 p-0.5">
+            <button
+              type="button"
+              onClick={() => setView("chart")}
+              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-xs font-semibold ${
+                view === "chart" ? "bg-navy text-white" : "text-navy hover:bg-surface"
+              }`}
+            >
+              <Network className="h-3.5 w-3.5" /> Chart
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("list")}
+              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-xs font-semibold ${
+                view === "list" ? "bg-navy text-white" : "text-navy hover:bg-surface"
+              }`}
+            >
+              <List className="h-3.5 w-3.5" /> List
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => setDraft({ ...emptyRole })}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-5 py-2.5 text-sm font-semibold text-white hover:from-green-500 hover:to-green-400"
+          >
+            <UserPlus className="h-4 w-4" /> New Role
+          </button>
+        </div>
       </div>
 
-      <div className="mt-4 overflow-x-auto rounded-2xl border border-navy-100 bg-white shadow-card">
-        <table className="w-full min-w-[760px] text-sm">
-          <thead>
-            <tr className="border-b border-navy-100 bg-surface text-xs uppercase tracking-wider text-muted">
-              <th className="px-4 py-3 text-start">Member</th>
-              <th className="px-4 py-3 text-start">Section</th>
-              <th className="px-4 py-3 text-start">Order</th>
-              <th className="px-4 py-3 text-start">Status</th>
-              <th className="px-4 py-3 text-start">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {members.length === 0 && !loading && (
-              <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                  No team members yet. Add the first one — run supabase/schema-v19.sql first if
-                  this list will not load.
-                </td>
-              </tr>
-            )}
-            {members.map((member) => (
-              <tr key={String(member.id)} className="border-b border-navy-50">
-                <td className="px-4 py-3">
-                  <span className="flex items-center gap-3">
-                    {member.photo_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={String(member.photo_url)}
-                        alt=""
-                        className="h-10 w-10 rounded-full border border-navy-50 object-cover"
-                      />
-                    ) : (
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-navy-50 text-navy-300">
-                        <UserRound className="h-5 w-5" />
-                      </span>
+      {view === "chart" ? (
+        <div className="mt-6 space-y-2">
+          {TIERS.map((tier, index) => {
+            const tierMembers = membersIn(tier.value);
+            const filledCount = tierMembers.filter(isFilled).length;
+            return (
+              <div key={tier.value}>
+                {index > 0 && <div className="mx-auto h-6 w-px bg-navy-200" aria-hidden="true" />}
+                <div className="rounded-2xl border border-navy-100 bg-white p-5 shadow-card">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="font-heading text-sm font-bold text-navy">{tier.label}</h3>
+                    <span className="text-xs font-semibold text-muted">
+                      {filledCount}/{tierMembers.length} filled
+                    </span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {tierMembers.length === 0 && (
+                      <span className="text-xs text-muted">No roles yet — add one.</span>
                     )}
-                    <span>
-                      <span className="block font-semibold text-navy">{String(member.name)}</span>
-                      <span className="block text-xs text-muted">
-                        {String(member.role_title)}
+                    {tierMembers.map((member) => (
+                      <button
+                        key={String(member.id)}
+                        type="button"
+                        onClick={() => setDraft({ ...member })}
+                        title={`${member.role_title}${member.name ? ` — ${member.name}` : " — open role"}${member.published ? "" : " (hidden)"}`}
+                        className={`max-w-56 truncate rounded-lg border px-3 py-2 text-xs font-semibold transition-colors ${
+                          !member.published
+                            ? "border-navy-100 bg-surface text-muted"
+                            : isFilled(member)
+                              ? "border-navy bg-navy text-white hover:bg-navy-600"
+                              : "border-dashed border-gold text-gold-600 hover:bg-gold-100/50"
+                        }`}
+                      >
+                        {isFilled(member) ? String(member.name) : String(member.role_title)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          <p className="pt-2 text-xs text-muted">
+            Navy = filled &amp; published · gold dashed = open role · gray = hidden (not validated).
+            Click any role to edit it.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-4 overflow-x-auto rounded-2xl border border-navy-100 bg-white shadow-card">
+          <table className="w-full min-w-[820px] text-sm">
+            <thead>
+              <tr className="border-b border-navy-100 bg-surface text-xs uppercase tracking-wider text-muted">
+                <th className="px-4 py-3 text-start">Role</th>
+                <th className="px-4 py-3 text-start">Person</th>
+                <th className="px-4 py-3 text-start">Section</th>
+                <th className="px-4 py-3 text-start">Order</th>
+                <th className="px-4 py-3 text-start">Status</th>
+                <th className="px-4 py-3 text-start">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.length === 0 && !loading && (
+                <tr>
+                  <td colSpan={6} className="px-4 py-10 text-center text-muted">
+                    No roles yet. Run supabase/schema-v20.sql to seed the organization structure,
+                    or add the first role.
+                  </td>
+                </tr>
+              )}
+              {members.map((member) => (
+                <tr key={String(member.id)} className="border-b border-navy-50">
+                  <td className="max-w-64 px-4 py-3">
+                    <span className="block truncate font-semibold text-navy">
+                      {String(member.role_title)}
+                    </span>
+                    {member.duties ? (
+                      <span className="block truncate text-xs text-muted">
+                        {String(member.duties)}
+                      </span>
+                    ) : null}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="flex items-center gap-2">
+                      {member.photo_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={String(member.photo_url)}
+                          alt=""
+                          className="h-8 w-8 rounded-full border border-navy-50 object-cover"
+                        />
+                      ) : (
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-navy-50 text-navy-300">
+                          <UserRound className="h-4 w-4" />
+                        </span>
+                      )}
+                      <span className={isFilled(member) ? "text-ink" : "text-muted"}>
+                        {isFilled(member) ? String(member.name) : "Open role"}
                       </span>
                     </span>
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-muted">{TIER_LABELS[String(member.tier)]}</td>
-                <td className="px-4 py-3 text-muted">{String(member.sort_order)}</td>
-                <td className="px-4 py-3">
-                  <button
-                    type="button"
-                    onClick={() => togglePublished(member)}
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      member.published ? "bg-green-50 text-green-700" : "bg-surface text-muted"
-                    }`}
-                    title="Click to toggle visibility"
-                  >
-                    {member.published ? "Visible" : "Hidden"}
-                  </button>
-                </td>
-                <td className="whitespace-nowrap px-4 py-3">
-                  <button
-                    type="button"
-                    onClick={() => setDraft({ ...member })}
-                    className="rounded-lg p-2 text-muted hover:bg-navy-50 hover:text-navy"
-                    aria-label="Edit"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => remove(member)}
-                    className="rounded-lg p-2 text-muted hover:bg-red-50 hover:text-red-600"
-                    aria-label="Remove"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                  </td>
+                  <td className="px-4 py-3 text-muted">{TIER_LABELS[String(member.tier)]}</td>
+                  <td className="px-4 py-3 text-muted">{String(member.sort_order)}</td>
+                  <td className="px-4 py-3">
+                    <button
+                      type="button"
+                      onClick={() => togglePublished(member)}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        member.published ? "bg-green-50 text-green-700" : "bg-gold-100 text-gold-600"
+                      }`}
+                      title="Click to toggle"
+                    >
+                      {member.published ? "Published" : "Validate"}
+                    </button>
+                  </td>
+                  <td className="whitespace-nowrap px-4 py-3">
+                    <button
+                      type="button"
+                      onClick={() => setDraft({ ...member })}
+                      className="rounded-lg p-2 text-muted hover:bg-navy-50 hover:text-navy"
+                      aria-label="Edit"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => remove(member)}
+                      className="rounded-lg p-2 text-muted hover:bg-red-50 hover:text-red-600"
+                      aria-label="Delete role"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

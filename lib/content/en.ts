@@ -1295,9 +1295,14 @@ export const en = {
     sections: {
       executive: "Executive Committee",
       board: "Board of Directors",
-      team: "Our Team",
+      leadership: "Leadership Team",
+      advisory: "Advisory Council",
     },
     readBio: "Read Bio",
+    details: "Role & Duties",
+    dutiesLabel: "Responsibilities",
+    profileLabel: "Ideal Profile",
+    openRole: "Open Role",
     empty: "Seats are being filled as the chamber grows.",
     applyTitle: "Want to help build the chamber?",
     applyText:
