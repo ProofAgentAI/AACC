@@ -190,7 +190,7 @@ export const en = {
         {
           title: "Policy & Advocacy",
           description:
-            "Nonpartisan advocacy for trade facilitation, direct flights, and diaspora economic opportunity.",
+            "Nonpartisan advocacy for trade facilitation, market access, and diaspora economic opportunity.",
           icon: "shield",
           href: "/advocacy",
         },
@@ -222,7 +222,7 @@ export const en = {
       eyebrow: "Featured Programs",
       title: "Initiatives That Move the Needle",
       description:
-        "From trade missions to direct flight advocacy, our programs are designed for measurable economic impact.",
+        "From trade missions to investment forums, our programs are designed for measurable economic impact.",
       viewAll: "View All Programs",
     },
     sectors: {
@@ -313,7 +313,7 @@ export const en = {
       para1:
         "AACC-USA is an independent nonprofit chamber-style association focused on business, trade, investment, community development, and advocacy. We serve as the connective tissue between Algerian-American entrepreneurs, professionals, companies, and the institutions that can help them grow.",
       para2:
-        "We are a business and community leadership platform, organizing trade missions, publishing a business directory, hosting investment forums, and advancing nonpartisan advocacy priorities like direct air connectivity between the United States and Algeria.",
+        "We are a business and community leadership platform, organizing trade missions, publishing a business directory, hosting investment forums, and advancing nonpartisan advocacy priorities that strengthen economic cooperation between the United States and Algeria.",
       disclaimer:
         "Important: AACC-USA is not a government agency and does not represent any government. We are an independent U.S.-based association serving business and community interests.",
     },
@@ -734,12 +734,12 @@ export const en = {
         cta: "Attend a Forum",
       },
       {
-        slug: "direct-flight-advocacy",
-        title: "Direct Flight Advocacy Initiative",
+        slug: "technology-innovation-exchange",
+        title: "Technology & Innovation Exchange",
         description:
-          "Building the business and community case for improved air connectivity between the United States and Algeria, a catalyst for trade, tourism, and family ties.",
-        icon: "plane",
-        cta: "Support the Initiative",
+          "Connecting U.S. and Algerian companies, universities, and startups to exchange technology, know-how, and talent across both markets.",
+        icon: "cpu",
+        cta: "Join the Exchange",
       },
       {
         slug: "diaspora-business-podcast",
@@ -929,9 +929,9 @@ export const en = {
       status: "Policy Brief, Coming Soon",
       items: [
         {
-          title: "The Case for Direct U.S.-Algeria Flights",
+          title: "The U.S.-Algeria Technology Corridor",
           summary:
-            "Why nonstop air connectivity is a trade, tourism, and community imperative, and what it would unlock for both economies.",
+            "How technology transfer, innovation partnerships, and diaspora expertise can accelerate growth in both economies.",
         },
         {
           title: "Unlocking Algerian-American Investment",
@@ -955,7 +955,7 @@ export const en = {
     cta: {
       title: "Advocacy Is Stronger With Members Behind It",
       description:
-        "Every membership adds weight to the chamber's voice on trade, connectivity, and opportunity.",
+        "Every membership adds weight to the chamber's voice on trade, innovation, and opportunity.",
       primary: "Join AACC-USA",
       secondary: "Read Chamber News",
     },
@@ -1109,7 +1109,7 @@ export const en = {
         "The chamber welcomes institutional partners whose missions align with Algerian-American economic growth.",
       types: [
         { name: "Corporations", icon: "building" },
-        { name: "Airlines", icon: "plane" },
+        { name: "Technology Companies", icon: "cpu" },
         { name: "Banks", icon: "chart" },
         { name: "Universities", icon: "users" },
         { name: "Law Firms", icon: "shield" },

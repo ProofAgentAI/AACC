@@ -38,10 +38,10 @@ export const posts: Post[] = [
     readTime: "7 min read",
   },
   {
-    slug: "case-for-direct-flights-us-algeria",
-    title: "The Case for Direct Flights Between the U.S. and Algeria",
+    slug: "us-algeria-technology-corridor",
+    title: "Building a U.S.-Algeria Technology Corridor",
     excerpt:
-      "Direct air connectivity is more than convenience. It is trade facilitation, investment enablement, and community connection. The business case, explained.",
+      "Technology transfer, innovation partnerships, and diaspora expertise are the fastest bridge between the two economies. What the corridor could look like.",
     date: "May 8, 2026",
     category: "Advocacy",
     readTime: "5 min read",
