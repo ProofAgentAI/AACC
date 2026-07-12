@@ -346,7 +346,7 @@ export const en = {
           "Fortune's America's Most Innovative Teams",
           "Judge, AWS Generative AI Awards",
         ],
-        linkedin: "",
+        linkedin: "https://www.linkedin.com/in/fouad-bousetouane-ph-d-83382614/",
         medium: "",
       },
       tiers: [

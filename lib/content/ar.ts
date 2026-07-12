@@ -329,7 +329,7 @@ export const ar: typeof en = {
           "فرق Fortune الأكثر ابتكاراً في أمريكا",
           "محكّم في جوائز AWS للذكاء الاصطناعي التوليدي",
         ],
-        linkedin: "",
+        linkedin: "https://www.linkedin.com/in/fouad-bousetouane-ph-d-83382614/",
         medium: "",
       },
       tiers: [
