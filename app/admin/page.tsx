@@ -28,6 +28,7 @@ import {
   Trash2,
   UserCog,
   UserPlus,
+  Users2,
   X,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -39,6 +40,7 @@ import TasksManager from "@/components/admin/TasksManager";
 import EventsManager from "@/components/admin/EventsManager";
 import BillingManager from "@/components/admin/BillingManager";
 import NewsletterComposer from "@/components/admin/NewsletterComposer";
+import TeamManager from "@/components/admin/TeamManager";
 import {
   ADMIN_EMAIL,
   ROLE_LABELS,
@@ -60,6 +62,7 @@ const TABS = [
   { key: "billing", label: "Billing", table: "", icon: CircleDollarSign },
   { key: "newsletter", label: "Newsletter", table: "", icon: MailPlus },
   { key: "crm", label: "CRM", table: "", icon: ContactRound },
+  { key: "team", label: "Team Page", table: "", icon: Users2 },
   { key: "memberships", label: "Memberships", table: "membership_applications", icon: Inbox },
   { key: "board", label: "Board Applications", table: "board_applications", icon: ClipboardList },
   { key: "directory", label: "Directory Requests", table: "directory_submissions", icon: Building2 },
@@ -100,6 +103,7 @@ const EMAIL_SUBJECTS: Record<TabKey, string> = {
   billing: "",
   newsletter: "",
   crm: "",
+  team: "",
   memberships: "Your AACC-USA membership application",
   board: "Your AACC-USA founding board application",
   directory: "Your AACC-USA business directory request",
@@ -686,7 +690,9 @@ export default function AdminDashboard() {
   const visibleTabs = TABS.filter((t) => {
     if (isAdmin) return true;
     if (myRole === "staff") return STAFF_TABS.includes(t.key);
-    return t.key !== "users" && t.key !== "approvals" && t.key !== "billing";
+    return (
+      t.key !== "users" && t.key !== "approvals" && t.key !== "billing" && t.key !== "team"
+    );
   });
   const currentLabel = TABS.find((t) => t.key === tab)?.label ?? "";
 
@@ -844,6 +850,8 @@ export default function AdminDashboard() {
         <ApprovalsManager onNotice={setNotice} onChanged={loadApprovalsCount} />
       ) : tab === "crm" ? (
         <CrmManager onNotice={setNotice} />
+      ) : tab === "team" ? (
+        <TeamManager onNotice={setNotice} />
       ) : tab !== "users" ? (
         <>
         {/* Sponsored listings: what the public directory page shows */}

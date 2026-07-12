@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import SectionHeading from "@/components/SectionHeading";
-import LeadershipOrgChart from "@/components/LeadershipOrgChart";
-import BoardApplyModal from "@/components/BoardApplyModal";
 import CTASection from "@/components/CTASection";
 import Icon from "@/components/Icon";
 import { getDictionary, isLocale, type Locale } from "@/lib/i18n";
@@ -59,24 +57,8 @@ export default async function AboutPage({
         </div>
       </section>
 
-      {/* Our role */}
-      <section className="bg-surface py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid items-start gap-14 lg:grid-cols-2">
-            <SectionHeading eyebrow={about.role.eyebrow} title={about.role.title} align="left" />
-            <div className="space-y-6 text-base leading-relaxed text-ink">
-              <p>{about.role.para1}</p>
-              <p>{about.role.para2}</p>
-              <p className="rounded-xl border border-gold/40 bg-gold-100/50 p-5 text-sm">
-                {about.role.disclaimer}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Founder message */}
-      <section className="bg-white py-20 sm:py-24">
+      <section className="bg-surface py-20 sm:py-24">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-navy-900 via-navy to-navy-600 p-10 text-center text-white sm:p-14">
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-gold">
@@ -86,26 +68,6 @@ export default async function AboutPage({
               &ldquo;{about.founder.quote}&rdquo;
             </blockquote>
             <p className="mt-8 text-sm font-semibold text-navy-100">{about.founder.attribution}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Leadership */}
-      <section className="bg-surface py-20 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            eyebrow={about.leadership.eyebrow}
-            title={about.leadership.title}
-            description={about.leadership.description}
-          />
-          <LeadershipOrgChart leadership={about.leadership} comingSoon={dict.common.comingSoon} />
-          <div className="mt-12 text-center">
-            <BoardApplyModal
-              locale={locale}
-              dict={about.board}
-              formDict={dict.form}
-              buttonLabel={about.leadership.applyCta}
-            />
           </div>
         </div>
       </section>
@@ -127,6 +89,22 @@ export default async function AboutPage({
                 <p className="mt-2 text-sm leading-relaxed text-muted">{value.description}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Our role */}
+      <section className="bg-surface py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid items-start gap-14 lg:grid-cols-2">
+            <SectionHeading eyebrow={about.role.eyebrow} title={about.role.title} align="left" />
+            <div className="space-y-6 text-base leading-relaxed text-ink">
+              <p>{about.role.para1}</p>
+              <p>{about.role.para2}</p>
+              <p className="rounded-xl border border-gold/40 bg-gold-100/50 p-5 text-sm">
+                {about.role.disclaimer}
+              </p>
+            </div>
           </div>
         </div>
       </section>

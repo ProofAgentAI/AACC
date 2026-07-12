@@ -38,6 +38,7 @@ export const en = {
     events: "Events",
     news: "News",
     contact: "Contact",
+    team: "Our Team",
     join: "Join AACC-USA",
     memberLogin: "Member Login",
     languageName: "العربية",
@@ -321,7 +322,7 @@ export const en = {
       label: "A Message From the Founder",
       quote:
         "AACC-USA was created to give Algerian-American entrepreneurs, professionals, and businesses a structured platform to connect, grow, and represent their economic voice across both countries.",
-      attribution: "— Founder, AACC-USA",
+      attribution: "— Dr. Fouad Bousetouane, President & Founder, AACC-USA",
     },
     leadership: {
       eyebrow: "Leadership",
@@ -1278,6 +1279,29 @@ export const en = {
       primary: "Become a Member",
       secondary: "Nominate a Spotlight",
     },
+  },
+
+  team: {
+    hero: {
+      eyebrow: "Our Team",
+      title: "The Dedicated Talents Behind AACC-USA",
+      description:
+        "Meet the executive committee, board of directors, and team building the bridge between Algerian and American business.",
+    },
+    intro: [
+      "AACC-USA is powered by a team of dedicated talents: entrepreneurs, executives, academics, and community builders who bring their expertise to serve the Algerian-American business community.",
+      "From strategy and governance to programs and outreach, every member contributes hands-on experience from both markets. The founding team is growing, and new leaders join as the chamber takes shape.",
+    ],
+    sections: {
+      executive: "Executive Committee",
+      board: "Board of Directors",
+      team: "Our Team",
+    },
+    readBio: "Read Bio",
+    empty: "Seats are being filled as the chamber grows.",
+    applyTitle: "Want to help build the chamber?",
+    applyText:
+      "Founding board seats are open across finance, legal, growth, communications, and community.",
   },
 
   privacy: {
