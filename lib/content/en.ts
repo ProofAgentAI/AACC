@@ -1298,7 +1298,6 @@ export const en = {
       leadership: "Leadership Team",
       ambassadors: "Chamber Ambassadors",
       advisory: "Advisory Council",
-      experts: "Expert Council",
     },
     readBio: "Read Bio",
     details: "Role & Duties",

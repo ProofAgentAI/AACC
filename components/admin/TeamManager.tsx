@@ -27,7 +27,6 @@ const TIERS = [
   { value: "leadership", label: "Leadership Team" },
   { value: "ambassadors", label: "Chamber Ambassadors" },
   { value: "advisory", label: "Advisory Council" },
-  { value: "experts", label: "Expert Council" },
 ] as const;
 
 const SEAT_STATUSES = [
@@ -44,7 +43,6 @@ const TIER_LABELS: Record<string, string> = {
   leadership: "Leadership Team",
   ambassadors: "Chamber Ambassadors",
   advisory: "Advisory Council",
-  experts: "Expert Council",
   team: "Leadership Team",
 };
 
@@ -115,7 +113,6 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
     leadership: 20,
     ambassadors: 40,
     advisory: 50,
-    experts: 60,
   };
 
   function newRoleIn(tier: string) {

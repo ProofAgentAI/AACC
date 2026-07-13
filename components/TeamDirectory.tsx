@@ -24,7 +24,7 @@ export type TeamMember = {
   name_ar: string | null;
   role_title: string;
   role_title_ar: string | null;
-  tier: "executive" | "board" | "leadership" | "ambassadors" | "advisory" | "experts" | "team";
+  tier: "executive" | "board" | "leadership" | "ambassadors" | "advisory" | "team";
   photo_url: string | null;
   bio: string | null;
   bio_ar: string | null;
@@ -37,7 +37,7 @@ export type TeamMember = {
   sort_order: number;
 };
 
-const TIERS = ["executive", "board", "leadership", "ambassadors", "advisory", "experts"] as const;
+const TIERS = ["executive", "board", "leadership", "ambassadors", "advisory"] as const;
 
 type ApplyStatus = "idle" | "submitting" | "success" | "duplicate" | "error";
 

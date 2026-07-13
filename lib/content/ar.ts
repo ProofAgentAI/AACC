@@ -1138,7 +1138,6 @@ export const ar: typeof en = {
       leadership: "الفريق القيادي",
       ambassadors: "سفراء الغرفة",
       advisory: "المجلس الاستشاري",
-      experts: "مجلس الخبراء",
     },
     readBio: "اقرأ السيرة",
     details: "الدور والمهام",
