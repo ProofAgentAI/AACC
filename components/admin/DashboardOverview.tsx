@@ -146,6 +146,7 @@ export default function DashboardOverview({
   const [engagement, setEngagement] = useState({ likes: 0, views: 0 });
   const [subscribers, setSubscribers] = useState(0);
   const [openTasks, setOpenTasks] = useState<Record<string, unknown>[]>([]);
+  const [taskOwners, setTaskOwners] = useState<{ owner: string; open: number; done: number }[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<Record<string, unknown>[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [finance, setFinance] = useState({ collected: 0, outstanding: 0, overdue: 0 });
@@ -175,10 +176,8 @@ export default function DashboardOverview({
       // tolerated silently so the rest of the dashboard still loads.
       supabase
         .from("staff_tasks")
-        .select("title, assigned_to, due_date, priority")
-        .eq("status", "open")
-        .order("due_date", { ascending: true, nullsFirst: false })
-        .limit(5),
+        .select("title, assigned_to, due_date, priority, status")
+        .order("due_date", { ascending: true, nullsFirst: false }),
       supabase
         .from("events")
         .select("title, starts_at, location, is_virtual, published")
@@ -212,7 +211,22 @@ export default function DashboardOverview({
       views: postRows.reduce((sum, r) => sum + Number(r.views ?? 0), 0),
     });
     setSubscribers(s.count ?? 0);
-    setOpenTasks((t.data as Record<string, unknown>[]) ?? []);
+    const taskRows = (t.data as Record<string, unknown>[]) ?? [];
+    setOpenTasks(taskRows.filter((r) => r.status === "open").slice(0, 5));
+    // Per-owner open vs closed, for the administrator's tracking panel.
+    const owners = new Map<string, { open: number; done: number }>();
+    for (const row of taskRows) {
+      const owner = String(row.assigned_to ?? "Unassigned");
+      const entry = owners.get(owner) ?? { open: 0, done: 0 };
+      if (row.status === "done") entry.done += 1;
+      else entry.open += 1;
+      owners.set(owner, entry);
+    }
+    setTaskOwners(
+      [...owners.entries()]
+        .map(([owner, counts]) => ({ owner, ...counts }))
+        .sort((a, b) => b.open - a.open || b.done - a.done)
+    );
     setUpcomingEvents((ev.data as Record<string, unknown>[]) ?? []);
 
     // Finance is admin-only; the query returns nothing (or errors before
@@ -366,6 +380,34 @@ export default function DashboardOverview({
             </ul>
           )}
         </Panel>
+
+        {/* Administrator tracking: every owner's open vs closed workload */}
+        {isAdmin && taskOwners.length > 0 && (
+          <Panel title="Tasks by Owner" onView={() => goTo("tasks")}>
+            <ul className="divide-y divide-navy-50">
+              {taskOwners.map((entry) => (
+                <li
+                  key={entry.owner}
+                  className="flex items-center justify-between gap-3 py-2.5 text-sm"
+                >
+                  <span className="min-w-0 truncate font-medium text-ink">{entry.owner}</span>
+                  <span className="flex shrink-0 items-center gap-2 text-xs font-semibold">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 ${
+                        entry.open > 0 ? "bg-gold-100 text-gold-600" : "bg-surface text-muted"
+                      }`}
+                    >
+                      {entry.open} open
+                    </span>
+                    <span className="rounded-full bg-green-50 px-2.5 py-0.5 text-green-700">
+                      {entry.done} closed
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+        )}
 
         <Panel title="Upcoming Events" onView={() => goTo("events")}>
           {upcomingEvents.length === 0 ? (
