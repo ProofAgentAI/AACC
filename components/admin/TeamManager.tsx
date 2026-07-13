@@ -105,6 +105,22 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
   const membersIn = (tier: string) => members.filter((m) => tierOf(m) === tier);
   const isFilled = (row: Row) => Boolean(String(row.name ?? "").trim());
 
+  // "Add role" inside a section: the editor opens on that section's template —
+  // tier preset and the role slotted at the end of that section's order.
+  const TIER_SORT_BASE: Record<string, number> = {
+    executive: 1,
+    board: 10,
+    leadership: 20,
+    ambassadors: 40,
+    advisory: 50,
+  };
+
+  function newRoleIn(tier: string) {
+    const existing = membersIn(tier).map((m) => Number(m.sort_order) || 0);
+    const nextSort = existing.length > 0 ? Math.max(...existing) + 1 : TIER_SORT_BASE[tier] ?? 100;
+    setDraft({ ...emptyRole, tier, sort_order: nextSort });
+  }
+
   async function uploadPhoto(file: File) {
     if (!supabase) return;
     if (file.size > 2 * 1024 * 1024) {
@@ -208,7 +224,9 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
       <div className="mt-6 rounded-2xl border border-navy-100 bg-white p-6 shadow-card sm:p-8">
         <div className="flex items-center justify-between">
           <h2 className="font-heading text-lg font-bold text-navy">
-            {draft.id ? `Edit: ${draft.name || draft.role_title}` : "New Role"}
+            {draft.id
+              ? `Edit: ${draft.name || draft.role_title}`
+              : `New Role — ${TIER_LABELS[String(draft.tier)] ?? "Team"}`}
           </h2>
           <button
             type="button"
@@ -624,8 +642,18 @@ export default function TeamManager({ onNotice }: { onNotice: (msg: string) => v
                 <div className="rounded-2xl border border-navy-100 bg-white p-5 shadow-card">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <h3 className="font-heading text-sm font-bold text-navy">{tier.label}</h3>
-                    <span className="text-xs font-semibold text-muted">
-                      {filledCount}/{tierMembers.length} filled
+                    <span className="flex items-center gap-3">
+                      <span className="text-xs font-semibold text-muted">
+                        {filledCount}/{tierMembers.length} filled
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => newRoleIn(tier.value)}
+                        className="inline-flex items-center gap-1 rounded-lg border border-navy-200 px-2.5 py-1 text-xs font-semibold text-navy hover:border-navy hover:bg-surface"
+                        title={`Add a role to ${tier.label}`}
+                      >
+                        <UserPlus className="h-3.5 w-3.5" /> Add role
+                      </button>
                     </span>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
