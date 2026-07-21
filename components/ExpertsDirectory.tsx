@@ -5,6 +5,8 @@ import {
   Award,
   Building2,
   Linkedin,
+  Lock,
+  LogIn,
   MapPin,
   Search,
   Star,
@@ -52,15 +54,19 @@ function Photo({ expert, size }: { expert: Expert; size: string }) {
   );
 }
 
-// Public Expert Council directory: featured grid (up to 9, admin-selected),
-// search by keyword + domain + sub-expertise, profile popups, and an
-// application dialog. Approved applications publish straight to this page.
+// Expert Council directory in two variants:
+// - "public"  (/experts): only the admin-featured experts (up to 9) plus a
+//   members-only notice — the extensive directory requires a member login.
+// - "members" (member portal): the full searchable directory with keyword,
+//   domain, and sub-expertise filters.
 export default function ExpertsDirectory({
   locale,
   dict,
+  variant = "public",
 }: {
   locale: Locale;
   dict: ExpertsDict;
+  variant?: "public" | "members";
 }) {
   const [experts, setExperts] = useState<Expert[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -75,19 +81,22 @@ export default function ExpertsDirectory({
       setLoaded(true);
       return;
     }
-    supabase
+    let request = supabase
       .from("experts")
       .select(
         "id, name, title, organization, linkedin, city_state, domain, subdomain, bio, photo_url, highlighted"
       )
-      .eq("status", "approved")
+      .eq("status", "approved");
+    // The public page only ever loads the featured picks.
+    if (variant === "public") request = request.eq("highlighted", true);
+    request
       .order("highlighted", { ascending: false })
       .order("name", { ascending: true })
       .then(({ data }) => {
         setExperts((data as Expert[]) ?? []);
         setLoaded(true);
       });
-  }, []);
+  }, [variant]);
 
   const featured = experts.filter((e) => e.highlighted).slice(0, 9);
   const activeDomain = EXPERT_DOMAINS.find((d) => d.value === domain);
@@ -140,89 +149,127 @@ export default function ExpertsDirectory({
 
   return (
     <div>
-      {/* Featured experts */}
-      {featured.length > 0 && (
-        <div className="mb-14">
+      {variant === "public" ? (
+        <>
+          {/* Featured experts only — the admin's spotlight picks */}
           <div className="flex items-center gap-4">
             <h2 className="inline-flex items-center gap-2 font-heading text-xl font-bold text-navy">
               <Award className="h-5 w-5 text-gold-600" /> {dict.highlightedTitle}
             </h2>
             <span className="h-px flex-1 bg-navy-100" aria-hidden="true" />
           </div>
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {featured.map((expert) => card(expert, true))}
+          {loaded && featured.length === 0 ? (
+            <p className="mt-6 rounded-2xl border border-dashed border-navy-200 bg-white p-12 text-center text-sm text-muted">
+              {dict.featuredEmpty}
+            </p>
+          ) : (
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {featured.map((expert) => card(expert, true))}
+            </div>
+          )}
+
+          {/* The extensive directory is members-only */}
+          <div className="mt-14 overflow-hidden rounded-3xl bg-navy-900 text-white">
+            <div className="p-8 sm:p-10">
+              <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold">
+                <Lock className="h-4 w-4" /> {dict.membersOnly.eyebrow}
+              </p>
+              <h2 className="mt-3 font-heading text-2xl font-bold">{dict.membersOnly.title}</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-navy-100 sm:text-base">
+                {dict.membersOnly.text}
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <a
+                  href={`/${locale}/membership`}
+                  className="rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-7 py-3 text-sm font-semibold text-white transition-all hover:from-green-500 hover:to-green-400"
+                >
+                  {dict.membersOnly.join}
+                </a>
+                <a
+                  href="/portal/login"
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3 text-sm font-semibold text-white hover:bg-white/10"
+                >
+                  <LogIn className="h-4 w-4" /> {dict.membersOnly.signIn}
+                </a>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* Search */}
-      <div className="rounded-2xl border border-navy-100 bg-white p-6 shadow-card">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-heading text-lg font-bold text-navy">{dict.searchTitle}</h2>
-          <button
-            type="button"
-            onClick={() => setApplyOpen(true)}
-            className="rounded-lg bg-gradient-to-r from-green-600 to-green-500 px-6 py-2.5 text-sm font-semibold text-white transition-all hover:from-green-500 hover:to-green-400"
-          >
-            {dict.applyCta}
-          </button>
-        </div>
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-          <div className="relative md:col-span-1">
-            <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={dict.searchPlaceholder}
-              className={`${inputClasses} ps-10`}
-            />
+          {/* Become an expert */}
+          <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-navy-100 bg-white p-6 shadow-card">
+            <p className="min-w-56 flex-1 text-sm leading-relaxed text-muted">{dict.applyIntro}</p>
+            <button
+              type="button"
+              onClick={() => setApplyOpen(true)}
+              className="rounded-lg bg-navy px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-600"
+            >
+              {dict.applyCta}
+            </button>
           </div>
-          <select
-            value={domain}
-            onChange={(e) => {
-              setDomain(e.target.value);
-              setSubdomain("");
-            }}
-            className={inputClasses}
-            aria-label={dict.domainLabel}
-          >
-            <option value="">{dict.allDomains}</option>
-            {EXPERT_DOMAINS.map((d) => (
-              <option key={d.value} value={d.value}>
-                {d[locale]}
-              </option>
-            ))}
-          </select>
-          <select
-            value={subdomain}
-            onChange={(e) => setSubdomain(e.target.value)}
-            disabled={!activeDomain}
-            className={`${inputClasses} disabled:opacity-50`}
-            aria-label={dict.subdomainLabel}
-          >
-            <option value="">{dict.allSubdomains}</option>
-            {activeDomain?.subs.map((sub) => (
-              <option key={sub.value} value={sub.value}>
-                {sub[locale]}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <p className="mt-6 text-sm font-medium text-muted" role="status">
-        {dict.showing} {filtered.length} {dict.experts}
-      </p>
-
-      {loaded && filtered.length === 0 ? (
-        <p className="mt-4 rounded-2xl border border-dashed border-navy-200 bg-white p-12 text-center text-sm text-muted">
-          {dict.empty}
-        </p>
+        </>
       ) : (
-        <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((expert) => card(expert, false))}
-        </div>
+        <>
+          {/* Members: the full searchable directory */}
+          <div className="rounded-2xl border border-navy-100 bg-white p-6 shadow-card">
+            <h2 className="font-heading text-lg font-bold text-navy">{dict.searchTitle}</h2>
+            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+              <div className="relative md:col-span-1">
+                <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={dict.searchPlaceholder}
+                  className={`${inputClasses} ps-10`}
+                />
+              </div>
+              <select
+                value={domain}
+                onChange={(e) => {
+                  setDomain(e.target.value);
+                  setSubdomain("");
+                }}
+                className={inputClasses}
+                aria-label={dict.domainLabel}
+              >
+                <option value="">{dict.allDomains}</option>
+                {EXPERT_DOMAINS.map((d) => (
+                  <option key={d.value} value={d.value}>
+                    {d[locale]}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={subdomain}
+                onChange={(e) => setSubdomain(e.target.value)}
+                disabled={!activeDomain}
+                className={`${inputClasses} disabled:opacity-50`}
+                aria-label={dict.subdomainLabel}
+              >
+                <option value="">{dict.allSubdomains}</option>
+                {activeDomain?.subs.map((sub) => (
+                  <option key={sub.value} value={sub.value}>
+                    {sub[locale]}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <p className="mt-6 text-sm font-medium text-muted" role="status">
+            {dict.showing} {filtered.length} {dict.experts}
+          </p>
+
+          {loaded && filtered.length === 0 ? (
+            <p className="mt-4 rounded-2xl border border-dashed border-navy-200 bg-white p-12 text-center text-sm text-muted">
+              {dict.empty}
+            </p>
+          ) : (
+            <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filtered.map((expert) => card(expert, expert.highlighted))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Expert profile dialog */}

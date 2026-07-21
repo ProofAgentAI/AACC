@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
+  Award,
   Building2,
   CalendarDays,
   ContactRound,
@@ -26,6 +27,8 @@ import MyBusinessListing from "@/components/portal/MyBusinessListing";
 import NewsFeed from "@/components/portal/NewsFeed";
 import NewslettersList from "@/components/portal/NewslettersList";
 import ProfileEditor from "@/components/portal/ProfileEditor";
+import ExpertsDirectory from "@/components/ExpertsDirectory";
+import { getDictionary } from "@/lib/i18n";
 import CrmManager from "@/components/admin/CrmManager";
 import { ROLE_LABELS, appRoleOf, isStaffRole, type AppRole } from "@/lib/admin";
 
@@ -34,6 +37,7 @@ const TABS = [
   { key: "events", label: "Events Calendar", icon: CalendarDays },
   { key: "directory", label: "Business Directory", icon: Building2 },
   { key: "business", label: "My Business", icon: Store },
+  { key: "expertscouncil", label: "Expert Council", icon: Award },
   { key: "news", label: "News & Articles", icon: Newspaper },
   { key: "newsletters", label: "Newsletters", icon: MailOpen },
   { key: "resources", label: "Resources", icon: Library },
@@ -398,6 +402,15 @@ export default function MemberPortal() {
           {tab === "directory" && <DirectoryBrowser onNotice={setNotice} />}
           {tab === "business" && hasBusinessTab && (
             <MyBusinessListing email={email} onNotice={setNotice} />
+          )}
+          {tab === "expertscouncil" && (
+            <div className="mt-6">
+              <ExpertsDirectory
+                locale="en"
+                dict={getDictionary("en").experts}
+                variant="members"
+              />
+            </div>
           )}
           {tab === "news" && <NewsFeed onNotice={setNotice} />}
           {tab === "newsletters" && <NewslettersList onNotice={setNotice} />}

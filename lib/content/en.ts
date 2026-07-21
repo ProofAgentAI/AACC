@@ -1401,6 +1401,14 @@ export const en = {
       error: "Something went wrong. Please try again, or email",
     },
     directoryCta: "Browse the Expert Council directory",
+    featuredEmpty: "Featured experts will appear here soon.",
+    membersOnly: {
+      eyebrow: "Members Only",
+      title: "The Full Expert Council Directory Is for Members",
+      text: "Members browse the complete Expert Council — every approved expert, searchable by domain and sub-expertise, with full profiles and contact links. Join the chamber to unlock it, or sign in if you are already a member.",
+      join: "Join AACC-USA to See All Experts",
+      signIn: "Member Sign In",
+    },
   },
 
   privacy: {
