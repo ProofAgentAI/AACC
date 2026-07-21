@@ -1211,6 +1211,14 @@ export const ar: typeof en = {
       titlePlaceholder: "مثال: طبيب قلب، محاسب قانوني، باحث ذكاء اصطناعي",
       organization: "المؤسسة",
       cityState: "المدينة / الولاية",
+      country: "البلد",
+      selectCountry: "اختر البلد",
+      usa: "الولايات المتحدة",
+      algeria: "الجزائر",
+      state: "الولاية الأمريكية",
+      selectState: "اختر الولاية",
+      wilaya: "الولاية / المدينة",
+      selectWilaya: "اختر الولاية",
       linkedin: "حساب لينكدإن",
       domain: "مجال الخبرة",
       selectDomain: "اختر المجال",
@@ -1229,6 +1237,7 @@ export const ar: typeof en = {
       duplicateText: "يوجد طلب بهذا البريد الإلكتروني من قبل، وسيعود إليك الفريق قريباً.",
       error: "حدث خطأ. حاول مجدداً أو راسلنا على",
     },
+    directoryCta: "تصفح دليل مجلس الخبراء",
   },
 
   privacy: {

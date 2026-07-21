@@ -1373,6 +1373,14 @@ export const en = {
       titlePlaceholder: "e.g. Cardiologist, CPA, AI Research Scientist",
       organization: "Organization",
       cityState: "City / State",
+      country: "Country",
+      selectCountry: "Select a country",
+      usa: "United States",
+      algeria: "Algeria",
+      state: "State",
+      selectState: "Select a state",
+      wilaya: "Wilaya / City",
+      selectWilaya: "Select a wilaya",
       linkedin: "LinkedIn Profile",
       domain: "Domain of expertise",
       selectDomain: "Select a domain",
@@ -1392,6 +1400,7 @@ export const en = {
       duplicateText: "An application with this email already exists. The team will get back to you.",
       error: "Something went wrong. Please try again, or email",
     },
+    directoryCta: "Browse the Expert Council directory",
   },
 
   privacy: {
