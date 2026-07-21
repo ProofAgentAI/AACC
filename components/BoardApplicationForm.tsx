@@ -56,6 +56,11 @@ export default function BoardApplicationForm({
     const data = new FormData(e.currentTarget);
     setStatus("submitting");
 
+    // A free-text area joins the selected checkboxes so reviewers see it
+    // alongside the standard board areas.
+    const otherArea = String(data.get("otherArea") ?? "").trim();
+    const allAreas = otherArea ? [...areas, `Other: ${otherArea}`] : areas;
+
     const { error } = await supabase.from("board_applications").insert({
       first_name: String(data.get("firstName") ?? "").trim(),
       last_name: String(data.get("lastName") ?? "").trim(),
@@ -63,7 +68,7 @@ export default function BoardApplicationForm({
       phone: String(data.get("cell") ?? "").trim() || null,
       city_state: String(data.get("location") ?? "").trim() || null,
       linkedin: String(data.get("linkedin") ?? "").trim() || null,
-      areas,
+      areas: allAreas,
       background: String(data.get("background") ?? "").trim(),
       leadership: String(data.get("leadership") ?? "").trim() || null,
       businesses: String(data.get("businesses") ?? "").trim() || null,
@@ -169,6 +174,19 @@ export default function BoardApplicationForm({
           ))}
         </div>
       </fieldset>
+
+      <div className="sm:col-span-2">
+        <label htmlFor="b-other-area" className="mb-1.5 block text-sm font-semibold text-navy">
+          {dict.otherAreaLabel}
+        </label>
+        <input
+          id="b-other-area"
+          name="otherArea"
+          type="text"
+          placeholder={dict.otherAreaPlaceholder}
+          className={inputClasses}
+        />
+      </div>
 
       <div className="sm:col-span-2">
         <label htmlFor="b-background" className="mb-1.5 block text-sm font-semibold text-navy">

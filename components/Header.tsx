@@ -28,6 +28,7 @@ export default function Header({ locale, nav }: { locale: Locale; nav: NavDict }
       items: [
         { href: "/about", label: nav.aboutUs },
         { href: "/team", label: nav.team },
+        { href: "/experts", label: nav.experts },
         { href: "/diaspora", label: nav.diaspora },
         { href: "/advocacy", label: nav.advocacy },
       ],

@@ -39,6 +39,7 @@ export const en = {
     news: "News",
     contact: "Contact",
     team: "Our Team",
+    experts: "Expert Council",
     join: "Join AACC-USA",
     memberLogin: "Member Login",
     languageName: "العربية",
@@ -377,6 +378,8 @@ export const en = {
       description:
         "AACC-USA is recruiting founding board members with hands-on expertise across the full life of the organization: finance, legal, growth, communications, and community. Tell us about yourself and where you can lead.",
       areasLabel: "Board areas you can lead (select all that apply)",
+      otherAreaLabel: "Another area where you can help (optional)",
+      otherAreaPlaceholder: "e.g. Grant writing, university relations, translation...",
       areas: [
         { value: "treasurer-finance", label: "Treasurer / Finance (CPA)" },
         { value: "legal-incorporation", label: "Legal & Incorporation (Attorney)" },
@@ -1339,6 +1342,56 @@ export const en = {
     applyTitle: "Want to help build the chamber?",
     applyText:
       "Founding board seats are open across finance, legal, growth, communications, and community.",
+  },
+
+  experts: {
+    hero: {
+      eyebrow: "Expert Council",
+      title: "A Directory of Algerian-American Expertise",
+      description:
+        "Specialists across the chamber's priority sectors, ready to advise members, programs, and partners. Search by domain, or apply to join the council.",
+    },
+    highlightedTitle: "Featured Experts",
+    searchTitle: "Find an Expert",
+    searchPlaceholder: "Search by name, organization, or keyword...",
+    allDomains: "All domains",
+    allSubdomains: "All sub-expertise",
+    domainLabel: "Domain of expertise",
+    subdomainLabel: "Sub-expertise",
+    organizationLabel: "Organization",
+    bioLabel: "About",
+    showing: "Showing",
+    experts: "experts",
+    empty: "No experts match your search yet.",
+    applyCta: "Apply to Join the Expert Council",
+    applyIntro:
+      "Share your expertise with the chamber's network. Applications are reviewed by the chamber team; approved experts are published in this directory.",
+    form: {
+      name: "Full Name",
+      email: "Email",
+      title: "Professional Title",
+      titlePlaceholder: "e.g. Cardiologist, CPA, AI Research Scientist",
+      organization: "Organization",
+      cityState: "City / State",
+      linkedin: "LinkedIn Profile",
+      domain: "Domain of expertise",
+      selectDomain: "Select a domain",
+      subdomain: "Sub-expertise",
+      selectSubdomain: "Select a sub-expertise",
+      bio: "Short bio (who you are, experience, how you can help)",
+      photo: "Photo",
+      photoHint: "Square headshot, PNG/JPG, max 2 MB",
+      uploadPhoto: "Upload photo",
+      uploading: "Uploading...",
+      submit: "Submit Application",
+      submitting: "Submitting...",
+      successTitle: "Application received",
+      successText:
+        "Thank you — the chamber team reviews every application. Once approved, your profile is published in the Expert Council directory.",
+      duplicateTitle: "Already applied",
+      duplicateText: "An application with this email already exists. The team will get back to you.",
+      error: "Something went wrong. Please try again, or email",
+    },
   },
 
   privacy: {

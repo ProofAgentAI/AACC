@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
+  Award,
   BadgeCheck,
   Building2,
   CalendarDays,
@@ -42,6 +43,7 @@ import EventsManager from "@/components/admin/EventsManager";
 import BillingManager from "@/components/admin/BillingManager";
 import NewsletterComposer from "@/components/admin/NewsletterComposer";
 import TeamManager from "@/components/admin/TeamManager";
+import ExpertsManager from "@/components/admin/ExpertsManager";
 import {
   ADMIN_EMAIL,
   ROLE_LABELS,
@@ -64,6 +66,7 @@ const TABS = [
   { key: "newsletter", label: "Newsletter", table: "", icon: MailPlus },
   { key: "crm", label: "CRM", table: "", icon: ContactRound },
   { key: "team", label: "Team Page", table: "", icon: Users2 },
+  { key: "experts", label: "Expert Council", table: "", icon: Award },
   { key: "memberships", label: "Memberships", table: "membership_applications", icon: Inbox },
   { key: "board", label: "Board Applications", table: "board_applications", icon: ClipboardList },
   { key: "roleapps", label: "Role Applications", table: "role_applications", icon: ClipboardCheck },
@@ -107,6 +110,7 @@ const EMAIL_SUBJECTS: Record<TabKey, string> = {
   newsletter: "",
   crm: "",
   team: "",
+  experts: "",
   memberships: "Your AACC-USA membership application",
   board: "Your AACC-USA founding board application",
   roleapps: "Your AACC-USA role application",
@@ -870,6 +874,8 @@ export default function AdminDashboard() {
         <CrmManager onNotice={setNotice} />
       ) : tab === "team" ? (
         <TeamManager onNotice={setNotice} />
+      ) : tab === "experts" ? (
+        <ExpertsManager onNotice={setNotice} />
       ) : tab !== "users" ? (
         <>
         {/* Sponsored listings: what the public directory page shows */}
